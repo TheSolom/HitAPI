@@ -1,0 +1,34 @@
+export interface Environment {
+    NODE_ENV: 'development' | 'production';
+    ENABLE_SWAGGER: boolean;
+    PORT?: number;
+    HOST?: string;
+    APP_NAME: string;
+    API_PREFIX: string;
+    FRONTEND_URL: string;
+    POSTGRES_HOST: string;
+    POSTGRES_PORT: number;
+    POSTGRES_USER: string;
+    POSTGRES_PASSWORD: string;
+    POSTGRES_DATABASE: string;
+    REDIS_HOST: string;
+    REDIS_PORT: number;
+    ACCESS_TOKEN_SECRET: string;
+    ACCESS_TOKEN_EXPIRATION_TIME: string;
+    REFRESH_TOKEN_EXPIRATION_TIME: string;
+    GOOGLE_CLIENT_ID: string;
+    GOOGLE_CLIENT_SECRET: string;
+    GOOGLE_REDIRECT_URI: string;
+    MAILER_REFRESH_TOKEN: string;
+    MAILER_HOST: string;
+    MAILER_PORT: number;
+    MAILER_USER: string;
+    MAILER_DEFAULT_EMAIL: string;
+    MAILER_DEFAULT_NAME: string;
+    MAILER_CLIENT_PORT: number;
+    MAILER_IGNORE_TLS?: boolean;
+    MAILER_SECURE?: boolean;
+    MAILER_REQUIRE_TLS?: boolean;
+    CACHE_TTL_EMAIL_VERIFICATION: number;
+    CACHE_TTL_PASSWORD_RESET: number;
+}
