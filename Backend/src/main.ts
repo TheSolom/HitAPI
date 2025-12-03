@@ -117,10 +117,15 @@ function configureSecurity(app: NestExpressApplication): void {
             contentSecurityPolicy: IS_PRODUCTION
                 ? {
                       directives: {
-                          defaultSrc: ["'self'"],
-                          styleSrc: ["'self'", "'unsafe-inline'"],
-                          scriptSrc: ["'self'"],
-                          imgSrc: ["'self'", 'data:', 'https:'],
+                          defaultSrc: [`'self'`],
+                          styleSrc: [`'self'`, `'unsafe-inline'`],
+                          scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
+                          imgSrc: [
+                              `'self'`,
+                              'data:',
+                              'https:',
+                              'validator.swagger.io',
+                          ],
                       },
                   }
                 : false,
@@ -133,10 +138,7 @@ function configureSecurity(app: NestExpressApplication): void {
     );
 
     app.disable('x-powered-by');
-
-    if (IS_PRODUCTION) {
-        app.set('trust proxy', 1);
-    }
+    if (IS_PRODUCTION) app.set('trust proxy', 1);
 
     logger.log('Security configured');
 }
@@ -173,7 +175,10 @@ function configureSwagger(app: NestExpressApplication): void {
         .setDescription('The HitAPI REST API documentation')
         .setVersion('1.0.0')
         .setLicense('MIT', 'https://opensource.org/licenses/MIT')
-        .addServer('http://localhost:3000', 'Local Development')
+        .addServer(
+            `http://localhost:${configService.get<number>('PORT', 3000)}`,
+            'Local Development',
+        )
         .addServer('https://api.hitapi.example.com', 'Production')
         .addBearerAuth(
             {
@@ -191,9 +196,11 @@ function configureSwagger(app: NestExpressApplication): void {
                 flows: {
                     authorizationCode: {
                         authorizationUrl:
-                            'http://localhost:3000/api/v1/auth/google/login',
+                            'https://accounts.google.com/o/oauth2/v2/auth',
                         tokenUrl:
-                            'http://localhost:3000/api/v1/auth/google/redirect',
+                            configService.getOrThrow<string>(
+                                'GOOGLE_TOKEN_URL',
+                            ),
                         scopes: {
                             email: 'Access to email address',
                             profile: 'Access to basic profile information',
@@ -205,21 +212,29 @@ function configureSwagger(app: NestExpressApplication): void {
         )
         .build();
 
-    const documentFactory = () => SwaggerModule.createDocument(app, config);
+    const document = SwaggerModule.createDocument(app, config);
 
-    SwaggerModule.setup('/docs', app, documentFactory, {
+    SwaggerModule.setup('docs', app, document, {
         useGlobalPrefix: true,
-        jsonDocumentUrl: '/docs/json',
-        yamlDocumentUrl: '/docs/yaml',
+        jsonDocumentUrl: 'docs/json',
+        yamlDocumentUrl: 'docs/yaml',
         swaggerOptions: {
+            oauth2RedirectUrl: configService.getOrThrow<string>(
+                'OAUTH2_REDIRECT_URL',
+            ),
+            initOAuth: {
+                clientId: configService.getOrThrow<string>('GOOGLE_CLIENT_ID'),
+                clientSecret: configService.getOrThrow<string>(
+                    'GOOGLE_CLIENT_SECRET',
+                ),
+                scopes: ['email', 'profile'],
+                usePkceWithAuthorizationCodeGrant: false,
+            },
             persistAuthorization: true,
-            docExpansion: 'none',
             filter: true,
             showRequestDuration: true,
-            syntaxHighlight: {
-                activate: true,
-                theme: 'monokai',
-            },
+            docExpansion: 'none',
+            syntaxHighlight: { activate: true, theme: 'monokai' },
         },
         customSiteTitle: 'HitAPI Documentation',
         customCss: '.swagger-ui .topbar { display: none }',
@@ -302,4 +317,4 @@ async function bootstrap(): Promise<void> {
     }
 }
 
-void bootstrap();
+await bootstrap();

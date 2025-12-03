@@ -16,9 +16,11 @@ export interface Environment {
     ACCESS_TOKEN_SECRET: string;
     ACCESS_TOKEN_EXPIRATION_TIME: string;
     REFRESH_TOKEN_EXPIRATION_TIME: string;
+    OAUTH2_REDIRECT_URL: string;
     GOOGLE_CLIENT_ID: string;
     GOOGLE_CLIENT_SECRET: string;
     GOOGLE_REDIRECT_URI: string;
+    GOOGLE_TOKEN_URL: string;
     MAILER_REFRESH_TOKEN: string;
     MAILER_HOST: string;
     MAILER_PORT: number;
