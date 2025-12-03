@@ -6,6 +6,7 @@ import { ThrottlerModule } from './config/throttler/throttler.module.js';
 import { DBModule } from './config/db/database.module.js';
 import { CacheModule } from './config/cache/cache.module.js';
 import { RateLimitModule } from './modules/rate-limit/rate-limit.module.js';
+import { UsersModule } from './modules/users/users.module.js';
 
 @Module({
     imports: [
@@ -18,6 +19,7 @@ import { RateLimitModule } from './modules/rate-limit/rate-limit.module.js';
         DBModule,
         CacheModule,
         RateLimitModule,
+        UsersModule,
     ],
     providers: [
         {

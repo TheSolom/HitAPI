@@ -13,6 +13,7 @@ import compression from 'compression';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import type { Environment } from './common/interfaces/env.interface.js';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor.js';
 import { AppModule } from './app.module.js';
 
 const logger = new Logger('Bootstrap');
@@ -72,6 +73,7 @@ function configureGlobalProviders(app: NestExpressApplication): void {
         new ClassSerializerInterceptor(reflector, {
             excludeExtraneousValues: true,
         }),
+        new ResponseInterceptor(reflector),
     );
 
     app.useGlobalPipes(
