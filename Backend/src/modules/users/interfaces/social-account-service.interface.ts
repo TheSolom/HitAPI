@@ -1,6 +1,5 @@
 import { AuthProvidersEnum } from '../../auth/enums/auth-providers.enum.js';
 import { SocialAccount } from '../entities/social-account.entity.js';
-import { SocialLoginDto } from '../../auth/social/dto/social-login.dto.js';
 import { NullableType } from '../../../common/@types/nullable.type.js';
 
 export interface ISocialAccountsService {
@@ -8,7 +7,7 @@ export interface ISocialAccountsService {
      * Finds a social account by its provider and social ID.
      * @param provider - The authentication provider (e.g., Google, Facebook).
      * @param socialId - The unique ID provided by the social authentication service.
-     * @returns A Promise that resolves to the SocialAccount if found, otherwise null.
+     * @returns {Promise<NullableType<SocialAccount>>} A Promise that resolves to the SocialAccount if found, otherwise null.
      */
     findBySocialId(
         provider: AuthProvidersEnum,
@@ -17,7 +16,7 @@ export interface ISocialAccountsService {
     /**
      * Finds all social accounts linked to a specific user.
      * @param userId - The ID of the user.
-     * @returns A Promise that resolves to an array of SocialAccount entities.
+     * @returns {Promise<SocialAccount[]>} A Promise that resolves to an array of SocialAccount entities.
      */
     findAllByUserId(userId: string): Promise<SocialAccount[]>;
     /**
@@ -25,7 +24,7 @@ export interface ISocialAccountsService {
      * @param userId - The ID of the user.
      * @param socialId - The unique ID provided by the social authentication service.
      * @param provider - The authentication provider.
-     * @returns A Promise that resolves to the created or updated SocialAccount entity.
+     * @returns {Promise<SocialAccount>} A Promise that resolves to the created or updated SocialAccount entity.
      */
     createOrUpdate(
         userId: string,
@@ -35,14 +34,14 @@ export interface ISocialAccountsService {
     /**
      * Checks if a user has multiple login methods (e.g., password and a social account, or multiple social accounts).
      * @param userId - The ID of the user.
-     * @returns A Promise that resolves to true if the user has multiple login methods, false otherwise.
+     * @returns {Promise<boolean>} A Promise that resolves to true if the user has multiple login methods, false otherwise.
      */
     hasMultipleLoginMethods(userId: string): Promise<boolean>;
     /**
      * Unlinks a social account from a user.
      * @param userId - The ID of the user.
      * @param provider - The authentication provider of the account to unlink.
-     * @returns A Promise that resolves to true if the account was successfully unlinked, false otherwise.
+     * @returns {Promise<boolean>} A Promise that resolves to true if the account was successfully unlinked, false otherwise.
      */
     unlinkAccount(
         userId: string,
