@@ -7,6 +7,9 @@ import { DBModule } from './config/db/database.module.js';
 import { CacheModule } from './config/cache/cache.module.js';
 import { RateLimitModule } from './modules/rate-limit/rate-limit.module.js';
 import { UsersModule } from './modules/users/users.module.js';
+import { MailsModule } from './modules/mails/mails.module.js';
+import { MailerModule } from './modules/mailer/mailer.module.js';
+import { AuthModule } from './modules/auth/auth.module.js';
 
 @Module({
     imports: [
@@ -20,6 +23,9 @@ import { UsersModule } from './modules/users/users.module.js';
         CacheModule,
         RateLimitModule,
         UsersModule,
+        MailsModule,
+        MailerModule,
+        AuthModule,
     ],
     providers: [
         {
