@@ -29,6 +29,7 @@ export class TeamsService implements ITeamsService {
         const [teams, totalItems] = await this.teamsRepository.findAndCount({
             skip,
             take: limit,
+            order: { createdAt: 'DESC' },
         });
 
         return {
