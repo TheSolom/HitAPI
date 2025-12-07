@@ -15,4 +15,5 @@ export enum Services {
     SOCIAL_AUTH = 'SOCIAL_AUTH_SERVICE',
     AUTH_GOOGLE = 'AUTH_GOOGLE_SERVICE',
     AUTH = 'AUTH_SERVICE',
+    TEAMS = 'TEAMS_SERVICE',
 }

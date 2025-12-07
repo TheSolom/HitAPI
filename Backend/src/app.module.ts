@@ -10,6 +10,7 @@ import { UsersModule } from './modules/users/users.module.js';
 import { MailsModule } from './modules/mails/mails.module.js';
 import { MailerModule } from './modules/mailer/mailer.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { TeamsModule } from './modules/teams/teams.module.js';
 
 @Module({
     imports: [
@@ -26,6 +27,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
         MailsModule,
         MailerModule,
         AuthModule,
+        TeamsModule,
     ],
     providers: [
         {

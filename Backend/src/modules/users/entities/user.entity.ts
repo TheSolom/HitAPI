@@ -12,6 +12,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { SocialAccount } from './social-account.entity.js';
+import { TeamMember } from '../../teams/entities/team-member.entity.js';
 
 @Entity()
 export class User {
@@ -41,6 +42,11 @@ export class User {
         cascade: true,
     })
     socialAccounts: Relation<SocialAccount>[];
+
+    @OneToMany(() => TeamMember, (teamMember) => teamMember.user, {
+        cascade: true,
+    })
+    teamMembers: Relation<TeamMember>[];
 
     @CreateDateColumn()
     createdAt: Date;
