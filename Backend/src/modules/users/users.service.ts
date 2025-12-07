@@ -102,11 +102,14 @@ export class UsersService implements IUsersService {
         return this.usersRepository.save(user);
     }
 
-    async updateUser(id: User['id'], payload: UpdateUserDto): Promise<User> {
+    async updateUser(
+        id: User['id'],
+        updateUserDto: UpdateUserDto,
+    ): Promise<User> {
         return this.saveUser(
             this.usersRepository.create({
                 id,
-                ...payload,
+                ...updateUserDto,
             }),
         );
     }
