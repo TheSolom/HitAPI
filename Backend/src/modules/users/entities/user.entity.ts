@@ -35,7 +35,7 @@ export class User {
     private verified: boolean;
 
     @Column({ type: 'boolean', default: false })
-    private admin: boolean;
+    private readonly admin: boolean;
 
     @OneToMany(() => SocialAccount, (socialAccount) => socialAccount.user, {
         cascade: true,

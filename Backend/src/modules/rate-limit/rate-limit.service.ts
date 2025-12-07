@@ -13,7 +13,7 @@ export class RateLimitService implements IRateLimitService {
         API_CALL: { maxRequests: 100, windowMs: 60000 }, // 1 min
     };
 
-    constructor(@Inject(CACHE_MANAGER) private cacheService: Cache) {}
+    constructor(@Inject(CACHE_MANAGER) private readonly cacheService: Cache) {}
 
     private getRateLimitKey(identifier: string, type: string): string {
         return `ratelimit:${type}:${identifier.toLowerCase()}`;
