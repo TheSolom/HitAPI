@@ -43,11 +43,4 @@ export interface ITeamsService {
      * @returns {Promise<void>}
      */
     deleteTeam(id: string): Promise<void>;
-    /**
-     * Save a team
-     *
-     * @param team
-     * @returns {Promise<Team>}
-     */
-    saveTeam(team: Team): Promise<Team>;
 }

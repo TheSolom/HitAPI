@@ -16,6 +16,10 @@ export class TeamsService implements ITeamsService {
         private readonly teamsRepository: Repository<Team>,
     ) {}
 
+    private async saveTeam(team: Team): Promise<Team> {
+        return this.teamsRepository.save(team);
+    }
+
     async findAll(
         offset: number,
         limit: number,
@@ -48,11 +52,12 @@ export class TeamsService implements ITeamsService {
         const existingTeam = await this.teamsRepository.findOneBy({ slug });
         if (existingTeam) throw new ConflictException('Team already exists');
 
-        const team = this.teamsRepository.create({
-            ...createTeamDto,
-            slug,
-        });
-        return this.teamsRepository.save(team);
+        return this.saveTeam(
+            this.teamsRepository.create({
+                ...createTeamDto,
+                slug,
+            }),
+        );
     }
 
     async updateTeam(id: string, updateTeamDto: UpdateTeamDto): Promise<Team> {
@@ -69,9 +74,5 @@ export class TeamsService implements ITeamsService {
 
     async deleteTeam(id: string): Promise<void> {
         await this.teamsRepository.softDelete(id);
-    }
-
-    async saveTeam(team: Team): Promise<Team> {
-        return this.teamsRepository.save(team);
     }
 }
