@@ -64,7 +64,6 @@
         "typeorm": "^0.3.27"
     },
     "devDependencies": {
-        "@compodoc/compodoc": "^1.1.32",
         "@eslint/eslintrc": "^3.3.1",
         "@eslint/js": "^9.38.0",
         "@nestjs/cli": "^11.0.10",
