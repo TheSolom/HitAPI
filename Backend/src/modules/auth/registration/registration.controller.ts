@@ -15,6 +15,7 @@ import {
     ApiBadRequestResponse,
     ApiConflictResponse,
     ApiInternalServerErrorResponse,
+    ApiTooManyRequestsResponse,
     ApiBody,
     ApiHeaders,
 } from '@nestjs/swagger';
@@ -29,6 +30,7 @@ import { ResendVerificationDto } from '../verification/dto/resend-verification.d
 import { SkipResponseInterceptor } from '../../../common/decorators/skip-response-interceptor.decorator.js';
 
 @ApiTags('Auth Registration')
+@ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
 @Controller(Routes.AUTH)
 export class RegistrationController {
     constructor(

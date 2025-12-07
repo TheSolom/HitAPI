@@ -5,6 +5,7 @@ import {
     ApiOAuth2,
     ApiOkResponse,
     ApiTags,
+    ApiTooManyRequestsResponse,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
@@ -21,6 +22,7 @@ import { CustomResponse } from '../../common/dto/custom-response.dto.js';
 @ApiBearerAuth('JWT')
 @ApiOAuth2(['email', 'profile'], 'GoogleOAuth2')
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+@ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {

@@ -31,6 +31,7 @@ import { ChangePasswordDto } from './dto/change-password.dto.js';
 import { SetPasswordDto } from './dto/set-password.dto.js';
 
 @ApiTags('Auth Passwords')
+@ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
 @Controller(Routes.AUTH)
 export class PasswordsController {
     constructor(

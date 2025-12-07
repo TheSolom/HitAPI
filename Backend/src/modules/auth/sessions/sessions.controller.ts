@@ -9,10 +9,11 @@ import {
     Get,
 } from '@nestjs/common';
 import {
+    ApiTags,
     ApiBearerAuth,
     ApiNoContentResponse,
     ApiOkResponse,
-    ApiTags,
+    ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 import { Routes } from '../../../common/constants/routes.constant.js';
@@ -25,6 +26,7 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard.js';
 import { UserSessionDto } from './dto/user-session.dto.js';
 
 @ApiTags('Auth Sessions')
+@ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
 @Controller(Routes.AUTH)
 export class SessionsController {
     constructor(

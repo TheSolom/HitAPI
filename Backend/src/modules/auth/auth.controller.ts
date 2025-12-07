@@ -19,6 +19,7 @@ import {
     ApiNoContentResponse,
     ApiOkResponse,
     ApiUnauthorizedResponse,
+    ApiTooManyRequestsResponse,
     ApiBody,
     ApiHeaders,
 } from '@nestjs/swagger';
@@ -42,6 +43,7 @@ import { AuthProvidersEnum } from './enums/auth-providers.enum.js';
 
 @ApiTags('Auth')
 @Controller(Routes.AUTH)
+@ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
 export class AuthController {
     constructor(
         @Inject(Services.AUTH) private readonly authService: IAuthService,

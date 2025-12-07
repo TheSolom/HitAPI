@@ -12,7 +12,12 @@ import {
     HttpStatus,
     BadRequestException,
 } from '@nestjs/common';
-import { ApiHeaders, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiTags,
+    ApiHeaders,
+    ApiOkResponse,
+    ApiTooManyRequestsResponse,
+} from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { OAuth2Client, TokenPayload } from 'google-auth-library';
 import { Routes } from '../../../common/constants/routes.constant.js';
@@ -30,6 +35,7 @@ import { AuthProvidersEnum } from '../enums/auth-providers.enum.js';
 import { SkipResponseInterceptor } from '../../../common/decorators/skip-response-interceptor.decorator.js';
 
 @ApiTags('Auth Google')
+@ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
 @Controller(Routes.AUTH_GOOGLE)
 export class GoogleAuthController {
     private readonly oauth2Client: OAuth2Client;
