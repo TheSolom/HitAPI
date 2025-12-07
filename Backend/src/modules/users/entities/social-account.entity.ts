@@ -6,8 +6,8 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     Index,
+    type Relation,
 } from 'typeorm';
-import type { Relation } from 'typeorm';
 import { AuthProvidersEnum } from '../../auth/enums/auth-providers.enum.js';
 import { User } from './user.entity.js';
 

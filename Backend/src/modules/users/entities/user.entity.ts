@@ -8,8 +8,8 @@ import {
     DeleteDateColumn,
     AfterLoad,
     BeforeUpdate,
+    type Relation,
 } from 'typeorm';
-import type { Relation } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { SocialAccount } from './social-account.entity.js';
 
