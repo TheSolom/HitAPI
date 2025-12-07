@@ -22,7 +22,7 @@ export class RefreshToken {
     @Index()
     user: User;
 
-    @Column({ default: false })
+    @Column({ type: 'boolean', default: false })
     isRevoked: boolean;
 
     @Column({ nullable: true })
