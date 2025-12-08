@@ -1,6 +1,7 @@
 import {
     Controller,
     Inject,
+    UseGuards,
     Get,
     Post,
     Delete,
@@ -23,10 +24,12 @@ import {
     ApiNotFoundResponse,
     ApiConflictResponse,
     ApiTooManyRequestsResponse,
+    ApiParam,
+    ApiBody,
 } from '@nestjs/swagger';
-import { UseGuards } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { ITeamsService } from './interfaces/teams-service.interfaces.js';
 import { OffsetPaginationOptionsDto } from '../../common/dto/offset-pagination-options.dto.js';
@@ -42,7 +45,7 @@ import { PaginatedTeamResponseDto } from './dto/paginated-team-response.dto.js';
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
 @UseGuards(JwtAuthGuard)
-@Controller('teams')
+@Controller(Routes.TEAMS)
 export class TeamsController {
     constructor(
         @Inject(Services.TEAMS) private readonly teamsService: ITeamsService,
@@ -61,6 +64,7 @@ export class TeamsController {
     @Get(':id')
     @ApiOkResponse({ type: CustomResponse<TeamResponseDto> })
     @ApiNotFoundResponse({ description: 'Team not found' })
+    @ApiParam({ name: 'id' })
     async findOne(
         @Param('id', ParseUUIDPipe) id: string,
     ): Promise<TeamResponseDto> {
@@ -73,6 +77,7 @@ export class TeamsController {
     @Post()
     @ApiOkResponse({ type: CustomResponse<TeamResponseDto> })
     @ApiConflictResponse({ description: 'Team already exists' })
+    @ApiBody({ type: CreateTeamDto })
     async createTeam(
         @Body() createTeamDto: CreateTeamDto,
     ): Promise<TeamResponseDto> {
@@ -84,9 +89,11 @@ export class TeamsController {
     @Patch(':id')
     @ApiOkResponse({ type: CustomResponse<TeamResponseDto> })
     @ApiNotFoundResponse({ description: 'Team not found' })
+    @ApiBody({ type: UpdateTeamDto })
+    @ApiParam({ name: 'id' })
     async updateTeam(
-        @Param('id', ParseUUIDPipe) id: string,
         @Body() updateTeamDto: UpdateTeamDto,
+        @Param('id', ParseUUIDPipe) id: string,
     ): Promise<TeamResponseDto> {
         const team = await this.teamsService.updateTeam(id, updateTeamDto);
         if (!team) throw new NotFoundException('Team not found');
@@ -97,6 +104,7 @@ export class TeamsController {
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse()
+    @ApiParam({ name: 'id' })
     async deleteTeam(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
         await this.teamsService.deleteTeam(id);
     }
