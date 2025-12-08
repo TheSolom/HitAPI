@@ -2,8 +2,9 @@ import {
     Entity,
     PrimaryGeneratedColumn,
     Column,
-    CreateDateColumn,
     ManyToOne,
+    CreateDateColumn,
+    DeleteDateColumn,
     type Relation,
 } from 'typeorm';
 import { TeamMemberRoles } from '../enums/team-member-roles.enum.js';
@@ -34,4 +35,7 @@ export class TeamMember {
 
     @CreateDateColumn()
     joinedAt: Date;
+
+    @DeleteDateColumn()
+    deletedAt: Date;
 }
