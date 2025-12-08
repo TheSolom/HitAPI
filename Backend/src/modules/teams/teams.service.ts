@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+    Injectable,
+    ConflictException,
+    NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import type { ITeamsService } from './interfaces/teams-service.interfaces.js';
@@ -7,7 +11,7 @@ import { CreateTeamDto } from './dto/create-team.dto.js';
 import { UpdateTeamDto } from './dto/update-team.dto.js';
 import type { NullableType } from '../../common/@types/nullable.type.js';
 import { createSlug } from '../../common/utils/slug.util.js';
-import { OffsetPaginationDto } from '../../common/dto/offset-pagination.dto.js';
+import { TeamMemberRoles } from './enums/team-member-roles.enum.js';
 
 @Injectable()
 export class TeamsService implements ITeamsService {
@@ -20,23 +24,11 @@ export class TeamsService implements ITeamsService {
         return this.teamsRepository.save(team);
     }
 
-    async findAll(
-        offset: number,
-        limit: number,
-    ): Promise<OffsetPaginationDto<Team>> {
-        const skip = (offset - 1) * limit;
-
-        const [teams, totalItems] = await this.teamsRepository.findAndCount({
-            skip,
-            take: limit,
+    async findAll(userId: string): Promise<Team[]> {
+        return this.teamsRepository.find({
+            where: { teamMembers: { user: { id: userId } } },
             order: { createdAt: 'DESC' },
         });
-
-        return {
-            totalItems,
-            totalPages: Math.ceil(totalItems / limit),
-            items: teams,
-        };
     }
 
     async findOne(id: string): Promise<NullableType<Team>> {
@@ -47,7 +39,10 @@ export class TeamsService implements ITeamsService {
         return team;
     }
 
-    async createTeam(createTeamDto: CreateTeamDto): Promise<Team> {
+    async createTeam(
+        userId: string,
+        createTeamDto: CreateTeamDto,
+    ): Promise<Team> {
         const slug = createSlug(createTeamDto.name);
 
         const existingTeam = await this.teamsRepository.findOneBy({ slug });
@@ -57,20 +52,26 @@ export class TeamsService implements ITeamsService {
             this.teamsRepository.create({
                 ...createTeamDto,
                 slug,
+                teamMembers: [
+                    {
+                        user: { id: userId },
+                        role: TeamMemberRoles.OWNER,
+                    },
+                ],
             }),
         );
     }
 
     async updateTeam(id: string, updateTeamDto: UpdateTeamDto): Promise<Team> {
-        const slug = updateTeamDto.name && createSlug(updateTeamDto.name);
+        const team = await this.teamsRepository.findOneBy({ id });
+        if (!team) throw new NotFoundException('Team not found');
 
-        return this.saveTeam(
-            this.teamsRepository.create({
-                id,
-                ...(slug && { slug }),
-                ...updateTeamDto,
-            }),
-        );
+        const updated = this.teamsRepository.merge(team, {
+            ...updateTeamDto,
+            ...(updateTeamDto.name && { slug: createSlug(updateTeamDto.name) }),
+        });
+
+        return this.teamsRepository.save(updated);
     }
 
     async deleteTeam(id: string): Promise<void> {

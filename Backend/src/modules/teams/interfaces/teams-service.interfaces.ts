@@ -1,5 +1,4 @@
 import type { NullableType } from '../../../common/@types/nullable.type.js';
-import { OffsetPaginationDto } from '../../../common/dto/offset-pagination.dto.js';
 import { Team } from '../entities/team.entity.js';
 import { CreateTeamDto } from '../dto/create-team.dto.js';
 import { UpdateTeamDto } from '../dto/update-team.dto.js';
@@ -8,11 +7,10 @@ export interface ITeamsService {
     /**
      * Find all teams
      *
-     * @param offset
-     * @param limit
-     * @returns {Promise<OffsetPaginationDto<Team>>}
+     * @param userId
+     * @returns {Promise<Team[]>}
      */
-    findAll(offset: number, limit: number): Promise<OffsetPaginationDto<Team>>;
+    findAll(userId: string): Promise<Team[]>;
     /**
      * Find one team by id
      *
@@ -23,11 +21,12 @@ export interface ITeamsService {
     /**
      * Create a new team
      *
+     * @param userId
      * @param CreateTeamDto
      * @returns {Promise<Team>}
      * @throws {ConflictException} Team already exists
      */
-    createTeam(createTeamDto: CreateTeamDto): Promise<Team>;
+    createTeam(userId: string, createTeamDto: CreateTeamDto): Promise<Team>;
     /**
      * Update a team
      *
