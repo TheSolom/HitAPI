@@ -8,7 +8,6 @@ import {
     Patch,
     Body,
     Param,
-    Query,
     ParseUUIDPipe,
     NotFoundException,
     HttpCode,
@@ -32,12 +31,12 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { ITeamsService } from './interfaces/teams-service.interfaces.js';
-import { OffsetPaginationOptionsDto } from '../../common/dto/offset-pagination-options.dto.js';
 import { CustomResponse } from '../../common/dto/custom-response.dto.js';
 import { CreateTeamDto } from './dto/create-team.dto.js';
 import { UpdateTeamDto } from './dto/update-team.dto.js';
 import { TeamResponseDto } from './dto/team-response.dto.js';
-import { PaginatedTeamResponseDto } from './dto/paginated-team-response.dto.js';
+import { AuthUser } from '../users/decorators/auth-user.decorator.js';
+import type { AuthenticatedUser } from '../users/dto/auth-user.dto.js';
 
 @ApiTags('Teams')
 @ApiBearerAuth('JWT')
@@ -52,13 +51,13 @@ export class TeamsController {
     ) {}
 
     @Get()
-    @ApiOkResponse({ type: CustomResponse<PaginatedTeamResponseDto> })
+    @ApiOkResponse({ type: CustomResponse<TeamResponseDto[]> })
     async findAll(
-        @Query() { offset, limit }: OffsetPaginationOptionsDto,
-    ): Promise<PaginatedTeamResponseDto> {
-        const teams = await this.teamsService.findAll(offset, limit);
+        @AuthUser() { id }: AuthenticatedUser,
+    ): Promise<TeamResponseDto[]> {
+        const teams = await this.teamsService.findAll(id);
 
-        return plainToInstance(PaginatedTeamResponseDto, teams);
+        return plainToInstance(TeamResponseDto, teams);
     }
 
     @Get(':id')
@@ -79,9 +78,10 @@ export class TeamsController {
     @ApiConflictResponse({ description: 'Team already exists' })
     @ApiBody({ type: CreateTeamDto })
     async createTeam(
+        @AuthUser() { id: userId }: AuthenticatedUser,
         @Body() createTeamDto: CreateTeamDto,
     ): Promise<TeamResponseDto> {
-        const team = await this.teamsService.createTeam(createTeamDto);
+        const team = await this.teamsService.createTeam(userId, createTeamDto);
 
         return plainToInstance(TeamResponseDto, team);
     }
