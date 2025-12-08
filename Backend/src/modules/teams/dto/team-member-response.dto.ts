@@ -5,8 +5,12 @@ import { TeamMemberRoles } from '../enums/team-member-roles.enum.js';
 
 export class TeamMemberResponseDto extends UserProfileDto {
     @Expose()
-    @Transform(({ obj }: { obj: { user?: { id: string } } }) => obj.user?.id)
+    @ApiProperty({ type: String })
     declare id: string;
+
+    @Expose()
+    @Transform(({ obj }: { obj: { user?: { id: string } } }) => obj.user?.id)
+    declare userId: string;
 
     @Expose()
     @Transform(
