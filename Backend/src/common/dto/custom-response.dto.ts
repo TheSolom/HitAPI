@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CustomResponse<T> {
-    @ApiProperty()
+    @ApiProperty({ default: 200 })
     statusCode: number;
 
-    @ApiProperty()
+    @ApiProperty({ default: 'Success' })
     message: string;
 
     @ApiPropertyOptional()
