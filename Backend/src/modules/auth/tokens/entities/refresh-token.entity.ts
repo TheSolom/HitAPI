@@ -18,8 +18,11 @@ export class RefreshToken {
     @Column()
     tokenHash: string;
 
-    @ManyToOne(() => User, { eager: true, onDelete: 'CASCADE' })
-    @Index()
+    @ManyToOne(() => User, {
+        eager: true,
+        onDelete: 'CASCADE',
+        nullable: false,
+    })
     user: User;
 
     @Column({ type: 'boolean', default: false })

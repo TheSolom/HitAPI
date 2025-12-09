@@ -25,6 +25,7 @@ export class SocialAccount {
 
     @ManyToOne(() => User, (user) => user.socialAccounts, {
         onDelete: 'CASCADE',
+        nullable: false,
     })
     user: Relation<User>;
 
