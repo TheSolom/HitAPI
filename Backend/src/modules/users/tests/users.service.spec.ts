@@ -112,7 +112,7 @@ describe('UsersService', () => {
         it('should filter by verified status if requested', async () => {
             await usersService.findById('1', { requireVerified: true });
             expect(queryBuilderMock.andWhere).toHaveBeenCalledWith(
-                'user.isVerified = :isVerified',
+                'user.verified = :isVerified',
                 { isVerified: true },
             );
         });
@@ -120,7 +120,7 @@ describe('UsersService', () => {
         it('should filter by admin status if requested', async () => {
             await usersService.findById('1', { requireAdmin: true });
             expect(queryBuilderMock.andWhere).toHaveBeenCalledWith(
-                'user.isAdmin = :isAdmin',
+                'user.admin = :isAdmin',
                 { isAdmin: true },
             );
         });
@@ -166,8 +166,6 @@ describe('UsersService', () => {
                     id: '1',
                     provider: AuthProvidersEnum.GOOGLE,
                     socialId: 'google-123',
-                    email: 'test@example.com',
-                    displayName: 'Test User',
                     user: {} as User,
                     createdAt: new Date(),
                     updatedAt: new Date(),
@@ -186,11 +184,27 @@ describe('UsersService', () => {
     describe('createUser', () => {
         it('should create a user if email does not exist', async () => {
             const createUserDto: CreateUserDto = {
-                email: 'new@example.com',
                 displayName: 'New User',
+                email: 'new@example.com',
                 password: 'password',
+                verified: true,
+                admin: false,
             };
-            const savedUser = { id: '1', ...createUserDto } as User;
+            const savedUser = {
+                id: '1',
+                displayName: createUserDto.displayName,
+                email: createUserDto.email,
+                password: createUserDto.password,
+                socialAccounts: [],
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                previousPassword: undefined,
+                isVerified: createUserDto.verified ?? false,
+                isAdmin: createUserDto.admin ?? false,
+                loadPreviousPassword: jest.fn(),
+                updatePreviousPassword: jest.fn(),
+                hasPassword: jest.fn().mockReturnValue(true),
+            } as unknown as User;
 
             jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
             const createSpy = jest
