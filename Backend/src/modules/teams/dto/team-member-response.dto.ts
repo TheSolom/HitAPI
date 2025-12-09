@@ -9,21 +9,21 @@ export class TeamMemberResponseDto extends UserProfileDto {
     declare id: string;
 
     @Expose()
-    @Transform(({ obj }: { obj: { user?: { id: string } } }) => obj.user?.id)
+    @Transform(({ obj }: { obj: { user: { id: string } } }) => obj.user.id)
     @ApiProperty({ format: 'uuid' })
     declare userId: string;
 
     @Expose()
     @Transform(
-        ({ obj }: { obj: { user?: { displayName: string } } }) =>
-            obj.user?.displayName,
+        ({ obj }: { obj: { user: { displayName: string } } }) =>
+            obj.user.displayName,
     )
     @ApiProperty({ type: 'string' })
     declare displayName: string;
 
     @Expose()
     @Transform(
-        ({ obj }: { obj: { user?: { email: string } } }) => obj.user?.email,
+        ({ obj }: { obj: { user: { email: string } } }) => obj.user.email,
     )
     @ApiProperty({ format: 'email' })
     declare email: string;
