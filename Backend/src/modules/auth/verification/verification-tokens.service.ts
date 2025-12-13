@@ -30,7 +30,7 @@ export class VerificationTokenService implements IVerificationTokensService {
 
     async getTokenData(token: string): Promise<MaybeType<TokenCacheData>> {
         const tokenKey = this.getTokenKey(token);
-        return await this.cacheService.get<TokenCacheData>(tokenKey);
+        return this.cacheService.get<TokenCacheData>(tokenKey);
     }
 
     async invalidateToken(token: string): Promise<void> {
