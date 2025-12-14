@@ -1,16 +1,13 @@
 import {
     Entity,
-    Index,
     PrimaryGeneratedColumn,
     Column,
     ManyToOne,
     CreateDateColumn,
-    DeleteDateColumn,
 } from 'typeorm';
 import { User } from '../../../users/entities/user.entity.js';
 
 @Entity('refresh_tokens')
-@Index(['user', 'deletedAt'])
 export class RefreshToken {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -24,9 +21,6 @@ export class RefreshToken {
         nullable: false,
     })
     user: User;
-
-    @Column({ type: 'boolean', default: false })
-    isRevoked: boolean;
 
     @Column({ nullable: true })
     deviceInfo?: string;
@@ -42,7 +36,4 @@ export class RefreshToken {
 
     @CreateDateColumn()
     createdAt: Date;
-
-    @DeleteDateColumn()
-    deletedAt: Date;
 }

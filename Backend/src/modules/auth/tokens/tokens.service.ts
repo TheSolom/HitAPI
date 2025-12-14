@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util.js';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'jsonwebtoken';
@@ -111,15 +111,13 @@ export class TokensService implements ITokensService {
             where: {
                 tokenHash,
                 user: { id: userId },
-                deletedAt: IsNull(),
-                isRevoked: false,
             },
         });
 
         if (!storedToken) return null;
 
         if (storedToken.expiresAt < new Date()) {
-            await this.refreshTokenRepository.remove(storedToken);
+            await this.revokeRefreshToken(token);
             return null;
         }
 
@@ -150,18 +148,9 @@ export class TokensService implements ITokensService {
         };
     }
 
-    async revokeRefreshToken(token: string, userId: string): Promise<void> {
+    async revokeRefreshToken(token: string): Promise<void> {
         const tokenHash = this.hashingService.hash(token);
 
-        await this.refreshTokenRepository.update(
-            {
-                user: { id: userId },
-                tokenHash,
-            },
-            {
-                deletedAt: new Date(),
-                isRevoked: true,
-            },
-        );
+        await this.refreshTokenRepository.delete({ tokenHash });
     }
 }

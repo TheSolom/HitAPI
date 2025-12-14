@@ -37,8 +37,7 @@ export interface ITokensService {
     /**
      * Revokes a specific refresh token for a user.
      * @param token The refresh token string to revoke.
-     * @param userId The ID of the user whose token is being revoked.
      * @returns {Promise<void>} A promise that resolves when the token is revoked.
      */
-    revokeRefreshToken(token: string, userId: string): Promise<void>;
+    revokeRefreshToken(token: string): Promise<void>;
 }

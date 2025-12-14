@@ -1,12 +1,13 @@
 import {
     Inject,
     Controller,
+    Get,
     Post,
-    Body,
+    Param,
     UseGuards,
     HttpCode,
     HttpStatus,
-    Get,
+    ParseUUIDPipe,
 } from '@nestjs/common';
 import {
     ApiTags,
@@ -14,6 +15,7 @@ import {
     ApiNoContentResponse,
     ApiOkResponse,
     ApiTooManyRequestsResponse,
+    ApiParam,
 } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 import { Routes } from '../../../common/constants/routes.constant.js';
@@ -26,6 +28,8 @@ import { JwtAuthGuard } from '../guards/jwt-auth.guard.js';
 import { UserSessionDto } from './dto/user-session.dto.js';
 
 @ApiTags('Auth Sessions')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('JWT')
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
 @Controller(Routes.AUTH)
 export class SessionsController {
@@ -35,25 +39,22 @@ export class SessionsController {
     ) {}
 
     @Get('sessions')
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth('JWT')
-    @ApiOkResponse({ type: CustomResponse<UserSessionDto>, isArray: true })
+    @ApiOkResponse({ type: CustomResponse<UserSessionDto[]> })
     async getActiveSessions(
-        @AuthUser() authUser: AuthenticatedUser,
+        @AuthUser() { id: userId }: AuthenticatedUser,
     ): Promise<UserSessionDto[]> {
-        const tokens = await this.sessionsService.getUserActiveSessions(
-            authUser.id,
-        );
+        const tokens = await this.sessionsService.getUserActiveSessions(userId);
 
-        return tokens.map((token) => plainToInstance(UserSessionDto, token));
+        return plainToInstance(UserSessionDto, tokens);
     }
 
     @Post('sessions/:sessionId/revoke')
     @HttpCode(HttpStatus.NO_CONTENT)
-    @UseGuards(JwtAuthGuard)
-    @ApiBearerAuth('JWT')
     @ApiNoContentResponse()
-    async revokeSession(@Body() body: { sessionId: string }): Promise<void> {
-        await this.sessionsService.revokeSession(body.sessionId);
+    @ApiParam({ name: 'sessionId' })
+    async revokeSession(
+        @Param('sessionId', ParseUUIDPipe) sessionId: string,
+    ): Promise<void> {
+        await this.sessionsService.revokeSession(sessionId);
     }
 }
