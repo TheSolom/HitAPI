@@ -31,7 +31,9 @@ export class TeamInvitesService implements ITeamInvitesService {
         return this.invitesRepository.save(invite);
     }
 
-    async findAll(teamId: TeamInvite['team']['id']): Promise<TeamInvite[]> {
+    async findAllByTeam(
+        teamId: TeamInvite['team']['id'],
+    ): Promise<TeamInvite[]> {
         return this.invitesRepository.find({
             where: { team: { id: teamId } },
             order: { createdAt: 'DESC' },

@@ -66,7 +66,7 @@ export class TeamMembersController {
         const team = await this.teamsService.findOne(teamId);
         if (!team) throw new NotFoundException('Team not found');
 
-        const members = await this.teamMembersService.findAll(teamId);
+        const members = await this.teamMembersService.findAllByTeam(teamId);
         return plainToInstance(TeamMemberResponseDto, members);
     }
 

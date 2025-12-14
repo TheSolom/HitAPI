@@ -55,7 +55,7 @@ export class TeamsController {
     async findAll(
         @AuthUser() { id }: AuthenticatedUser,
     ): Promise<TeamResponseDto[]> {
-        const teams = await this.teamsService.findAll(id);
+        const teams = await this.teamsService.findAllByUser(id);
 
         return plainToInstance(TeamResponseDto, teams);
     }

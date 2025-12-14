@@ -73,7 +73,7 @@ export class TeamInvitesController {
     async findAll(
         @Param('teamId', ParseUUIDPipe) teamId: string,
     ): Promise<TeamInviteResponseDto[]> {
-        const invites = await this.teamInvitesService.findAll(teamId);
+        const invites = await this.teamInvitesService.findAllByTeam(teamId);
 
         return plainToInstance(TeamInviteResponseDto, invites);
     }

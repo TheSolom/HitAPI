@@ -9,7 +9,7 @@ export interface ITeamMembersService {
      * @param teamId
      * @returns {Promise<TeamMember[]>}
      */
-    findAll(teamId: string): Promise<TeamMember[]>;
+    findAllByTeam(teamId: string): Promise<TeamMember[]>;
     /**
      * Find one team member by member id
      *

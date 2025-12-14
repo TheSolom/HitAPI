@@ -8,7 +8,7 @@ export interface ITeamInvitesService {
      * @param teamId
      * @returns {Promise<TeamInvite[]>}
      */
-    findAll(teamId: TeamInvite['team']['id']): Promise<TeamInvite[]>;
+    findAllByTeam(teamId: TeamInvite['team']['id']): Promise<TeamInvite[]>;
     /**
      * Find one invite by id and teamId
      *

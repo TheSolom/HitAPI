@@ -18,7 +18,9 @@ export class TeamMembersService implements ITeamMembersService {
         return this.teamMembersRepository.save(teamMember);
     }
 
-    async findAll(teamId: TeamMember['team']['id']): Promise<TeamMember[]> {
+    async findAllByTeam(
+        teamId: TeamMember['team']['id'],
+    ): Promise<TeamMember[]> {
         return this.teamMembersRepository.find({
             where: { team: { id: teamId } },
             order: { joinedAt: 'ASC', user: { email: 'ASC' } },
