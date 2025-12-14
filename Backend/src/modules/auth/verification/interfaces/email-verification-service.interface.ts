@@ -9,9 +9,9 @@ export interface IEmailVerificationService {
      */
     sendVerificationEmail(email: string, displayName: string): Promise<string>;
     /**
-     * Verifies the email of the user.
+     * Verifies a verification token.
      * @param token The token to verify.
      * @returns {Promise<TokenCacheData>} A promise that resolves to the token cache data.
      */
-    verifyEmail(token: string): Promise<TokenCacheData>;
+    verifyVerificationToken(token: string): Promise<TokenCacheData>;
 }

@@ -61,7 +61,7 @@ export class EmailVerificationService implements IEmailVerificationService {
         return token;
     }
 
-    async verifyEmail(token: string): Promise<TokenCacheData> {
+    async verifyVerificationToken(token: string): Promise<TokenCacheData> {
         const data = await this.verificationTokenService.consumeToken(token);
 
         if (data.subject !== MailSubjects.EMAIL_VERIFICATION) {

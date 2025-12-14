@@ -77,7 +77,7 @@ export class RegistrationService implements IRegistrationService {
         ipAddress?: string,
     ): Promise<LoginTokensDto> {
         const tokenData =
-            await this.emailVerificationService.verifyEmail(token);
+            await this.emailVerificationService.verifyVerificationToken(token);
 
         const user = await this.usersService.findByEmail(tokenData.email);
 
