@@ -24,7 +24,7 @@ export class TeamsService implements ITeamsService {
         return this.teamsRepository.save(team);
     }
 
-    async findAll(userId: string): Promise<Team[]> {
+    async findAllByUser(userId: string): Promise<Team[]> {
         return this.teamsRepository.find({
             where: { teamMembers: { user: { id: userId } } },
             order: { createdAt: 'DESC' },
@@ -70,12 +70,12 @@ export class TeamsService implements ITeamsService {
         const team = await this.teamsRepository.findOneBy({ id });
         if (!team) throw new NotFoundException('Team not found');
 
-        const updated = this.teamsRepository.merge(team, {
+        const updatedTeam = this.teamsRepository.merge(team, {
             ...updateTeamDto,
             ...(updateTeamDto.name && { slug: createSlug(updateTeamDto.name) }),
         });
 
-        return this.teamsRepository.save(updated);
+        return this.saveTeam(updatedTeam);
     }
 
     async deleteTeam(id: string): Promise<void> {
