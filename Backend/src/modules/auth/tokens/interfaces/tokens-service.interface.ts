@@ -40,4 +40,9 @@ export interface ITokensService {
      * @returns {Promise<void>} A promise that resolves when the token is revoked.
      */
     revokeRefreshToken(token: string): Promise<void>;
+    /**
+     * Removes expired refresh tokens from the database.
+     * @returns {Promise<void>} A promise that resolves when the expired tokens are removed.
+     */
+    removeExpiredRefreshTokens(): Promise<void>;
 }
