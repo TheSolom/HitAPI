@@ -3,11 +3,11 @@ import {
     Injectable,
     BadRequestException,
     UnauthorizedException,
+    InternalServerErrorException,
 } from '@nestjs/common';
 import { Services } from '../../../common/constants/services.constant.js';
 import type { IPasswordsService } from './interfaces/passwords-service.interface.js';
 import type { IPasswordsResetService } from './interfaces/passwords-reset-service.interface.js';
-import type { IRateLimitService } from '../../rate-limit/interfaces/rate-limit-service.interface.js';
 import type { IUsersService } from '../../users/interfaces/users-service.interface.js';
 import type { ISessionsService } from '../sessions/interfaces/sessions-service.interface.js';
 import type { IHashingService } from '../../hashing/interfaces/hashing-service.interface.js';
@@ -21,8 +21,6 @@ export class PasswordsService implements IPasswordsService {
     constructor(
         @Inject(Services.PASSWORD_RESET)
         private readonly passwordResetService: IPasswordsResetService,
-        @Inject(Services.RATE_LIMIT)
-        private readonly rateLimitService: IRateLimitService,
         @Inject(Services.USERS)
         private readonly usersService: IUsersService,
         @Inject(Services.SESSIONS)
@@ -51,6 +49,7 @@ export class PasswordsService implements IPasswordsService {
 
     async forgotPassword(email: string): Promise<{ message: string }> {
         const startTime = Date.now();
+        let emailSent = false;
 
         const user = await this.usersService.findByEmail(email, {
             requireVerified: true,
@@ -62,12 +61,19 @@ export class PasswordsService implements IPasswordsService {
                     email,
                     user.displayName,
                 );
+                emailSent = true;
             } catch (error) {
                 console.error('Failed to send password reset email:', error);
             }
         }
 
         await this.ensureMinimumResponseTime(startTime);
+
+        if (user && !emailSent) {
+            throw new InternalServerErrorException(
+                'Failed to send password reset email. Please try again later.',
+            );
+        }
 
         return {
             message: 'Password reset email sent if email is valid',
@@ -91,11 +97,6 @@ export class PasswordsService implements IPasswordsService {
         }
 
         await this.updateUserPassword(user, resetPasswordDto.newPassword);
-
-        await this.rateLimitService.clearRateLimit(
-            tokenData.email,
-            'PASSWORD_RESET',
-        );
 
         return {
             message: 'Password reset successfully',

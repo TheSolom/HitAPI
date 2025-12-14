@@ -10,7 +10,7 @@ import type { IPasswordsResetService } from './interfaces/passwords-reset-servic
 import type { IRateLimitService } from '../../rate-limit/interfaces/rate-limit-service.interface.js';
 import type { IVerificationTokensService } from '../verification/interfaces/verification-tokens-service.interface.js';
 import type { IMailsService } from '../../mails/interfaces/mails-service.interface.js';
-import type { Environment } from 'src/common/interfaces/env.interface.js';
+import type { Environment } from '../../../common/interfaces/env.interface.js';
 import type { TokenCacheData } from '../verification/interfaces/token-cache-data.interface.js';
 import { MailSubjects } from '../../mails/enums/mails.enum.js';
 
@@ -30,16 +30,14 @@ export class PasswordsResetService implements IPasswordsResetService {
         email: string,
         displayName: string,
     ): Promise<string> {
-        const normalizedEmail = email.toLowerCase();
-
         await this.rateLimitService.checkRateLimit(
-            normalizedEmail,
+            email,
             MailSubjects.PASSWORD_RESET,
         );
 
         const token = await this.verificationTokensService.createToken(
             {
-                email: normalizedEmail,
+                email,
                 displayName,
                 subject: MailSubjects.PASSWORD_RESET,
             },
@@ -69,6 +67,11 @@ export class PasswordsResetService implements IPasswordsResetService {
         if (data.subject !== MailSubjects.PASSWORD_RESET) {
             throw new BadRequestException('Invalid reset token');
         }
+
+        await this.rateLimitService.clearRateLimit(
+            data.email,
+            MailSubjects.PASSWORD_RESET,
+        );
 
         return data;
     }
