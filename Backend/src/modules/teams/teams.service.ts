@@ -32,11 +32,15 @@ export class TeamsService implements ITeamsService {
     }
 
     async findOne(id: string): Promise<NullableType<Team>> {
-        const team = await this.teamsRepository.findOne({
+        return this.teamsRepository.findOne({
             where: { id },
-            relations: ['teamMembers', 'teamMembers.user'],
+            relations: [
+                'teamMembers',
+                'teamMembers.user',
+                'invites',
+                'invites.inviter',
+            ],
         });
-        return team;
     }
 
     async createTeam(

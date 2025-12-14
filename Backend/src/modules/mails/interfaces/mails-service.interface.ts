@@ -17,4 +17,10 @@ export interface IMailsService {
     passwordReset(
         mailData: MailData<{ token: string; displayName: string }>,
     ): Promise<void>;
+    /**
+     * Sends an email for the team invite process.
+     * @param mailData - The mail data containing the recipient's information, invite token.
+     * @returns {Promise<void>} A promise that resolves when the email has been sent.
+     */
+    teamInvite(mailData: MailData<{ token: string }>): Promise<void>;
 }

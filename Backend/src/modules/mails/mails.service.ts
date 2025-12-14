@@ -59,4 +59,24 @@ export class MailsService implements IMailsService {
             },
         });
     }
+
+    async teamInvite(mailData: MailData<{ token: string }>): Promise<void> {
+        await this.mailerService.sendMail({
+            to: mailData.to,
+            subject: 'Team Invite',
+            text: `${this.configService.getOrThrow<string>('FRONTEND_URL')}/team-invite/${mailData.data.token}`,
+            templatePath: path.join(
+                process.cwd(),
+                'src',
+                'modules',
+                'mails',
+                'templates',
+                'team-invite.hbs',
+            ),
+            context: {
+                inviteLink: `${this.configService.getOrThrow<string>('FRONTEND_URL')}/team-invite/${mailData.data.token}`,
+                AppName: this.configService.getOrThrow<string>('APP_NAME'),
+            },
+        });
+    }
 }

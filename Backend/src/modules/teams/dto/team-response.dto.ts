@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { TeamMemberResponseDto } from './team-member-response.dto.js';
+import { TeamInviteResponseDto } from './team-invite-response.dto.js';
 
 export class TeamResponseDto {
     @Expose()
@@ -27,6 +28,11 @@ export class TeamResponseDto {
     @ApiProperty({ type: TeamMemberResponseDto, isArray: true })
     @Type(() => TeamMemberResponseDto)
     teamMembers: TeamMemberResponseDto[];
+
+    @Expose()
+    @ApiProperty({ type: TeamInviteResponseDto, isArray: true })
+    @Type(() => TeamInviteResponseDto)
+    invites: TeamInviteResponseDto[];
 
     @Expose()
     @ApiProperty({ type: Date })

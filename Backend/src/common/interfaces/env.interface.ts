@@ -14,8 +14,9 @@ export interface Environment {
     REDIS_HOST: string;
     REDIS_PORT: number;
     ACCESS_TOKEN_SECRET: string;
-    ACCESS_TOKEN_EXPIRATION_TIME: string;
-    REFRESH_TOKEN_EXPIRATION_TIME: string;
+    ACCESS_TOKEN_EXPIRATION_TIME: number;
+    REFRESH_TOKEN_EXPIRATION_TIME: number;
+    INVITE_EXPIRATION_TIME: number;
     OAUTH2_REDIRECT_URL: string;
     GOOGLE_CLIENT_ID: string;
     GOOGLE_CLIENT_SECRET: string;

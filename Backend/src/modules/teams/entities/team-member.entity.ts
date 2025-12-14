@@ -7,10 +7,12 @@ import {
     DeleteDateColumn,
     Index,
     type Relation,
+    OneToMany,
 } from 'typeorm';
 import { TeamMemberRoles } from '../enums/team-member-roles.enum.js';
 import { Team } from './team.entity.js';
 import { User } from '../../users/entities/user.entity.js';
+import { TeamInvite } from './team-invite.entity.js';
 
 @Entity()
 @Index(['team', 'user'], { unique: true })
@@ -36,6 +38,11 @@ export class TeamMember {
         nullable: false,
     })
     user: Relation<User>;
+
+    @OneToMany(() => TeamInvite, (invite) => invite.inviter, {
+        cascade: true,
+    })
+    invites: Relation<TeamInvite>[];
 
     @CreateDateColumn()
     joinedAt: Date;

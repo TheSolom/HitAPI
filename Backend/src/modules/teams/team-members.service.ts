@@ -8,7 +8,7 @@ import type { NullableType } from '../../common/@types/nullable.type.js';
 import { TeamMemberRolePriority } from './enums/team-member-roles.enum.js';
 
 @Injectable()
-export class TeamsMembersService implements ITeamMembersService {
+export class TeamMembersService implements ITeamMembersService {
     constructor(
         @InjectRepository(TeamMember)
         private readonly teamMembersRepository: Repository<TeamMember>,
