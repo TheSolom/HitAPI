@@ -41,14 +41,10 @@ export class PasswordsController {
 
     @Post('forgot-password')
     @HttpCode(HttpStatus.OK)
-    @ApiOkResponse({ description: 'Password reset email sent' })
+    @ApiOkResponse({ type: CustomResponse<{ message: string }> })
     @ApiUnauthorizedResponse({ description: 'User not found' })
-    @ApiTooManyRequestsResponse({ description: 'Too many requests' })
-    @ApiInternalServerErrorResponse({
-        description:
-            'Failed to send password reset email. Please try again later.',
-    })
-    @ApiBody({ type: CustomResponse<ForgotPasswordDto> })
+    @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
+    @ApiBody({ type: ForgotPasswordDto })
     async forgotPassword(
         @Body() { email }: ForgotPasswordDto,
     ): Promise<{ message: string }> {
@@ -57,10 +53,10 @@ export class PasswordsController {
 
     @Post('reset-password')
     @HttpCode(HttpStatus.OK)
-    @ApiOkResponse({ description: 'Password reset successfully' })
+    @ApiOkResponse({ type: CustomResponse<{ message: string }> })
     @ApiUnauthorizedResponse({ description: 'User not found' })
     @ApiBadRequestResponse({ description: 'Invalid or expired token' })
-    @ApiBody({ type: CustomResponse<ResetPasswordDto> })
+    @ApiBody({ type: ResetPasswordDto })
     async resetPassword(
         @Body() resetPasswordDto: ResetPasswordDto,
     ): Promise<{ message: string }> {
@@ -70,13 +66,13 @@ export class PasswordsController {
     @Patch('change-password')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('JWT')
-    @ApiOkResponse({ description: 'Password changed successfully' })
+    @ApiOkResponse({ type: CustomResponse<{ message: string }> })
     @ApiUnauthorizedResponse({ description: 'Wrong password' })
     @ApiBadRequestResponse({ description: 'User has no password set' })
-    @ApiBody({ type: CustomResponse<ChangePasswordDto> })
+    @ApiBody({ type: ChangePasswordDto })
     async changePassword(
-        @Body() { currentPassword, newPassword }: ChangePasswordDto,
         @AuthUser() authUser: AuthenticatedUser,
+        @Body() { currentPassword, newPassword }: ChangePasswordDto,
     ): Promise<{ message: string }> {
         return this.passwordService.changePassword(
             authUser.id,
@@ -88,13 +84,13 @@ export class PasswordsController {
     @Patch('set-password')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('JWT')
-    @ApiOkResponse({ description: 'Password set successfully' })
+    @ApiOkResponse({ type: CustomResponse<{ message: string }> })
     @ApiUnauthorizedResponse({ description: 'User not found' })
     @ApiBadRequestResponse({ description: 'User already has a password' })
-    @ApiBody({ type: CustomResponse<SetPasswordDto> })
+    @ApiBody({ type: SetPasswordDto })
     async setPassword(
-        @Body() { newPassword }: SetPasswordDto,
         @AuthUser() authUser: AuthenticatedUser,
+        @Body() { newPassword }: SetPasswordDto,
     ): Promise<{ message: string }> {
         return this.passwordService.setPassword(authUser.id, newPassword);
     }
