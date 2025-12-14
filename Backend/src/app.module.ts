@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerGuard } from '@nestjs/throttler';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { ThrottlerModule } from './config/throttler/throttler.module.js';
 import { DBModule } from './config/db/database.module.js';
 import { CacheModule } from './config/cache/cache.module.js';
@@ -19,6 +20,7 @@ import { TeamsModule } from './modules/teams/teams.module.js';
             isGlobal: true,
             cache: true,
         }),
+        ScheduleModule.forRoot(),
         ThrottlerModule,
         DBModule,
         CacheModule,

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util.js';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'jsonwebtoken';
@@ -152,5 +152,11 @@ export class TokensService implements ITokensService {
         const tokenHash = this.hashingService.hash(token);
 
         await this.refreshTokenRepository.delete({ tokenHash });
+    }
+
+    async removeExpiredRefreshTokens() {
+        await this.refreshTokenRepository.delete({
+            expiresAt: LessThan(new Date()),
+        });
     }
 }
