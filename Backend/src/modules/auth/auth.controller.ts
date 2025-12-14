@@ -102,11 +102,8 @@ export class AuthController {
     @ApiBearerAuth('JWT')
     @ApiNoContentResponse()
     @ApiUnauthorizedResponse({ description: 'Invalid token' })
-    async logout(
-        @Body() { refreshToken }: LogoutDto,
-        @AuthUser() authUser: AuthenticatedUser,
-    ) {
-        await this.tokensService.revokeRefreshToken(refreshToken, authUser.id);
+    async logout(@Body() { refreshToken }: LogoutDto) {
+        await this.tokensService.revokeRefreshToken(refreshToken);
     }
 
     @Post('logout-all')
