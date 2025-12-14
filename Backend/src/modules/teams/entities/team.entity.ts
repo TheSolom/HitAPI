@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { TeamMember } from './team-member.entity.js';
 import { TeamInvite } from './team-invite.entity.js';
+import { App } from '../../apps/entities/app.entity.js';
 
 @Entity()
 export class Team {
@@ -37,6 +38,11 @@ export class Team {
         cascade: true,
     })
     invites: Relation<TeamInvite[]>;
+
+    @OneToMany(() => App, (app) => app.team, {
+        cascade: true,
+    })
+    apps: Relation<App[]>;
 
     @CreateDateColumn()
     createdAt: Date;

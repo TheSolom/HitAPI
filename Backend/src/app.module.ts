@@ -12,6 +12,7 @@ import { MailsModule } from './modules/mails/mails.module.js';
 import { MailerModule } from './modules/mailer/mailer.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { TeamsModule } from './modules/teams/teams.module.js';
+import { AppsModule } from './modules/apps/apps.module.js';
 
 @Module({
     imports: [
@@ -30,6 +31,7 @@ import { TeamsModule } from './modules/teams/teams.module.js';
         MailerModule,
         AuthModule,
         TeamsModule,
+        AppsModule,
     ],
     providers: [
         {

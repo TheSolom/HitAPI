@@ -4,4 +4,5 @@ export enum Routes {
     AUTH_GOOGLE = 'auth/google',
     TEAMS = 'teams',
     TEAM_MEMBERS = 'teams/:teamId/members',
+    APPS = 'apps',
 }
