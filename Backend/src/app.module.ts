@@ -13,6 +13,7 @@ import { MailerModule } from './modules/mailer/mailer.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { TeamsModule } from './modules/teams/teams.module.js';
 import { AppsModule } from './modules/apps/apps.module.js';
+import { EndpointsModule } from './modules/endpoints/endpoints.module.js';
 
 @Module({
     imports: [
@@ -32,6 +33,7 @@ import { AppsModule } from './modules/apps/apps.module.js';
         AuthModule,
         TeamsModule,
         AppsModule,
+        EndpointsModule,
     ],
     providers: [
         {
