@@ -6,4 +6,5 @@ export enum Routes {
     TEAM_MEMBERS = 'teams/:teamId/members',
     APPS = 'apps',
     ENDPOINTS = 'apps/:appId/endpoints',
+    CONSUMERS = 'apps/:appId',
 }
