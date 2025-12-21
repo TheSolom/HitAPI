@@ -7,7 +7,9 @@ export const postgresConfiguration: DynamicModule = TypeOrmModule.forRootAsync({
     useFactory: (configService: ConfigService<Environment, true>) => ({
         type: 'postgres',
         host: configService.getOrThrow<string>('POSTGRES_HOST'),
-        port: parseInt(configService.getOrThrow<string>('POSTGRES_PORT')),
+        port: Number.parseInt(
+            configService.getOrThrow<string>('POSTGRES_PORT'),
+        ),
         username: configService.getOrThrow<string>('POSTGRES_USER'),
         password: configService.getOrThrow<string>('POSTGRES_PASSWORD'),
         database: configService.getOrThrow<string>('POSTGRES_DATABASE'),
