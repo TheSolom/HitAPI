@@ -99,11 +99,31 @@ export class EndpointsService implements IEndpointsService {
             throw new NotFoundException('Endpoint not found');
         }
 
-        // TODO: Implement error config update logic.
-        // Note: Error config handling would typically involve a separate entity
-        // for tracking expected status codes. This is a placeholder implementation.
-        // The actual implementation depends on how the endpoint error expectations
-        // should be stored (e.g., a separate EndpointErrorConfig entity or JSON column).
-        // For now, we just validate the endpoint exists.
+        const currentStatusCodes = endpoint.expectedStatusCodes ?? [];
+        let newStatusCodes: number[];
+
+        if (updateEndpointErrorConfigDto.expected) {
+            if (
+                currentStatusCodes.includes(
+                    updateEndpointErrorConfigDto.statusCode,
+                )
+            ) {
+                newStatusCodes = currentStatusCodes;
+            } else {
+                newStatusCodes = [
+                    ...currentStatusCodes,
+                    updateEndpointErrorConfigDto.statusCode,
+                ];
+            }
+        } else {
+            newStatusCodes = currentStatusCodes.filter(
+                (code) => code !== updateEndpointErrorConfigDto.statusCode,
+            );
+        }
+
+        if (newStatusCodes !== currentStatusCodes) {
+            endpoint.expectedStatusCodes = newStatusCodes;
+            await this.saveEndpoint(endpoint);
+        }
     }
 }

@@ -28,11 +28,14 @@ export class Endpoint {
     @Column({ type: 'text', nullable: true })
     description: string | null;
 
-    @Column({ type: 'integer', nullable: true })
+    @Column({ type: 'int', nullable: true })
     targetResponseTimeMs: number | null;
 
     @Column({ type: 'boolean', default: false })
     excluded: boolean;
+
+    @Column({ type: 'int', array: true, default: [] })
+    expectedStatusCodes: number[];
 
     @ManyToOne(() => App, {
         onDelete: 'CASCADE',
