@@ -15,6 +15,7 @@ import { TeamsModule } from './modules/teams/teams.module.js';
 import { AppsModule } from './modules/apps/apps.module.js';
 import { EndpointsModule } from './modules/endpoints/endpoints.module.js';
 import { ConsumersModule } from './modules/consumers/consumers.module.js';
+import { GeoIPModule } from './modules/geo-ip/geo-ip.module.js';
 
 @Module({
     imports: [
@@ -36,6 +37,7 @@ import { ConsumersModule } from './modules/consumers/consumers.module.js';
         AppsModule,
         EndpointsModule,
         ConsumersModule,
+        GeoIPModule,
     ],
     providers: [
         {

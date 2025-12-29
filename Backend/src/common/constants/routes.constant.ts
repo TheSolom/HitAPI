@@ -7,4 +7,5 @@ export enum Routes {
     APPS = 'apps',
     ENDPOINTS = 'apps/:appId/endpoints',
     CONSUMERS = 'apps/:appId',
+    GEO_IP = 'geo-ip',
 }
