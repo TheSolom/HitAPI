@@ -16,7 +16,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { AuthUser } from './decorators/auth-user.decorator.js';
 import { AuthenticatedUser } from './dto/auth-user.dto.js';
 import { SocialAccountDto } from '../auth/social/dto/social-account.dto.js';
-import { CustomResponse } from '../../common/dto/custom-response.dto.js';
+import { createCustomResponse } from '../../common/utils/create-custom-response.util.js';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT')
@@ -31,7 +31,7 @@ export class UsersController {
     ) {}
 
     @Get('me')
-    @ApiOkResponse({ type: CustomResponse<UserProfileDto> })
+    @ApiOkResponse({ type: createCustomResponse(UserProfileDto) })
     async getUserProfile(
         @AuthUser() { id }: AuthenticatedUser,
     ): Promise<UserProfileDto> {
@@ -42,7 +42,7 @@ export class UsersController {
     }
 
     @Get('me/social-accounts')
-    @ApiOkResponse({ type: CustomResponse<SocialAccountDto>, isArray: true })
+    @ApiOkResponse({ type: createCustomResponse(SocialAccountDto, true) })
     async getSocialAccounts(
         @AuthUser() { id }: AuthenticatedUser,
     ): Promise<SocialAccountDto[]> {

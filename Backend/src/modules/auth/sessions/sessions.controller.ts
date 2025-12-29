@@ -21,7 +21,7 @@ import { plainToInstance } from 'class-transformer';
 import { Routes } from '../../../common/constants/routes.constant.js';
 import { Services } from '../../../common/constants/services.constant.js';
 import type { ISessionsService } from './interfaces/sessions-service.interface.js';
-import { CustomResponse } from '../../../common/dto/custom-response.dto.js';
+import { createCustomResponse } from '../../../common/utils/create-custom-response.util.js';
 import { AuthenticatedUser } from '../../users/dto/auth-user.dto.js';
 import { AuthUser } from '../../users/decorators/auth-user.decorator.js';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard.js';
@@ -39,7 +39,7 @@ export class SessionsController {
     ) {}
 
     @Get('sessions')
-    @ApiOkResponse({ type: CustomResponse<UserSessionDto[]> })
+    @ApiOkResponse({ type: createCustomResponse(UserSessionDto, true) })
     async getActiveSessions(
         @AuthUser() { id: userId }: AuthenticatedUser,
     ): Promise<UserSessionDto[]> {

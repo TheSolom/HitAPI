@@ -37,7 +37,8 @@ import { Services } from '../../common/constants/services.constant.js';
 import type { ITeamInvitesService } from './interfaces/team-invites-service.interfaces.js';
 import type { ITeamMembersService } from './interfaces/team-members-service.interfaces.js';
 import type { IMailsService } from '../mails/interfaces/mails-service.interface.js';
-import { CustomResponse } from '../../common/dto/custom-response.dto.js';
+import { createCustomResponse } from '../../common/utils/create-custom-response.util.js';
+import { MessageResponseDto } from '../../common/dto/message-response.dto.js';
 import { TeamRoles } from './decorators/team-roles.decorator.js';
 import { AuthUser } from '../users/decorators/auth-user.decorator.js';
 import { CreateTeamInviteDto } from './dto/create-team-invite.dto.js';
@@ -68,7 +69,7 @@ export class TeamInvitesController {
     ) {}
 
     @Get(':teamId/invites')
-    @ApiOkResponse({ type: CustomResponse<TeamInviteResponseDto[]> })
+    @ApiOkResponse({ type: createCustomResponse(TeamInviteResponseDto, true) })
     @ApiParam({ name: 'teamId' })
     async findAll(
         @Param('teamId', ParseUUIDPipe) teamId: string,
@@ -79,7 +80,7 @@ export class TeamInvitesController {
     }
 
     @Get('invites/:token')
-    @ApiOkResponse({ type: CustomResponse<PublicTeamInviteResponseDto> })
+    @ApiOkResponse({ type: createCustomResponse(PublicTeamInviteResponseDto) })
     @ApiParam({ name: 'token' })
     async findOne(
         @Param('token') token: string,
@@ -93,7 +94,7 @@ export class TeamInvitesController {
     @Post(':teamId/invites')
     @HttpCode(HttpStatus.OK)
     @TeamRoles(TeamMemberRoles.OWNER, TeamMemberRoles.ADMIN)
-    @ApiOkResponse({ type: CustomResponse<{ message: string }> })
+    @ApiOkResponse({ type: createCustomResponse(MessageResponseDto) })
     @ApiConflictResponse({ description: 'Invite already exists' })
     @ApiForbiddenResponse({ description: 'Forbidden' })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
@@ -126,7 +127,7 @@ export class TeamInvitesController {
 
     @Post('invites/:token/accept')
     @HttpCode(HttpStatus.OK)
-    @ApiOkResponse({ type: CustomResponse<TeamMemberResponseDto> })
+    @ApiOkResponse({ type: createCustomResponse(TeamMemberResponseDto) })
     @ApiNotFoundResponse({ description: 'Invite not found' })
     @ApiBadRequestResponse({ description: 'Invite expired' })
     @ApiParam({ name: 'token' })
@@ -155,7 +156,7 @@ export class TeamInvitesController {
 
     @Post('invites/:token/reject')
     @HttpCode(HttpStatus.OK)
-    @ApiOkResponse({ type: CustomResponse<{ message: string }> })
+    @ApiOkResponse({ type: createCustomResponse(MessageResponseDto) })
     @ApiNotFoundResponse({ description: 'Invite not found' })
     @ApiBadRequestResponse({ description: 'Invite expired' })
     @ApiParam({ name: 'token' })

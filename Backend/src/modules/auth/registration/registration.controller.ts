@@ -22,11 +22,12 @@ import {
 import { Routes } from '../../../common/constants/routes.constant.js';
 import { Services } from '../../../common/constants/services.constant.js';
 import type { IRegistrationService } from './interfaces/registration-service.interface.js';
-import { CustomResponse } from '../../../common/dto/custom-response.dto.js';
+import { createCustomResponse } from '../../../common/utils/create-custom-response.util.js';
 import { RegistrationDto } from './dto/registration.dto.js';
 import { LoginTokensDto } from '../tokens/dto/login-tokens.dto.js';
 import { VerifyEmailDto } from '../verification/dto/verify-email.dto.js';
 import { ResendVerificationDto } from '../verification/dto/resend-verification.dto.js';
+import { MessageResponseDto } from '../../../common/dto/message-response.dto.js';
 import { SkipResponseInterceptor } from '../../../common/decorators/skip-response-interceptor.decorator.js';
 
 @ApiTags('Auth Registration')
@@ -39,7 +40,7 @@ export class RegistrationController {
     ) {}
 
     @Post('register')
-    @ApiOkResponse({ type: CustomResponse<{ message: string }> })
+    @ApiOkResponse({ type: createCustomResponse(MessageResponseDto) })
     @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
     @ApiConflictResponse({ description: 'Email already registered' })
     @ApiInternalServerErrorResponse({
@@ -77,7 +78,7 @@ export class RegistrationController {
 
     @Post('resend-verification')
     @HttpCode(HttpStatus.OK)
-    @ApiOkResponse({ type: CustomResponse<{ message: string }> })
+    @ApiOkResponse({ type: createCustomResponse(MessageResponseDto) })
     @ApiBadRequestResponse({
         description: 'User not found or email already verified',
     })

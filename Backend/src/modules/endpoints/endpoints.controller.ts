@@ -30,7 +30,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { IEndpointsService } from './interfaces/endpoints-service.interface.js';
-import { CustomResponse } from '../../common/dto/custom-response.dto.js';
+import { createCustomResponse } from '../../common/utils/create-custom-response.util.js';
 import { EndpointResponseDto } from './dto/endpoint-response.dto.js';
 import { EndpointConfigResponseDto } from './dto/endpoint-config-response.dto.js';
 import { UpdateEndpointConfigDto } from './dto/update-endpoint-config.dto.js';
@@ -51,7 +51,7 @@ export class EndpointsController {
     ) {}
 
     @Get()
-    @ApiOkResponse({ type: CustomResponse<EndpointResponseDto[]> })
+    @ApiOkResponse({ type: createCustomResponse(EndpointResponseDto, true) })
     async listEndpoints(
         @Param('appId', ParseUUIDPipe) appId: string,
     ): Promise<EndpointResponseDto[]> {
@@ -61,7 +61,7 @@ export class EndpointsController {
     }
 
     @Get(':id')
-    @ApiOkResponse({ type: CustomResponse<EndpointResponseDto> })
+    @ApiOkResponse({ type: createCustomResponse(EndpointResponseDto) })
     @ApiNotFoundResponse({ description: 'Endpoint not found' })
     @ApiParam({ name: 'id' })
     async getEndpoint(
@@ -75,7 +75,7 @@ export class EndpointsController {
     }
 
     @Get('config')
-    @ApiOkResponse({ type: CustomResponse<EndpointConfigResponseDto> })
+    @ApiOkResponse({ type: createCustomResponse(EndpointConfigResponseDto) })
     @ApiNotFoundResponse({ description: 'Endpoint not found' })
     @ApiQuery({ name: 'method' })
     @ApiQuery({ name: 'path' })

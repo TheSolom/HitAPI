@@ -31,7 +31,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { ITeamsService } from './interfaces/teams-service.interfaces.js';
-import { CustomResponse } from '../../common/dto/custom-response.dto.js';
+import { createCustomResponse } from '../../common/utils/create-custom-response.util.js';
 import { CreateTeamDto } from './dto/create-team.dto.js';
 import { UpdateTeamDto } from './dto/update-team.dto.js';
 import { TeamResponseDto } from './dto/team-response.dto.js';
@@ -51,7 +51,7 @@ export class TeamsController {
     ) {}
 
     @Get()
-    @ApiOkResponse({ type: CustomResponse<TeamResponseDto[]> })
+    @ApiOkResponse({ type: createCustomResponse(TeamResponseDto, true) })
     async findAll(
         @AuthUser() { id }: AuthenticatedUser,
     ): Promise<TeamResponseDto[]> {
@@ -61,7 +61,7 @@ export class TeamsController {
     }
 
     @Get(':id')
-    @ApiOkResponse({ type: CustomResponse<TeamResponseDto> })
+    @ApiOkResponse({ type: createCustomResponse(TeamResponseDto) })
     @ApiNotFoundResponse({ description: 'Team not found' })
     @ApiParam({ name: 'id' })
     async findOne(
@@ -74,7 +74,7 @@ export class TeamsController {
     }
 
     @Post()
-    @ApiOkResponse({ type: CustomResponse<TeamResponseDto> })
+    @ApiOkResponse({ type: createCustomResponse(TeamResponseDto) })
     @ApiConflictResponse({ description: 'Team already exists' })
     @ApiBody({ type: CreateTeamDto })
     async createTeam(
@@ -87,7 +87,7 @@ export class TeamsController {
     }
 
     @Patch(':id')
-    @ApiOkResponse({ type: CustomResponse<TeamResponseDto> })
+    @ApiOkResponse({ type: createCustomResponse(TeamResponseDto) })
     @ApiNotFoundResponse({ description: 'Team not found' })
     @ApiBody({ type: UpdateTeamDto })
     @ApiParam({ name: 'id' })

@@ -31,7 +31,7 @@ import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { IConsumersService } from './interfaces/consumers-service.interface.js';
 import type { IConsumerGroupsService } from './interfaces/consumer-groups-service.interface.js';
-import { CustomResponse } from '../../common/dto/custom-response.dto.js';
+import { createCustomResponse } from '../../common/utils/create-custom-response.util.js';
 import { ConsumerResponseDto } from './dto/consumer-response.dto.js';
 import { ConsumerGroupResponseDto } from './dto/consumer-group-response.dto.js';
 import { UpdateConsumerDto } from './dto/update-consumer.dto.js';
@@ -55,7 +55,7 @@ export class ConsumersController {
     ) {}
 
     @Get('consumers')
-    @ApiOkResponse({ type: CustomResponse<ConsumerResponseDto[]> })
+    @ApiOkResponse({ type: createCustomResponse(ConsumerResponseDto, true) })
     async listConsumers(
         @Param('appId', ParseUUIDPipe) appId: string,
     ): Promise<ConsumerResponseDto[]> {
@@ -65,7 +65,7 @@ export class ConsumersController {
     }
 
     @Get('consumers/:consumerId')
-    @ApiOkResponse({ type: CustomResponse<ConsumerResponseDto> })
+    @ApiOkResponse({ type: createCustomResponse(ConsumerResponseDto) })
     @ApiNotFoundResponse({ description: 'Consumer not found' })
     @ApiParam({ name: 'consumerId' })
     async getConsumer(
@@ -85,7 +85,7 @@ export class ConsumersController {
     }
 
     @Put('consumers/:consumerId')
-    @ApiOkResponse({ type: CustomResponse<void> })
+    @ApiOkResponse({ type: createCustomResponse(null) })
     @ApiNotFoundResponse({ description: 'Consumer not found' })
     @ApiBody({ type: UpdateConsumerDto })
     @ApiParam({ name: 'consumerId' })
@@ -102,7 +102,9 @@ export class ConsumersController {
     }
 
     @Get('consumer-groups')
-    @ApiOkResponse({ type: CustomResponse<ConsumerGroupResponseDto[]> })
+    @ApiOkResponse({
+        type: createCustomResponse(ConsumerGroupResponseDto, true),
+    })
     async listConsumerGroups(
         @Param('appId', ParseUUIDPipe) appId: string,
     ): Promise<ConsumerGroupResponseDto[]> {
@@ -112,7 +114,7 @@ export class ConsumersController {
     }
 
     @Get('consumer-groups/:groupId')
-    @ApiOkResponse({ type: CustomResponse<ConsumerGroupResponseDto> })
+    @ApiOkResponse({ type: createCustomResponse(ConsumerGroupResponseDto) })
     @ApiNotFoundResponse({ description: 'Consumer group not found' })
     @ApiParam({ name: 'groupId' })
     async getConsumerGroup(
@@ -147,7 +149,7 @@ export class ConsumersController {
     }
 
     @Put('consumer-groups/:groupId')
-    @ApiOkResponse({ type: CustomResponse<void> })
+    @ApiOkResponse({ type: createCustomResponse(null) })
     @ApiNotFoundResponse({ description: 'Consumer group not found' })
     @ApiBody({ type: UpdateConsumerGroupDto })
     @ApiParam({ name: 'groupId' })

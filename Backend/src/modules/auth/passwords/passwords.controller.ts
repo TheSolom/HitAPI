@@ -21,7 +21,8 @@ import {
 import { Routes } from '../../../common/constants/routes.constant.js';
 import { Services } from '../../../common/constants/services.constant.js';
 import type { IPasswordsService } from './interfaces/passwords-service.interface.js';
-import { CustomResponse } from '../../../common/dto/custom-response.dto.js';
+import { createCustomResponse } from '../../../common/utils/create-custom-response.util.js';
+import { MessageResponseDto } from '../../../common/dto/message-response.dto.js';
 import { AuthenticatedUser } from '../../users/dto/auth-user.dto.js';
 import { ForgotPasswordDto } from './dto/forgot-password.dto.js';
 import { ResetPasswordDto } from './dto/reset-password.dto.js';
@@ -41,7 +42,7 @@ export class PasswordsController {
 
     @Post('forgot-password')
     @HttpCode(HttpStatus.OK)
-    @ApiOkResponse({ type: CustomResponse<{ message: string }> })
+    @ApiOkResponse({ type: createCustomResponse(MessageResponseDto) })
     @ApiUnauthorizedResponse({ description: 'User not found' })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
     @ApiBody({ type: ForgotPasswordDto })
@@ -53,7 +54,7 @@ export class PasswordsController {
 
     @Post('reset-password')
     @HttpCode(HttpStatus.OK)
-    @ApiOkResponse({ type: CustomResponse<{ message: string }> })
+    @ApiOkResponse({ type: createCustomResponse(MessageResponseDto) })
     @ApiUnauthorizedResponse({ description: 'User not found' })
     @ApiBadRequestResponse({ description: 'Invalid or expired token' })
     @ApiBody({ type: ResetPasswordDto })
@@ -66,7 +67,7 @@ export class PasswordsController {
     @Patch('change-password')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('JWT')
-    @ApiOkResponse({ type: CustomResponse<{ message: string }> })
+    @ApiOkResponse({ type: createCustomResponse(MessageResponseDto) })
     @ApiUnauthorizedResponse({ description: 'Wrong password' })
     @ApiBadRequestResponse({ description: 'User has no password set' })
     @ApiBody({ type: ChangePasswordDto })
@@ -84,7 +85,7 @@ export class PasswordsController {
     @Patch('set-password')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth('JWT')
-    @ApiOkResponse({ type: CustomResponse<{ message: string }> })
+    @ApiOkResponse({ type: createCustomResponse(MessageResponseDto) })
     @ApiUnauthorizedResponse({ description: 'User not found' })
     @ApiBadRequestResponse({ description: 'User already has a password' })
     @ApiBody({ type: SetPasswordDto })

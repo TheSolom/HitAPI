@@ -34,7 +34,7 @@ import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { ITeamMembersService } from './interfaces/team-members-service.interfaces.js';
 import type { ITeamsService } from './interfaces/teams-service.interfaces.js';
-import { CustomResponse } from '../../common/dto/custom-response.dto.js';
+import { createCustomResponse } from '../../common/utils/create-custom-response.util.js';
 import { TeamMemberResponseDto } from './dto/team-member-response.dto.js';
 import { AddTeamMemberDto } from './dto/add-team-member.dto.js';
 import { UpdateTeamMemberDto } from './dto/update-team-member.dto.js';
@@ -58,7 +58,7 @@ export class TeamMembersController {
     ) {}
 
     @Get()
-    @ApiOkResponse({ type: CustomResponse<TeamMemberResponseDto[]> })
+    @ApiOkResponse({ type: createCustomResponse(TeamMemberResponseDto, true) })
     @ApiNotFoundResponse({ description: 'Team not found' })
     async findAll(
         @Param('teamId', ParseUUIDPipe) teamId: string,
@@ -71,7 +71,7 @@ export class TeamMembersController {
     }
 
     @Get(':memberId')
-    @ApiOkResponse({ type: CustomResponse<TeamMemberResponseDto> })
+    @ApiOkResponse({ type: createCustomResponse(TeamMemberResponseDto) })
     @ApiNotFoundResponse({ description: 'Member not found' })
     @ApiParam({ name: 'memberId' })
     async findOne(
@@ -85,7 +85,7 @@ export class TeamMembersController {
     }
 
     @Post()
-    @ApiOkResponse({ type: CustomResponse<TeamMemberResponseDto> })
+    @ApiOkResponse({ type: createCustomResponse(TeamMemberResponseDto) })
     @ApiNotFoundResponse({ description: 'Team not found' })
     @ApiForbiddenResponse({ description: 'Forbidden' })
     @ApiConflictResponse({ description: 'Member already exists' })
@@ -124,7 +124,7 @@ export class TeamMembersController {
     }
 
     @Patch(':memberId')
-    @ApiOkResponse({ type: CustomResponse<TeamMemberResponseDto> })
+    @ApiOkResponse({ type: createCustomResponse(TeamMemberResponseDto) })
     @ApiNotFoundResponse({ description: 'Member not found' })
     @ApiForbiddenResponse({ description: 'Forbidden' })
     @ApiBody({ type: UpdateTeamMemberDto })

@@ -34,7 +34,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { IAppsService } from './interfaces/apps-service.interface.js';
-import { CustomResponse } from '../../common/dto/custom-response.dto.js';
+import { createCustomResponse } from '../../common/utils/create-custom-response.util.js';
 import { CreateAppDto } from './dto/create-app.dto.js';
 import { UpdateAppDto } from './dto/update-app.dto.js';
 import { AppResponseDto } from './dto/app-response.dto.js';
@@ -52,7 +52,7 @@ export class AppsController {
     ) {}
 
     @Get()
-    @ApiOkResponse({ type: CustomResponse<AppResponseDto[]> })
+    @ApiOkResponse({ type: createCustomResponse(AppResponseDto, true) })
     @ApiQuery({ name: 'teamId' })
     async listApps(
         @Query('teamId', ParseUUIDPipe) teamId: string,
@@ -63,7 +63,7 @@ export class AppsController {
     }
 
     @Post()
-    @ApiCreatedResponse({ type: CustomResponse<AppResponseDto> })
+    @ApiCreatedResponse({ type: createCustomResponse(AppResponseDto) })
     @ApiConflictResponse({ description: 'App already exists' })
     @ApiBody({ type: CreateAppDto })
     async createApp(
@@ -75,7 +75,7 @@ export class AppsController {
     }
 
     @Get(':id')
-    @ApiOkResponse({ type: CustomResponse<AppResponseDto> })
+    @ApiOkResponse({ type: createCustomResponse(AppResponseDto) })
     @ApiNotFoundResponse({ description: 'App not found' })
     @ApiParam({ name: 'id' })
     async getApp(
@@ -88,7 +88,7 @@ export class AppsController {
     }
 
     @Patch(':id')
-    @ApiOkResponse({ type: CustomResponse<AppResponseDto> })
+    @ApiOkResponse({ type: createCustomResponse(AppResponseDto) })
     @ApiNotFoundResponse({ description: 'App not found' })
     @ApiBody({ type: UpdateAppDto })
     @ApiParam({ name: 'id' })
