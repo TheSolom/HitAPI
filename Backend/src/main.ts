@@ -71,10 +71,10 @@ function configureGlobalProviders(app: NestExpressApplication): void {
     const reflector = app.get(Reflector);
 
     app.useGlobalInterceptors(
+        new ResponseInterceptor(reflector),
         new ClassSerializerInterceptor(reflector, {
             excludeExtraneousValues: true,
         }),
-        new ResponseInterceptor(reflector),
     );
 
     app.useGlobalPipes(
