@@ -16,12 +16,12 @@ import helmet from 'helmet';
 import type { Environment } from './common/interfaces/env.interface.js';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor.js';
 import { PostgresExceptionFilter } from './common/filters/database-exception.filter.js';
+import { GlobalExceptionFilter } from './common/filters/global-exception.filter.js';
 import { AppModule } from './app.module.js';
 
 const logger = new Logger('Bootstrap');
 const configService = new ConfigService<Environment, true>();
-const IS_PRODUCTION =
-    configService.getOrThrow<string>('NODE_ENV') === 'production';
+const IS_PRODUCTION = configService.get<string>('NODE_ENV') === 'production';
 
 function configureCors(app: NestExpressApplication): void {
     if (IS_PRODUCTION) {
@@ -91,7 +91,10 @@ function configureGlobalProviders(app: NestExpressApplication): void {
         }),
     );
 
-    app.useGlobalFilters(new PostgresExceptionFilter());
+    app.useGlobalFilters(
+        new GlobalExceptionFilter(),
+        new PostgresExceptionFilter(),
+    );
 
     logger.log('Global providers configured');
 }
