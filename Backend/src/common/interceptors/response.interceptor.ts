@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable, map } from 'rxjs';
-import { Response } from 'express';
 import { isObject } from 'class-validator';
+import type { Response } from 'express';
 import type { CustomResponse } from '../dto/custom-response.dto.js';
 import { SKIP_RESPONSE_INTERCEPTOR } from '../decorators/skip-response-interceptor.decorator.js';
 
@@ -23,9 +23,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
             return next.handle();
         }
 
-        return next
-            .handle()
-            .pipe(map((res: T) => this.transformResponse(res, context)));
+        return next.handle().pipe(map((res: T) => this.formatResponse(res)));
     }
 
     private shouldSkipInterceptor(context: ExecutionContext): boolean {
@@ -35,62 +33,47 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
         );
     }
 
-    private transformResponse(
-        res: T,
-        context: ExecutionContext,
-    ): CustomResponse<T> | T {
-        // Return as-is if already in correct format
-        if (this.isCustomResponseFormat(res)) {
+    private formatResponse(res: T): CustomResponse<T> | T {
+        if (this.isAlreadyFormatted(res)) {
             return res;
         }
 
-        const statusCode = context
-            .switchToHttp()
-            .getResponse<Response>().statusCode;
         const message = this.extractMessage(res);
 
-        // Handle message-only responses
         if (this.isMessageOnly(res)) {
-            return {
-                statusCode,
-                message: message || 'Success',
-            };
+            return { message: message || 'Success' };
         }
 
-        // Check if response already has both data and metadata (paginated response)
-        if (this.isPaginatedResponse(res)) {
-            return {
-                statusCode,
-                message: message || 'Success',
-                ...this.extractPaginatedResponse(res),
-            } as CustomResponse<T>;
-        }
-
-        // Extract data and metadata for regular responses
-        const data = this.extractData(res);
-        const metadata = this.extractMetadata(res);
+        const { data, metadata } = this.extractDataAndMetadata(res);
 
         return {
-            statusCode,
             message: message || 'Success',
             ...(metadata && { metadata }),
             ...(data && { data }),
         } as CustomResponse<T>;
     }
 
-    private isCustomResponseFormat(res: T): res is T & CustomResponse<T> {
-        return (
-            isObject(res) &&
-            'statusCode' in (res as Record<string, unknown>) &&
-            'message' in (res as Record<string, unknown>) &&
-            typeof (res as Record<string, unknown>).statusCode === 'number' &&
-            typeof (res as Record<string, unknown>).message === 'string'
-        );
+    private isAlreadyFormatted(res: T): res is T & CustomResponse<T> {
+        if (!isObject(res)) return false;
+
+        const obj = res as Record<string, unknown>;
+        return 'message' in obj && typeof obj.message === 'string';
+    }
+
+    private getStatusCode(context: ExecutionContext): number {
+        return context.switchToHttp().getResponse<Response>().statusCode;
+    }
+
+    private extractMessage(res: T): string | undefined {
+        if (!isObject(res)) return undefined;
+
+        const msg = (res as Record<string, unknown>).message;
+        return typeof msg === 'string' ? msg : undefined;
     }
 
     private isMessageOnly(res: T): boolean {
-        if (!isObject(res)) {
-            return true;
+        if (!isObject(res) || Array.isArray(res)) {
+            return false;
         }
 
         const keys = Object.keys(res as Record<string, unknown>);
@@ -99,68 +82,48 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
         );
     }
 
-    private isPaginatedResponse(res: T): boolean {
-        if (!isObject(res)) {
-            return false;
-        }
+    private extractDataAndMetadata(res: T): {
+        data: Array<unknown> | null;
+        metadata: Record<string, unknown> | null;
+    } {
+        const metadata = this.extractMetadata(res);
+        const data = this.extractData(res);
 
-        const obj = res as Record<string, unknown>;
-        return (
-            'data' in obj &&
-            Array.isArray(obj.data) &&
-            'metadata' in obj &&
-            isObject(obj.metadata)
-        );
-    }
-
-    private extractPaginatedResponse(res: T): Record<string, unknown> {
-        const obj = res as Record<string, unknown>;
-        return {
-            data: obj.data,
-            metadata: obj.metadata,
-        };
-    }
-
-    private extractMessage(res: T): string | undefined {
-        if (!isObject(res)) {
-            return undefined;
-        }
-
-        const msg = (res as Record<string, unknown>).message;
-        return typeof msg === 'string' ? msg : undefined;
+        return { data, metadata };
     }
 
     private extractMetadata(res: T): Record<string, unknown> | null {
-        if (
-            !isObject(res) ||
-            this.isMessageOnly(res) ||
-            !('metadata' in (res as Record<string, unknown>))
-        ) {
-            return null;
-        }
-
-        return (res as Record<string, unknown>).metadata as Record<
-            string,
-            unknown
-        >;
-    }
-
-    private extractData(res: T): Record<string, unknown> | null {
         if (!isObject(res) || this.isMessageOnly(res)) {
             return null;
         }
 
-        if ('data' in (res as Record<string, unknown>)) {
-            return (res as Record<string, unknown>).data as Record<
-                string,
-                unknown
-            >;
+        const obj = res as Record<string, unknown>;
+        return 'metadata' in obj && isObject(obj.metadata)
+            ? (obj.metadata as Record<string, unknown>)
+            : null;
+    }
+
+    private extractData(res: T): Array<unknown> | null {
+        if (Array.isArray(res)) {
+            return res;
         }
 
-        const data = { ...(res as Record<string, unknown>) };
+        if (!isObject(res) || this.isMessageOnly(res)) {
+            return null;
+        }
+
+        const obj = res as Record<string, unknown>;
+
+        if ('data' in obj) {
+            return Array.isArray(obj.data)
+                ? (obj.data as Array<unknown>)
+                : [obj.data];
+        }
+
+        const data = { ...obj };
         delete data.message;
         delete data.metadata;
 
-        return Object.keys(data).length > 0 ? data : null;
+        return Object.keys(data).length > 0 ? [data] : null;
     }
 }
