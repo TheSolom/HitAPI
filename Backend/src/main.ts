@@ -3,6 +3,7 @@ import {
     ValidationPipe,
     VersioningType,
     Logger,
+    BadRequestException,
 } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -79,13 +80,13 @@ function configureGlobalProviders(app: NestExpressApplication): void {
 
     app.useGlobalPipes(
         new ValidationPipe({
-            transform: true,
             whitelist: true,
             forbidNonWhitelisted: true,
-            stopAtFirstError: true,
+            transform: true,
+            transformOptions: { enableImplicitConversion: true },
             enableDebugMessages: !IS_PRODUCTION,
-            transformOptions: {
-                enableImplicitConversion: true,
+            exceptionFactory: (validationErrors) => {
+                return new BadRequestException(validationErrors);
             },
         }),
     );
