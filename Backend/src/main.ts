@@ -14,7 +14,7 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import type { Environment } from './common/interfaces/env.interface.js';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor.js';
-import { PostgresExceptionFilter } from './common/filters/database.exception.filter.js';
+import { PostgresExceptionFilter } from './common/filters/database-exception.filter.js';
 import { AppModule } from './app.module.js';
 
 const logger = new Logger('Bootstrap');
