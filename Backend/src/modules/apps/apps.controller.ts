@@ -53,7 +53,7 @@ export class AppsController {
 
     @Get()
     @ApiOkResponse({ type: createCustomResponse(AppResponseDto, true) })
-    @ApiQuery({ name: 'teamId' })
+    @ApiQuery({ name: 'teamId', format: 'uuid' })
     async listApps(
         @Query('teamId', ParseUUIDPipe) teamId: string,
     ): Promise<AppResponseDto[]> {
@@ -77,7 +77,7 @@ export class AppsController {
     @Get(':id')
     @ApiOkResponse({ type: createCustomResponse(AppResponseDto) })
     @ApiNotFoundResponse({ description: 'App not found' })
-    @ApiParam({ name: 'id' })
+    @ApiParam({ name: 'id', format: 'uuid' })
     async getApp(
         @Param('id', ParseUUIDPipe) id: string,
     ): Promise<AppResponseDto> {
@@ -91,7 +91,7 @@ export class AppsController {
     @ApiOkResponse({ type: createCustomResponse(AppResponseDto) })
     @ApiNotFoundResponse({ description: 'App not found' })
     @ApiBody({ type: UpdateAppDto })
-    @ApiParam({ name: 'id' })
+    @ApiParam({ name: 'id', format: 'uuid' })
     async updateApp(
         @Body() updateAppDto: UpdateAppDto,
         @Param('id', ParseUUIDPipe) id: string,
@@ -104,7 +104,7 @@ export class AppsController {
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse()
-    @ApiParam({ name: 'id' })
+    @ApiParam({ name: 'id', format: 'uuid' })
     async deleteApp(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
         await this.appsService.deleteApp(id);
     }

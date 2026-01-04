@@ -35,13 +35,14 @@ import { EndpointResponseDto } from './dto/endpoint-response.dto.js';
 import { EndpointConfigResponseDto } from './dto/endpoint-config-response.dto.js';
 import { UpdateEndpointConfigDto } from './dto/update-endpoint-config.dto.js';
 import { UpdateEndpointErrorConfigDto } from './dto/update-endpoint-error-config.dto.js';
+import { RestfulMethods } from '../../common/enums/restful-methods.enum.js';
 
 @ApiTags('Endpoints')
 @ApiBearerAuth('JWT')
 @ApiOAuth2(['email', 'profile'], 'GoogleOAuth2')
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
-@ApiParam({ name: 'appId' })
+@ApiParam({ name: 'appId', format: 'uuid' })
 @UseGuards(JwtAuthGuard)
 @Controller(Routes.ENDPOINTS)
 export class EndpointsController {
@@ -63,7 +64,7 @@ export class EndpointsController {
     @Get(':id')
     @ApiOkResponse({ type: createCustomResponse(EndpointResponseDto) })
     @ApiNotFoundResponse({ description: 'Endpoint not found' })
-    @ApiParam({ name: 'id' })
+    @ApiParam({ name: 'id', format: 'uuid' })
     async getEndpoint(
         @Param('appId', ParseUUIDPipe) appId: string,
         @Param('id', ParseUUIDPipe) id: string,
@@ -77,11 +78,11 @@ export class EndpointsController {
     @Get('config')
     @ApiOkResponse({ type: createCustomResponse(EndpointConfigResponseDto) })
     @ApiNotFoundResponse({ description: 'Endpoint not found' })
-    @ApiQuery({ name: 'method' })
+    @ApiQuery({ name: 'method', enum: RestfulMethods })
     @ApiQuery({ name: 'path' })
     async getEndpointConfig(
         @Param('appId', ParseUUIDPipe) appId: string,
-        @Query('method') method: string,
+        @Query('method') method: RestfulMethods,
         @Query('path') path: string,
     ): Promise<EndpointConfigResponseDto> {
         return this.endpointsService.getConfig(appId, method, path);

@@ -7,6 +7,7 @@ import { Endpoint } from './entities/endpoint.entity.js';
 import type { UpdateEndpointConfigDto } from './dto/update-endpoint-config.dto.js';
 import type { UpdateEndpointErrorConfigDto } from './dto/update-endpoint-error-config.dto.js';
 import type { EndpointConfigResponseDto } from './dto/endpoint-config-response.dto.js';
+import type { RestfulMethods } from 'src/common/enums/restful-methods.enum.js';
 
 @Injectable()
 export class EndpointsService implements IEndpointsService {
@@ -37,7 +38,7 @@ export class EndpointsService implements IEndpointsService {
 
     async getConfig(
         appId: string,
-        method: string,
+        method: RestfulMethods,
         path: string,
     ): Promise<EndpointConfigResponseDto> {
         const endpoint = await this.endpointsRepository.findOne({

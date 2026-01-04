@@ -1,18 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
     IsBoolean,
+    IsEnum,
     IsInt,
     IsNotEmpty,
     IsString,
     Max,
     Min,
 } from 'class-validator';
+import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
 
 export class UpdateEndpointErrorConfigDto {
-    @ApiProperty({ type: 'string' })
-    @IsString()
+    @ApiProperty({ enum: RestfulMethods })
+    @IsEnum(RestfulMethods)
     @IsNotEmpty()
-    method: string;
+    method: RestfulMethods;
 
     @ApiProperty({ type: 'string' })
     @IsString()

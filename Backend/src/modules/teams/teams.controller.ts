@@ -63,7 +63,7 @@ export class TeamsController {
     @Get(':id')
     @ApiOkResponse({ type: createCustomResponse(TeamResponseDto) })
     @ApiNotFoundResponse({ description: 'Team not found' })
-    @ApiParam({ name: 'id' })
+    @ApiParam({ name: 'id', format: 'uuid' })
     async findOne(
         @Param('id', ParseUUIDPipe) id: string,
     ): Promise<TeamResponseDto> {
@@ -90,7 +90,7 @@ export class TeamsController {
     @ApiOkResponse({ type: createCustomResponse(TeamResponseDto) })
     @ApiNotFoundResponse({ description: 'Team not found' })
     @ApiBody({ type: UpdateTeamDto })
-    @ApiParam({ name: 'id' })
+    @ApiParam({ name: 'id', format: 'uuid' })
     async updateTeam(
         @Body() updateTeamDto: UpdateTeamDto,
         @Param('id', ParseUUIDPipe) id: string,
@@ -104,7 +104,7 @@ export class TeamsController {
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiNoContentResponse()
-    @ApiParam({ name: 'id' })
+    @ApiParam({ name: 'id', format: 'uuid' })
     async deleteTeam(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
         await this.teamsService.deleteTeam(id);
     }

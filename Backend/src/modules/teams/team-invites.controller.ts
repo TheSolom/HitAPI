@@ -70,7 +70,7 @@ export class TeamInvitesController {
 
     @Get(':teamId/invites')
     @ApiOkResponse({ type: createCustomResponse(TeamInviteResponseDto, true) })
-    @ApiParam({ name: 'teamId' })
+    @ApiParam({ name: 'teamId', format: 'uuid' })
     async findAll(
         @Param('teamId', ParseUUIDPipe) teamId: string,
     ): Promise<TeamInviteResponseDto[]> {
@@ -99,7 +99,7 @@ export class TeamInvitesController {
     @ApiForbiddenResponse({ description: 'Forbidden' })
     @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
     @ApiBody({ type: CreateTeamInviteDto })
-    @ApiParam({ name: 'teamId' })
+    @ApiParam({ name: 'teamId', format: 'uuid' })
     async createTeamInvite(
         @Body() { email, memberId }: CreateTeamInviteDto,
         @Param('teamId', ParseUUIDPipe) teamId: string,
@@ -182,8 +182,8 @@ export class TeamInvitesController {
     @ApiNoContentResponse()
     @ApiNotFoundResponse({ description: 'Invite not found' })
     @ApiForbiddenResponse({ description: 'Forbidden' })
-    @ApiParam({ name: 'teamId' })
-    @ApiParam({ name: 'inviteId' })
+    @ApiParam({ name: 'teamId', format: 'uuid' })
+    @ApiParam({ name: 'inviteId', format: 'uuid' })
     async removeInvite(
         @AuthUser() { id: userId }: AuthenticatedUser,
         @Param('teamId', ParseUUIDPipe) teamId: string,

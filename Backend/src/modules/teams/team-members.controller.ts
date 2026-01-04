@@ -47,7 +47,7 @@ import { TeamMemberRoles } from './enums/team-member-roles.enum.js';
 @ApiOAuth2(['email', 'profile'], 'GoogleOAuth2')
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
-@ApiParam({ name: 'teamId' })
+@ApiParam({ name: 'teamId', format: 'uuid' })
 @UseGuards(JwtAuthGuard)
 @Controller(Routes.TEAM_MEMBERS)
 export class TeamMembersController {
@@ -73,7 +73,7 @@ export class TeamMembersController {
     @Get(':memberId')
     @ApiOkResponse({ type: createCustomResponse(TeamMemberResponseDto) })
     @ApiNotFoundResponse({ description: 'Member not found' })
-    @ApiParam({ name: 'memberId' })
+    @ApiParam({ name: 'memberId', format: 'uuid' })
     async findOne(
         @Param('teamId', ParseUUIDPipe) teamId: string,
         @Param('memberId', ParseUUIDPipe) memberId: string,
@@ -128,7 +128,7 @@ export class TeamMembersController {
     @ApiNotFoundResponse({ description: 'Member not found' })
     @ApiForbiddenResponse({ description: 'Forbidden' })
     @ApiBody({ type: UpdateTeamMemberDto })
-    @ApiParam({ name: 'memberId' })
+    @ApiParam({ name: 'memberId', format: 'uuid' })
     async updateTeamMemberRole(
         @AuthUser() { id: userId }: AuthenticatedUser,
         @Body() { role }: UpdateTeamMemberDto,
@@ -179,7 +179,7 @@ export class TeamMembersController {
     @ApiNoContentResponse()
     @ApiNotFoundResponse({ description: 'Member not found' })
     @ApiForbiddenResponse({ description: 'Forbidden' })
-    @ApiParam({ name: 'memberId' })
+    @ApiParam({ name: 'memberId', format: 'uuid' })
     async removeTeamMember(
         @AuthUser() { id: userId }: AuthenticatedUser,
         @Param('teamId', ParseUUIDPipe) teamId: string,

@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
     IsBoolean,
+    IsEnum,
     IsInt,
     IsNotEmpty,
     IsOptional,
@@ -9,12 +10,13 @@ import {
     Min,
 } from 'class-validator';
 import { InStepRange } from '../../../common/validators/in-step-range.validator.js';
+import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
 
 export class UpdateEndpointConfigDto {
-    @ApiProperty({ type: 'string' })
-    @IsString()
+    @ApiProperty({ enum: RestfulMethods })
+    @IsEnum(RestfulMethods)
     @IsNotEmpty()
-    method: string;
+    method: RestfulMethods;
 
     @ApiProperty({ type: 'string' })
     @IsString()

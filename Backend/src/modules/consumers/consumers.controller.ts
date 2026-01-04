@@ -43,7 +43,7 @@ import { UpdateConsumerGroupDto } from './dto/update-consumer-group.dto.js';
 @ApiOAuth2(['email', 'profile'], 'GoogleOAuth2')
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
-@ApiParam({ name: 'appId' })
+@ApiParam({ name: 'appId', format: 'uuid' })
 @UseGuards(JwtAuthGuard)
 @Controller(Routes.CONSUMERS)
 export class ConsumersController {
