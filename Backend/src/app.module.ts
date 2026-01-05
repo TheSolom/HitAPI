@@ -16,6 +16,7 @@ import { AppsModule } from './modules/apps/apps.module.js';
 import { EndpointsModule } from './modules/endpoints/endpoints.module.js';
 import { ConsumersModule } from './modules/consumers/consumers.module.js';
 import { GeoIPModule } from './modules/geo-ip/geo-ip.module.js';
+import { RequestLogsModule } from './modules/request-logs/request-logs.module.js';
 
 @Module({
     imports: [
@@ -38,6 +39,7 @@ import { GeoIPModule } from './modules/geo-ip/geo-ip.module.js';
         EndpointsModule,
         ConsumersModule,
         GeoIPModule,
+        RequestLogsModule,
     ],
     providers: [
         {
