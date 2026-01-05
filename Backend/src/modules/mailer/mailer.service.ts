@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises';
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import nodemailer, { Transporter, SendMailOptions } from 'nodemailer';
 import { OAuth2Client } from 'google-auth-library';
@@ -9,7 +9,8 @@ import type { Environment } from '../../common/interfaces/env.interface.js';
 
 @Injectable()
 export class MailerService implements IMailerService, OnModuleInit {
-    private transporter: Transporter;
+    private readonly logger = new Logger(MailerService.name);
+    private transporter?: Transporter;
     private readonly googleOAuth2: OAuth2Client;
     private readonly templateCache = new Map<
         string,
@@ -64,8 +65,7 @@ export class MailerService implements IMailerService, OnModuleInit {
                 },
             });
         } catch (error) {
-            console.error('Failed to initialize mailer transporter', error);
-            throw error;
+            this.logger.error('Failed to initialize mailer transporter', error);
         }
     }
 
