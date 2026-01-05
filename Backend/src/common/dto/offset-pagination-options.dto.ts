@@ -4,15 +4,15 @@ import { Type } from 'class-transformer';
 
 export class OffsetPaginationOptionsDto {
     @ApiProperty({ type: 'integer' })
+    @Type(() => Number)
     @Min(1)
     @IsInt()
-    @Type(() => Number)
     offset: number;
 
     @ApiProperty({ type: 'integer' })
+    @Type(() => Number)
     @Max(100)
     @Min(1)
     @IsInt()
-    @Type(() => Number)
     limit: number;
 }
