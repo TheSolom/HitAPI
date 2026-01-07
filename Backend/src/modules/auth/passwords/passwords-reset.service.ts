@@ -10,7 +10,7 @@ import type { IPasswordsResetService } from './interfaces/passwords-reset-servic
 import type { IRateLimitService } from '../../rate-limit/interfaces/rate-limit-service.interface.js';
 import type { IVerificationTokensService } from '../verification/interfaces/verification-tokens-service.interface.js';
 import type { IMailsService } from '../../mails/interfaces/mails-service.interface.js';
-import type { Environment } from '../../../common/interfaces/env.interface.js';
+import type { EnvironmentVariablesDto } from '../../../config/env/dto/environment-variables.dto.js';
 import type { TokenCacheData } from '../verification/interfaces/token-cache-data.interface.js';
 import { MailSubjects } from '../../mails/enums/mails.enum.js';
 
@@ -23,7 +23,10 @@ export class PasswordsResetService implements IPasswordsResetService {
         private readonly verificationTokensService: IVerificationTokensService,
         @Inject(Services.MAILS)
         private readonly mailsService: IMailsService,
-        private readonly configService: ConfigService<Environment, true>,
+        private readonly configService: ConfigService<
+            EnvironmentVariablesDto,
+            true
+        >,
     ) {}
 
     async sendPasswordResetEmail(
@@ -41,9 +44,7 @@ export class PasswordsResetService implements IPasswordsResetService {
                 displayName,
                 subject: MailSubjects.PASSWORD_RESET,
             },
-            Number.parseInt(
-                this.configService.get<string>('CACHE_TTL_PASSWORD_RESET'),
-            ),
+            this.configService.get<number>('CACHE_TTL_PASSWORD_RESET'),
         );
 
         try {

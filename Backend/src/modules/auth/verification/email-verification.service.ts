@@ -10,7 +10,7 @@ import type { IRateLimitService } from '../../rate-limit/interfaces/rate-limit-s
 import type { IVerificationTokensService } from './interfaces/verification-tokens-service.interface.js';
 import type { IMailsService } from '../../mails/interfaces/mails-service.interface.js';
 import type { TokenCacheData } from './interfaces/token-cache-data.interface.js';
-import type { Environment } from '../../../common/interfaces/env.interface.js';
+import type { EnvironmentVariablesDto } from '../../../config/env/dto/environment-variables.dto.js';
 import { MailSubjects } from '../../mails/enums/mails.enum.js';
 import type { IEmailVerificationService } from './interfaces/email-verification-service.interface.js';
 
@@ -23,7 +23,10 @@ export class EmailVerificationService implements IEmailVerificationService {
         private readonly verificationTokenService: IVerificationTokensService,
         @Inject(Services.MAILS)
         private readonly mailsService: IMailsService,
-        private readonly configService: ConfigService<Environment, true>,
+        private readonly configService: ConfigService<
+            EnvironmentVariablesDto,
+            true
+        >,
     ) {}
 
     async sendVerificationEmail(
@@ -41,9 +44,7 @@ export class EmailVerificationService implements IEmailVerificationService {
                 displayName,
                 subject: MailSubjects.EMAIL_VERIFICATION,
             },
-            Number.parseInt(
-                this.configService.get<string>('CACHE_TTL_EMAIL_VERIFICATION'),
-            ),
+            this.configService.get<number>('CACHE_TTL_EMAIL_VERIFICATION'),
         );
 
         try {

@@ -3,6 +3,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { validate } from './config/env/validation.js';
 import { ThrottlerModule } from './config/throttler/throttler.module.js';
 import { DBModule } from './config/db/database.module.js';
 import { CacheModule } from './config/cache/cache.module.js';
@@ -21,9 +22,10 @@ import { RequestLogsModule } from './modules/request-logs/request-logs.module.js
 @Module({
     imports: [
         ConfigModule.forRoot({
-            envFilePath: '.env.local', // Local development environment variables
+            envFilePath: `.env${process.env.NODE_ENV === 'production' ? '' : '.local'}`,
             isGlobal: true,
             cache: true,
+            validate,
         }),
         ScheduleModule.forRoot(),
         ThrottlerModule,

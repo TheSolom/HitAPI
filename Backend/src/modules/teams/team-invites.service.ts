@@ -10,7 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util.js';
 import type { ITeamInvitesService } from './interfaces/team-invites-service.interfaces.js';
-import type { Environment } from '../../common/interfaces/env.interface.js';
+import { EnvironmentVariablesDto } from '../../config/env/dto/environment-variables.dto.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { IHashingService } from '../hashing/interfaces/hashing-service.interface.js';
 import type { NullableType } from '../../common/@types/nullable.type.js';
@@ -22,9 +22,12 @@ export class TeamInvitesService implements ITeamInvitesService {
     constructor(
         @InjectRepository(TeamInvite)
         private readonly invitesRepository: Repository<TeamInvite>,
-        private readonly configService: ConfigService<Environment, true>,
         @Inject(Services.HASHING)
         private readonly hashingService: IHashingService,
+        private readonly configService: ConfigService<
+            EnvironmentVariablesDto,
+            true
+        >,
     ) {}
 
     private async saveInvite(invite: TeamInvite): Promise<TeamInvite> {
@@ -81,8 +84,8 @@ export class TeamInvitesService implements ITeamInvitesService {
         const token = randomStringGenerator();
         const tokenHash = this.hashingService.hash(token);
 
-        const inviteExpiresIn = Number.parseInt(
-            this.configService.getOrThrow<string>('INVITE_EXPIRATION_TIME'),
+        const inviteExpiresIn = this.configService.getOrThrow<number>(
+            'INVITE_EXPIRATION_TIME',
         );
 
         const invite = await this.saveInvite(

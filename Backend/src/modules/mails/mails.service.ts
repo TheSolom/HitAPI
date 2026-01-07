@@ -4,14 +4,17 @@ import { ConfigService } from '@nestjs/config';
 import { Services } from '../../common/constants/services.constant.js';
 import type { IMailerService } from '../mailer/interfaces/mailer-service.interface.js';
 import type { IMailsService } from './interfaces/mails-service.interface.js';
-import type { Environment } from '../../common/interfaces/env.interface.js';
+import type { EnvironmentVariablesDto } from '../../config/env/dto/environment-variables.dto.js';
 import type { MailData } from './types/mails.type.js';
 
 @Injectable()
 export class MailsService implements IMailsService {
     constructor(
         @Inject(Services.MAILER) private readonly mailerService: IMailerService,
-        private readonly configService: ConfigService<Environment, true>,
+        private readonly configService: ConfigService<
+            EnvironmentVariablesDto,
+            true
+        >,
     ) {}
 
     async emailConfirmation(

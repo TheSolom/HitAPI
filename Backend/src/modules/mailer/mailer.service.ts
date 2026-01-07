@@ -5,7 +5,7 @@ import nodemailer, { Transporter, SendMailOptions } from 'nodemailer';
 import { OAuth2Client } from 'google-auth-library';
 import Handlebars from 'handlebars';
 import type { IMailerService } from './interfaces/mailer-service.interface.js';
-import type { Environment } from '../../common/interfaces/env.interface.js';
+import type { EnvironmentVariablesDto } from '../../config/env/dto/environment-variables.dto.js';
 
 @Injectable()
 export class MailerService implements IMailerService, OnModuleInit {
@@ -18,7 +18,10 @@ export class MailerService implements IMailerService, OnModuleInit {
     >();
 
     constructor(
-        private readonly configService: ConfigService<Environment, true>,
+        private readonly configService: ConfigService<
+            EnvironmentVariablesDto,
+            true
+        >,
     ) {
         this.googleOAuth2 = new OAuth2Client(
             this.configService.getOrThrow<string>('GOOGLE_CLIENT_ID'),

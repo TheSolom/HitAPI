@@ -9,7 +9,7 @@ import { RefreshToken } from './entities/refresh-token.entity.js';
 import { Services } from '../../../common/constants/services.constant.js';
 import type { ITokensService } from './interfaces/tokens-service.interface.js';
 import type { IHashingService } from '../../hashing/interfaces/hashing-service.interface.js';
-import type { Environment } from '../../../common/interfaces/env.interface.js';
+import type { EnvironmentVariablesDto } from '../../../config/env/dto/environment-variables.dto.js';
 import type { IJwtPayload } from './interfaces/jwt-payload.interface.js';
 import { NullableType } from '../../../common/@types/nullable.type.js';
 import { AuthenticatedUser } from '../../users/dto/auth-user.dto.js';
@@ -22,8 +22,11 @@ export class TokensService implements ITokensService {
         private readonly refreshTokenRepository: Repository<RefreshToken>,
         @Inject(Services.HASHING)
         private readonly hashingService: IHashingService,
-        private readonly configService: ConfigService<Environment, true>,
         private readonly jwtService: JwtService,
+        private readonly configService: ConfigService<
+            EnvironmentVariablesDto,
+            true
+        >,
     ) {}
 
     private async updateLastUsedAsync(tokenId: string): Promise<void> {

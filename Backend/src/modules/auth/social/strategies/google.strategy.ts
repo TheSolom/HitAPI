@@ -4,7 +4,7 @@ import { Profile, Strategy } from 'passport-google-oauth20';
 import { ConfigService } from '@nestjs/config';
 import { Services } from '../../../../common/constants/services.constant.js';
 import type { ISocialAuthService } from '../interfaces/social-auth-service.interface.js';
-import type { Environment } from '../../../../common/interfaces/env.interface.js';
+import type { EnvironmentVariablesDto } from '../../../../config/env/dto/environment-variables.dto.js';
 import { SocialLoginDto } from '../dto/social-login.dto.js';
 import { AuthProvidersEnum } from '../../enums/auth-providers.enum.js';
 
@@ -13,7 +13,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     constructor(
         @Inject(Services.SOCIAL_AUTH)
         private readonly socialAuthService: ISocialAuthService,
-        private readonly configService: ConfigService<Environment, true>,
+        private readonly configService: ConfigService<
+            EnvironmentVariablesDto,
+            true
+        >,
     ) {
         super({
             clientID: configService.getOrThrow<string>('GOOGLE_CLIENT_ID'),
