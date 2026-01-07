@@ -24,7 +24,7 @@ import { Routes } from '../../../common/constants/routes.constant.js';
 import { Services } from '../../../common/constants/services.constant.js';
 import type { ITokensService } from '../tokens/interfaces/tokens-service.interface.js';
 import type { ISocialAuthService } from './interfaces/social-auth-service.interface.js';
-import type { Environment } from 'src/common/interfaces/env.interface.js';
+import type { EnvironmentVariablesDto } from '../../../config/env/dto/environment-variables.dto.js';
 import { GoogleOAuth2Guard } from './guards/google-OAuth2.guard.js';
 import { AuthenticatedUser } from '../../users/dto/auth-user.dto.js';
 import { TokenExchangeDto } from './dto/token-exchange.dto.js';
@@ -44,7 +44,10 @@ export class GoogleAuthController {
         @Inject(Services.TOKENS) private readonly tokensService: ITokensService,
         @Inject(Services.SOCIAL_AUTH)
         private readonly socialAuthService: ISocialAuthService,
-        private readonly configService: ConfigService<Environment, true>,
+        private readonly configService: ConfigService<
+            EnvironmentVariablesDto,
+            true
+        >,
     ) {
         this.oauth2Client = new OAuth2Client(
             this.configService.getOrThrow<string>('GOOGLE_CLIENT_ID'),

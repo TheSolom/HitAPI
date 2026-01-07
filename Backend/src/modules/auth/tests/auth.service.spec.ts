@@ -2,7 +2,7 @@ import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { AuthService } from '../auth.service.js';
-import type { IUsersService } from 'src/modules/users/interfaces/users-service.interface.js';
+import type { IUsersService } from '../../users/interfaces/users-service.interface.js';
 import type { ITokensService } from '../tokens/interfaces/tokens-service.interface.js';
 import type { IHashingService } from '../../hashing/interfaces/hashing-service.interface.js';
 import { Services } from '../../../common/constants/services.constant.js';
