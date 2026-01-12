@@ -7,13 +7,15 @@ import type { CountryResponseDto } from './dto/country-response.dto.js';
 @Injectable()
 export class GeoIPService implements OnModuleInit, IGeoIPService {
     private readonly logger = new Logger(GeoIPService.name);
-    private lookup?: Reader<CountryResponse>;
+    private static lookup?: Reader<CountryResponse>;
 
     async onModuleInit() {
         const PATH = 'assets/GeoLite2-Country_20260102/GeoLite2-Country.mmdb';
 
+        if (GeoIPService.lookup) return;
+
         try {
-            this.lookup = await open<CountryResponse>(PATH);
+            GeoIPService.lookup = await open<CountryResponse>(PATH);
         } catch (error) {
             this.logger.error('Failed to initialize GeoIP service', error);
         }
@@ -21,7 +23,7 @@ export class GeoIPService implements OnModuleInit, IGeoIPService {
 
     getCountry(ip: string): NullableType<CountryResponseDto> {
         try {
-            const response = this.lookup?.get(ip);
+            const response = GeoIPService.lookup?.get(ip);
 
             if (response?.country) {
                 return {
