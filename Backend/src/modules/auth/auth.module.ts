@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '../../config/jwt/jwt.module.js';
 import { PassportModule } from '@nestjs/passport';
-import { HashingModule } from '../hashing/hashing.module.js';
 import { MailsModule } from '../mails/mails.module.js';
 import { VerificationModule } from './verification/verification.module.js';
 import { PasswordsModule } from './passwords/passwords.module.js';
@@ -21,7 +20,6 @@ import { AnonymousStrategy } from './strategies/anonymous.strategy.js';
     imports: [
         JwtModule,
         PassportModule,
-        HashingModule,
         MailsModule,
         VerificationModule,
         PasswordsModule,

@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Team } from './entities/team.entity.js';
 import { TeamMember } from './entities/team-member.entity.js';
 import { TeamInvite } from './entities/team-invite.entity.js';
-import { HashingModule } from '../hashing/hashing.module.js';
 import { TeamsController } from './teams.controller.js';
 import { TeamMembersController } from './team-members.controller.js';
 import { TeamInvitesController } from './team-invites.controller.js';
@@ -16,7 +15,6 @@ import { MailsModule } from '../mails/mails.module.js';
 @Module({
     imports: [
         TypeOrmModule.forFeature([Team, TeamMember, TeamInvite]),
-        HashingModule,
         MailsModule,
     ],
     controllers: [
