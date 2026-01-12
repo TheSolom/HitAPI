@@ -9,7 +9,10 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
 import type { Request, Response } from 'express';
-import type { RFC9457Response } from '../../common/interfaces/RFC9457-response.interface.js';
+import type {
+    RFC9457Response,
+    ValidationErrorDetail,
+} from '../../common/interfaces/RFC9457-response.interface.js';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -177,14 +180,55 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     private formatValidationErrors(
         errors: Array<Record<string, unknown>>,
     ): RFC9457Response['errors'] {
-        return errors.map((error) => ({
-            field: (error.property as string) || 'unknown',
-            detail: error.constraints
-                ? Object.values(
-                      error.constraints as Record<string, string>,
-                  ).join('; ')
-                : (error.message as string) || 'Validation failed',
-        }));
+        const flattenedErrors: ValidationErrorDetail[] = [];
+
+        for (const error of errors) {
+            this.flattenValidationError(error, '', flattenedErrors);
+        }
+
+        return flattenedErrors;
+    }
+
+    private flattenValidationError(
+        error: Record<string, unknown>,
+        parentPath: string,
+        result: ValidationErrorDetail[],
+    ): void {
+        const property = error.property as string;
+        const currentPath = parentPath ? `${parentPath}.${property}` : property;
+
+        // If this error has constraints, add them
+        if (error.constraints && typeof error.constraints === 'object') {
+            const detail = Object.values(
+                error.constraints as Record<string, string>,
+            ).join('; ');
+            result.push({
+                field: currentPath,
+                detail,
+            });
+        }
+
+        // If this error has children, recurse into them
+        if (Array.isArray(error.children)) {
+            for (const child of error.children) {
+                this.flattenValidationError(
+                    child as Record<string, unknown>,
+                    currentPath,
+                    result,
+                );
+            }
+        }
+
+        // If no constraints and no children, it's a parent-only error
+        if (
+            !error.constraints &&
+            (!Array.isArray(error.children) || error.children.length === 0)
+        ) {
+            result.push({
+                field: currentPath,
+                detail: (error.message as string) || 'Validation failed',
+            });
+        }
     }
 
     private getHttpStatusTitle(status: number): string {
