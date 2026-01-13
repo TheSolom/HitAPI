@@ -1,12 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { IConsumersService } from './interfaces/consumers-service.interface.js';
 import { Consumer } from './entities/consumer.entity.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { IConsumerGroupsService } from './interfaces/consumer-groups-service.interface.js';
 import type { NullableType } from './../../common/@types/nullable.type.js';
-import { UpdateConsumerDto } from './dto/update-consumer.dto.js';
+import type { CreateConsumerDto } from './dto/create-consumer.dto.js';
+import type { UpdateConsumerDto } from './dto/update-consumer.dto.js';
 
 @Injectable()
 export class ConsumersService implements IConsumersService {
@@ -21,7 +22,7 @@ export class ConsumersService implements IConsumersService {
         return this.consumerRepository.save(consumer);
     }
 
-    async findAllConsumers(appId: string): Promise<Consumer[]> {
+    async findAllByAppId(appId: string): Promise<Consumer[]> {
         return this.consumerRepository.find({
             where: { app: { id: appId }, hidden: false },
             order: { name: 'ASC' },
@@ -29,7 +30,16 @@ export class ConsumersService implements IConsumersService {
         });
     }
 
-    async findConsumer(
+    async findAllByIdentifiers(
+        appId: string,
+        identifiers: string[],
+    ): Promise<Consumer[]> {
+        return this.consumerRepository.find({
+            where: { app: { id: appId }, identifier: In(identifiers) },
+        });
+    }
+
+    async findById(
         appId: string,
         consumerId: number,
     ): Promise<NullableType<Consumer>> {
@@ -39,12 +49,45 @@ export class ConsumersService implements IConsumersService {
         });
     }
 
+    async findByIdentifier(
+        appId: string,
+        identifier: string,
+    ): Promise<NullableType<Consumer>> {
+        return this.consumerRepository.findOne({
+            where: { identifier, app: { id: appId } },
+        });
+    }
+
+    async createConsumers(
+        appId: string,
+        createConsumersDto: CreateConsumerDto[],
+    ): Promise<{ id: number; identifier: string }[]> {
+        const consumers = createConsumersDto.map((c) => ({
+            ...c,
+            app: { id: appId },
+            group: { id: c.groupId },
+        }));
+
+        const insertResult = await this.consumerRepository
+            .createQueryBuilder()
+            .insert()
+            .into(Consumer)
+            .values(consumers)
+            .returning(['id', 'identifier'])
+            .execute();
+
+        return insertResult.generatedMaps as {
+            id: number;
+            identifier: string;
+        }[];
+    }
+
     async updateConsumer(
         appId: string,
         consumerId: number,
         updateConsumerDto: UpdateConsumerDto,
     ): Promise<void> {
-        const consumer = await this.findConsumer(appId, consumerId);
+        const consumer = await this.findById(appId, consumerId);
 
         if (!consumer) {
             throw new Error('Consumer not found');

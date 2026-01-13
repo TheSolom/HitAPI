@@ -20,11 +20,11 @@ export class Consumer {
     @Column()
     identifier: string;
 
-    @Column()
-    name: string;
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    name: string | null;
 
     @Column({ default: false })
-    hidden: boolean;
+    hidden: boolean = false;
 
     @ManyToOne(() => App, { onDelete: 'CASCADE', nullable: false })
     app: Relation<App>;

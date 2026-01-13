@@ -59,7 +59,7 @@ export class ConsumersController {
     async listConsumers(
         @Param('appId', ParseUUIDPipe) appId: string,
     ): Promise<ConsumerResponseDto[]> {
-        const consumers = await this.consumersService.findAllConsumers(appId);
+        const consumers = await this.consumersService.findAllByAppId(appId);
 
         return plainToInstance(ConsumerResponseDto, consumers);
     }
@@ -72,7 +72,7 @@ export class ConsumersController {
         @Param('appId', ParseUUIDPipe) appId: string,
         @Param('consumerId', ParseIntPipe) consumerId: number,
     ): Promise<ConsumerResponseDto> {
-        const consumer = await this.consumersService.findConsumer(
+        const consumer = await this.consumersService.findById(
             appId,
             consumerId,
         );
