@@ -7,6 +7,7 @@ import { validate } from './config/env/validation.js';
 import { ThrottlerModule } from './config/throttler/throttler.module.js';
 import { DBModule } from './config/db/database.module.js';
 import { CacheModule } from './config/cache/cache.module.js';
+import { QueueModule } from './config/queue/queue.module.js';
 import { RateLimitModule } from './modules/rate-limit/rate-limit.module.js';
 import { UsersModule } from './modules/users/users.module.js';
 import { MailsModule } from './modules/mails/mails.module.js';
@@ -31,6 +32,7 @@ import { RequestLogsModule } from './modules/request-logs/request-logs.module.js
         ThrottlerModule,
         DBModule,
         CacheModule,
+        QueueModule,
         RateLimitModule,
         UsersModule,
         MailsModule,
