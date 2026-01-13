@@ -2,6 +2,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import type { Logger } from '@nestjs/common';
 import type { EnvironmentVariablesDto } from '../config/env/dto/environment-variables.dto.js';
+import { Routes } from '../common/constants/routes.constant.js';
 
 export async function startApp(
     app: NestExpressApplication,
@@ -16,7 +17,8 @@ export async function startApp(
 
     const appUrl = await app.getUrl();
     const apiUrl = `${appUrl}/${apiPrefix}`;
-    const docsUrl = `${appUrl}/${apiPrefix}/docs`;
+    const docsUrl = `${appUrl}/${apiPrefix}/${Routes.DOCS}`;
+    const queuesUrl = `${appUrl}/${apiPrefix}/${Routes.QUEUES}`;
 
     logger.log('='.repeat(50));
     logger.log(`🚀 Application started successfully`);
@@ -25,6 +27,7 @@ export async function startApp(
     );
     logger.log(`🌐 Application URL: ${apiUrl}`);
     logger.log(`📚 Swagger Documentation: ${docsUrl}`);
+    logger.log(`📊 Queues: ${queuesUrl}`);
     logger.log(`💾 Process ID: ${process.pid}`);
     logger.log('='.repeat(50));
 }
