@@ -31,9 +31,16 @@ export class AppsService implements IAppsService {
         });
     }
 
-    async findOne(id: string): Promise<NullableType<App>> {
+    async findById(id: string): Promise<NullableType<App>> {
         return this.appsRepository.findOne({
             where: { id },
+            relations: { framework: true },
+        });
+    }
+
+    async findByClientId(clientId: string): Promise<NullableType<App>> {
+        return this.appsRepository.findOne({
+            where: { clientId },
             relations: { framework: true },
         });
     }
@@ -60,7 +67,7 @@ export class AppsService implements IAppsService {
     }
 
     async updateApp(id: string, updateAppDto: UpdateAppDto): Promise<App> {
-        const app = await this.findOne(id);
+        const app = await this.findById(id);
         if (!app) throw new NotFoundException('App not found');
 
         const updated = this.appsRepository.merge(app, {

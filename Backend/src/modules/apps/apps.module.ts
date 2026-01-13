@@ -15,5 +15,6 @@ import { AppsService } from './apps.service.js';
             useClass: AppsService,
         },
     ],
+    exports: [Services.APPS],
 })
 export class AppsModule {}

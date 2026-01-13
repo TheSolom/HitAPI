@@ -17,7 +17,14 @@ export interface IAppsService {
      * @param id
      * @returns {Promise<NullableType<App>>}
      */
-    findOne(id: string): Promise<NullableType<App>>;
+    findById(id: string): Promise<NullableType<App>>;
+    /**
+     * Find one app by clientId
+     *
+     * @param clientId
+     * @returns {Promise<NullableType<App>>}
+     */
+    findByClientId(clientId: string): Promise<NullableType<App>>;
     /**
      * Create a new app
      *

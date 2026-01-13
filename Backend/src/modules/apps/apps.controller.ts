@@ -81,7 +81,7 @@ export class AppsController {
     async getApp(
         @Param('id', ParseUUIDPipe) id: string,
     ): Promise<AppResponseDto> {
-        const app = await this.appsService.findOne(id);
+        const app = await this.appsService.findById(id);
         if (!app) throw new NotFoundException('App not found');
 
         return plainToInstance(AppResponseDto, app);
