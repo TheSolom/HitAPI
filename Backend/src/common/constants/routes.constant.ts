@@ -1,4 +1,6 @@
 export enum Routes {
+    DOCS = 'docs',
+    QUEUES = 'queues',
     USERS = 'users',
     AUTH = 'auth',
     AUTH_GOOGLE = 'auth/google',
