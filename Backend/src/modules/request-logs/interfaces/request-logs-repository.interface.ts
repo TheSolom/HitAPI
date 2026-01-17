@@ -9,17 +9,17 @@ export interface PartialRequestLog {
     method: RestfulMethods;
     path: string;
     url: string;
-    requestSize: number;
     statusCode: number;
-    statusText: string | null;
     responseTime: number;
     responseSize: number;
-    clientIp: string;
-    clientCountryCode: string;
-    clientCountryName: string;
-    consumerId: number;
-    consumerName: string;
     timestamp: Date;
+    statusText?: string;
+    requestSize?: number;
+    clientIp?: string;
+    clientCountryCode?: string;
+    clientCountryName?: string;
+    consumerId?: number;
+    consumerName?: string;
 }
 
 export interface TimelineRawResult {

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
 import { MetadataResponseDto } from '../../../common/dto/metadata.response.dto.js';
 
@@ -15,14 +15,8 @@ export class RequestLogResponseDto {
     @ApiProperty({ type: 'string' })
     url: string;
 
-    @ApiProperty({ type: 'integer', minimum: 0 })
-    requestSize: number;
-
     @ApiProperty({ type: 'integer', minimum: 100, maximum: 599 })
     statusCode: number;
-
-    @ApiProperty({ type: 'string', nullable: true })
-    statusText: string | null;
 
     @ApiProperty({ type: 'integer', minimum: 0 })
     responseTime: number;
@@ -30,30 +24,36 @@ export class RequestLogResponseDto {
     @ApiProperty({ type: 'integer', minimum: 0 })
     responseSize: number;
 
-    @ApiProperty({ format: 'ip' })
-    clientIp: string;
-
-    @ApiProperty({ type: 'string' })
-    clientCountryName: string;
-
-    @ApiProperty({ pattern: '^[A-Z]{2}$' })
-    clientCountryCode: string;
-
-    @ApiProperty({
-        type: 'object',
-        additionalProperties: { type: 'integer', minimum: 0 },
-        example: { ERROR: 5, WARN: 2, INFO: 10 },
-    })
-    applicationLogsCountByLevel: Record<string, number>;
-
-    @ApiProperty({ type: 'number' })
-    consumerId: number;
-
-    @ApiProperty({ type: 'string' })
-    consumerName: string;
-
     @ApiProperty({ format: 'date-time' })
     timestamp: Date;
+
+    @ApiPropertyOptional({ type: 'string' })
+    statusText?: string;
+
+    @ApiPropertyOptional({ type: 'integer', minimum: 0 })
+    requestSize?: number;
+
+    @ApiPropertyOptional({ format: 'ip' })
+    clientIp?: string;
+
+    @ApiPropertyOptional({ type: 'string' })
+    clientCountryName?: string;
+
+    @ApiPropertyOptional({ pattern: '^[A-Z]{2}$' })
+    clientCountryCode?: string;
+
+    @ApiPropertyOptional({ type: 'integer' })
+    consumerId?: number;
+
+    @ApiPropertyOptional({ type: 'string' })
+    consumerName?: string;
+
+    @ApiPropertyOptional({
+        type: 'object',
+        additionalProperties: { type: 'integer', minimum: 0 },
+        example: { ERROR: 5, WARN: 2 },
+    })
+    applicationLogsCountByLevel?: Record<string, number>;
 }
 
 export class RequestLogResponsePaginatedDto {
