@@ -3,6 +3,7 @@ import type { RestfulMethods } from '../../../common/enums/restful-methods.enum.
 import type { FindOptions } from '../../../common/@types/find-options.type.js';
 import type { NullableType } from '../../../common/@types/nullable.type.js';
 import type { RequestLog } from '../entities/request-log.entity.js';
+import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
 
 export interface PartialRequestLog {
     requestUuid: string;
@@ -52,6 +53,14 @@ export interface RequestLogFilterCriteria {
 }
 
 export interface IRequestLogsRepository {
+    /**
+     * Create multiple request logs
+     * @param createRequestLogsDto
+     * @returns {Promise<void>}
+     */
+    createRequestLogs(
+        createRequestLogsDto: CreateRequestLogDto[],
+    ): Promise<void>;
     /**
      * Find request logs with filtering, pagination and ordering
      * @param criteria

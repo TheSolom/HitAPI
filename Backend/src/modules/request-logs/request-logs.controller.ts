@@ -24,6 +24,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { IRequestLogsService } from './interfaces/request-logs-service.interface.js';
+import type { IApplicationLogsService } from './interfaces/application-logs-service.interface.js';
 import { GetRequestLogsOptionsDto } from './dto/get-request-logs-options.dto.js';
 import { GetRequestLogTimelineOptionsDto } from './dto/get-request-log-timeline-options.dto.js';
 import {
@@ -47,6 +48,8 @@ export class RequestLogsController {
     constructor(
         @Inject(Services.REQUEST_LOGS)
         private readonly requestLogsService: IRequestLogsService,
+        @Inject(Services.APPLICATION_LOGS)
+        private readonly applicationLogsService: IApplicationLogsService,
     ) {}
 
     @Get()
@@ -110,7 +113,7 @@ export class RequestLogsController {
         @Param('requestUuid', ParseUUIDPipe) requestUuid: string,
         @Query('appId', ParseUUIDPipe) appId: string,
     ): Promise<ApplicationLogResponseDto[]> {
-        const logs = await this.requestLogsService.getRequestLogApplicationLogs(
+        const logs = await this.applicationLogsService.getApplicationLogs(
             requestUuid,
             appId,
         );

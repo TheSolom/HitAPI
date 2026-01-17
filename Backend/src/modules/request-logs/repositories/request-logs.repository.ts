@@ -11,6 +11,7 @@ import { RequestLog } from '../entities/request-log.entity.js';
 import { calculatePeriodTimestamp } from '../../../common/utils/period.util.js';
 import type { FindOptions } from '../../../common/@types/find-options.type.js';
 import type { NullableType } from '../../../common/@types/nullable.type.js';
+import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
 
 type QueryBuilder = ReturnType<Repository<RequestLog>['createQueryBuilder']>;
 
@@ -106,6 +107,20 @@ export class RequestLogsRepository implements IRequestLogsRepository {
 
         this.applyPathFilter(qb, criteria);
         this.applyPeriodFilter(qb, criteria);
+    }
+
+    async createRequestLogs(
+        createRequestLogsDto: CreateRequestLogDto[],
+    ): Promise<void> {
+        const entities = createRequestLogsDto.map((dto) =>
+            this.requestLogRepository.create({
+                ...dto,
+                app: { id: dto.appId },
+                consumer: { id: dto.consumerId },
+            }),
+        );
+
+        await this.requestLogRepository.insert(entities);
     }
 
     async findWithFilters(

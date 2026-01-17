@@ -8,6 +8,7 @@ import { RequestLogsRepository } from './repositories/request-logs.repository.js
 import { ApplicationLogsRepository } from './repositories/application-logs.repository.js';
 import { Services } from '../../common/constants/services.constant.js';
 import { RequestLogsService } from './request-logs.service.js';
+import { ApplicationLogsService } from './application-logs.service.js';
 
 @Module({
     imports: [TypeOrmModule.forFeature([RequestLog, ApplicationLog])],
@@ -25,6 +26,11 @@ import { RequestLogsService } from './request-logs.service.js';
             provide: Services.REQUEST_LOGS,
             useClass: RequestLogsService,
         },
+        {
+            provide: Services.APPLICATION_LOGS,
+            useClass: ApplicationLogsService,
+        },
     ],
+    exports: [Services.REQUEST_LOGS, Services.APPLICATION_LOGS],
 })
 export class RequestLogsModule {}

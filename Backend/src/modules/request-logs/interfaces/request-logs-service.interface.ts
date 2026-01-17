@@ -1,11 +1,17 @@
+import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
 import type { GetRequestLogsOptionsDto } from '../dto/get-request-logs-options.dto.js';
 import type { RequestLogResponsePaginatedDto } from '../dto/request-log-response.dto.js';
 import type { GetRequestLogTimelineOptionsDto } from '../dto/get-request-log-timeline-options.dto.js';
 import type { RequestLogTimelineResponseDto } from '../dto/request-log-timeline-response.dto.js';
 import type { RequestLogDetailsResponseDto } from '../dto/request-log-details-response.dto.js';
-import type { ApplicationLogResponseDto } from '../dto/application-log-response.dto.js';
 
 export interface IRequestLogsService {
+    /**
+     * Create request logs
+     * @param requestLogsDto
+     * @returns {void}
+     */
+    createRequestLogs(requestLogsDto: CreateRequestLogDto[]): Promise<void>;
     /**
      * Get request logs
      * @param getRequestLogsOptionsDto
@@ -42,14 +48,4 @@ export interface IRequestLogsService {
         appId: string,
         timestamp?: string,
     ): Promise<RequestLogDetailsResponseDto>;
-    /**
-     * Get request log application logs
-     * @param requestUuid
-     * @param appId
-     * @returns {ApplicationLogResponseDto[]}
-     */
-    getRequestLogApplicationLogs(
-        requestUuid: string,
-        appId: string,
-    ): Promise<ApplicationLogResponseDto[]>;
 }

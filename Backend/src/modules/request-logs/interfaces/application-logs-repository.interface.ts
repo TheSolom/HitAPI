@@ -1,7 +1,14 @@
+import type { CreateApplicationLogDto } from '../dto/create-application-log.dto.js';
 import type { ApplicationLog } from '../entities/application-log.entity.js';
 import type { LogCountByLevel } from './log-count-by-level.interface.js';
 
 export interface IApplicationLogsRepository {
+    /**
+     * Create multiple application logs
+     * @param logs
+     * @returns {Promise<void>}
+     */
+    createApplicationLogs(logs: CreateApplicationLogDto[]): Promise<void>;
     /**
      * Find log counts grouped by level for multiple request UUIDs
      * @param requestUuids

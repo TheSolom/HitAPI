@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import type { IApplicationLogsRepository } from '../interfaces/application-logs-repository.interface.js';
-import type { LogCountByLevel } from '../interfaces/log-count-by-level.interface.js';
 import { ApplicationLog } from '../entities/application-log.entity.js';
+import type { CreateApplicationLogDto } from '../dto/create-application-log.dto.js';
+import type { LogCountByLevel } from '../interfaces/log-count-by-level.interface.js';
 
 @Injectable()
 export class ApplicationLogsRepository implements IApplicationLogsRepository {
@@ -11,6 +12,12 @@ export class ApplicationLogsRepository implements IApplicationLogsRepository {
         @InjectRepository(ApplicationLog)
         private readonly applicationLogRepository: Repository<ApplicationLog>,
     ) {}
+
+    async createApplicationLogs(
+        applicationLogDto: CreateApplicationLogDto[],
+    ): Promise<void> {
+        await this.applicationLogRepository.insert(applicationLogDto);
+    }
 
     async findLogCountsByRequestUuids(
         requestUuids: string[],

@@ -6,12 +6,12 @@ import type {
     PartialRequestLog,
 } from './interfaces/request-logs-repository.interface.js';
 import type { IApplicationLogsRepository } from './interfaces/application-logs-repository.interface.js';
+import type { CreateRequestLogDto } from './dto/create-request-log.dto.js';
 import type { GetRequestLogsOptionsDto } from './dto/get-request-logs-options.dto.js';
 import type { RequestLogResponsePaginatedDto } from './dto/request-log-response.dto.js';
 import type { RequestLogTimelineResponseDto } from './dto/request-log-timeline-response.dto.js';
 import type { RequestLogDetailsResponseDto } from './dto/request-log-details-response.dto.js';
 import { RequestLogMapper } from './mappers/request-log.mapper.js';
-import type { ApplicationLog } from './entities/application-log.entity.js';
 import { createCSV } from '../../common/utils/csv.util.js';
 import { buildMetadata } from '../../common/helpers/metadata.helper.js';
 
@@ -34,6 +34,12 @@ export class RequestLogsService implements IRequestLogsService {
             );
 
         return RequestLogMapper.buildLogCountMap(logCounts);
+    }
+
+    async createRequestLogs(
+        requestLogsDto: CreateRequestLogDto[],
+    ): Promise<void> {
+        return this.requestLogsRepository.createRequestLogs(requestLogsDto);
     }
 
     async getRequestLogs({
@@ -79,18 +85,18 @@ export class RequestLogsService implements IRequestLogsService {
             'method',
             'path',
             'url',
-            'requestSize',
             'statusCode',
-            'statusText',
             'responseTime',
             'responseSize',
+            'applicationLogsCountByLevel',
+            'timestamp',
+            'statusText',
+            'requestSize',
             'clientIp',
             'clientCountryCode',
             'clientCountryName',
-            'applicationLogsCountByLevel',
             'consumerId',
             'consumerName',
-            'timestamp',
         ];
 
         return createCSV(data, headers);
@@ -128,16 +134,6 @@ export class RequestLogsService implements IRequestLogsService {
             log,
             logsCount,
             logCountByLevel,
-        );
-    }
-
-    async getRequestLogApplicationLogs(
-        requestUuid: string,
-        appId: string,
-    ): Promise<ApplicationLog[]> {
-        return this.applicationLogsRepository.findByRequestUuidAndAppId(
-            requestUuid,
-            appId,
         );
     }
 }
