@@ -30,9 +30,7 @@ export class ApplicationLog {
     @Column({ type: 'int', nullable: true })
     line: number | null;
 
-    @ManyToOne(() => RequestLog, (rl) => rl.applicationLogs, {
-        onDelete: 'CASCADE',
-    })
+    @ManyToOne(() => RequestLog, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'requestUuid', referencedColumnName: 'requestUuid' })
     requestLog: Relation<RequestLog>;
 

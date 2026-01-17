@@ -4,13 +4,11 @@ import {
     PrimaryGeneratedColumn,
     Index,
     ManyToOne,
-    OneToMany,
     type Relation,
 } from 'typeorm';
 import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
 import { Consumer } from '../../consumers/entities/consumer.entity.js';
 import { App } from '../../apps/entities/app.entity.js';
-import { ApplicationLog } from './application-log.entity.js';
 
 @Entity()
 @Index(['method', 'statusCode'])
@@ -79,9 +77,6 @@ export class RequestLog {
 
     @ManyToOne(() => App, { onDelete: 'CASCADE', nullable: false })
     app: Relation<App>;
-
-    @OneToMany(() => ApplicationLog, (al) => al.requestLog, { cascade: true })
-    applicationLogs: Relation<ApplicationLog>[];
 
     @Column({ type: 'timestamptz' })
     timestamp: Date;
