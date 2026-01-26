@@ -4,7 +4,7 @@ import { Services } from '../../../common/constants/services.constant.js';
 import type { ISocialAuthService } from './interfaces/social-auth-service.interface.js';
 import type { IUsersService } from '../../users/interfaces/users-service.interface.js';
 import type { ISocialAccountsService } from '../../users/interfaces/social-account-service.interface.js';
-import type { NullableType } from '../../../common/@types/nullable.type.js';
+import type { NullableType } from '../../../common/types/nullable.type.js';
 import { AuthProvidersEnum } from '../enums/auth-providers.enum.js';
 import { SocialLoginDto } from './dto/social-login.dto.js';
 import { AuthenticatedUser } from '../../users/dto/auth-user.dto.js';

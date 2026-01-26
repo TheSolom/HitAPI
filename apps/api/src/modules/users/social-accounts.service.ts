@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import type { ISocialAccountsService } from './interfaces/social-account-service.interface.js';
-import type { NullableType } from '../../common/@types/nullable.type.js';
+import type { NullableType } from '../../common/types/nullable.type.js';
 import { SocialAccount } from '../users/entities/social-account.entity.js';
 import { AuthProvidersEnum } from '../auth/enums/auth-providers.enum.js';
 

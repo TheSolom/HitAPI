@@ -4,7 +4,7 @@ import { Repository, ILike } from 'typeorm';
 import type { ITeamMembersService } from './interfaces/team-members-service.interfaces.js';
 import { TeamMember } from './entities/team-member.entity.js';
 import { AddTeamMemberDto } from './dto/add-team-member.dto.js';
-import type { NullableType } from '../../common/@types/nullable.type.js';
+import type { NullableType } from '../../common/types/nullable.type.js';
 import { TeamMemberRolePriority } from './enums/team-member-roles.enum.js';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { AuthProvidersEnum } from '../../auth/enums/auth-providers.enum.js';
 import { SocialAccount } from '../entities/social-account.entity.js';
-import { NullableType } from '../../../common/@types/nullable.type.js';
+import { NullableType } from '../../../common/types/nullable.type.js';
 
 export interface ISocialAccountsService {
     /**

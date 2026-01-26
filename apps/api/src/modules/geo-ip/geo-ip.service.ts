@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { open, type Reader, type CountryResponse } from 'maxmind';
 import type { IGeoIPService } from './interfaces/geo-ip-service.interface.js';
-import type { NullableType } from '../../common/@types/nullable.type.js';
+import type { NullableType } from '../../common/types/nullable.type.js';
 import type { CountryResponseDto } from './dto/country-response.dto.js';
 
 @Injectable()

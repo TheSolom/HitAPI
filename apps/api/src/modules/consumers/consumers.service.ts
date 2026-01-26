@@ -5,7 +5,7 @@ import { IConsumersService } from './interfaces/consumers-service.interface.js';
 import { Consumer } from './entities/consumer.entity.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { IConsumerGroupsService } from './interfaces/consumer-groups-service.interface.js';
-import type { NullableType } from './../../common/@types/nullable.type.js';
+import type { NullableType } from '../../common/types/nullable.type.js';
 import type { CreateConsumerDto } from './dto/create-consumer.dto.js';
 import type { UpdateConsumerDto } from './dto/update-consumer.dto.js';
 

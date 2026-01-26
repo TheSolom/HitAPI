@@ -13,7 +13,7 @@ import type { ITeamInvitesService } from './interfaces/team-invites-service.inte
 import { EnvironmentVariablesDto } from '../../config/env/dto/environment-variables.dto.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { IHashingService } from '../hashing/interfaces/hashing-service.interface.js';
-import type { NullableType } from '../../common/@types/nullable.type.js';
+import type { NullableType } from '../../common/types/nullable.type.js';
 import { TeamInvite } from './entities/team-invite.entity.js';
 import { InviteStatus } from './enums/invite-status.enum.js';
 

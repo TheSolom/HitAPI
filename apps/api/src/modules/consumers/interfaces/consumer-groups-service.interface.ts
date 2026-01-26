@@ -1,4 +1,4 @@
-import type { NullableType } from '../../../common/@types/nullable.type.js';
+import type { NullableType } from '../../../common/types/nullable.type.js';
 import type { ConsumerGroup } from '../entities/consumer-group.entity.js';
 import type { CreateConsumerGroupDto } from '../dto/create-consumer-group.dto.js';
 import type { UpdateConsumerGroupDto } from '../dto/update-consumer-group.dto.js';

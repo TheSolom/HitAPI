@@ -1,4 +1,4 @@
-import type { NullableType } from '../../../common/@types/nullable.type.js';
+import type { NullableType } from '../../../common/types/nullable.type.js';
 import { TeamInvite } from '../entities/team-invite.entity.js';
 
 export interface ITeamInvitesService {

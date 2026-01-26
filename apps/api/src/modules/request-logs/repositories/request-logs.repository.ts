@@ -9,8 +9,8 @@ import type {
 } from '../interfaces/request-logs-repository.interface.js';
 import { RequestLog } from '../entities/request-log.entity.js';
 import { calculatePeriodTimestamp } from '../../../common/utils/period.util.js';
-import type { FindOptions } from '../../../common/@types/find-options.type.js';
-import type { NullableType } from '../../../common/@types/nullable.type.js';
+import type { FindOptions } from '../../../common/types/find-options.type.js';
+import type { NullableType } from '../../../common/types/nullable.type.js';
 import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
 
 type QueryBuilder = ReturnType<Repository<RequestLog>['createQueryBuilder']>;

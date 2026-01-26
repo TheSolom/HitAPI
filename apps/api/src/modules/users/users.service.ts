@@ -5,7 +5,7 @@ import { User } from './entities/user.entity.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { ISocialAccountsService } from './interfaces/social-account-service.interface.js';
 import type { IUsersService } from './interfaces/users-service.interface.js';
-import type { NullableType } from '../../common/@types/nullable.type.js';
+import type { NullableType } from '../../common/types/nullable.type.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { SocialAccount } from './entities/social-account.entity.js';

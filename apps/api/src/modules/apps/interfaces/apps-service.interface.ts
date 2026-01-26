@@ -1,4 +1,4 @@
-import type { NullableType } from '../../../common/@types/nullable.type.js';
+import type { NullableType } from '../../../common/types/nullable.type.js';
 import { App } from '../entities/app.entity.js';
 import { CreateAppDto } from '../dto/create-app.dto.js';
 import { UpdateAppDto } from '../dto/update-app.dto.js';

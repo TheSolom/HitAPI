@@ -1,4 +1,4 @@
-import type { NullableType } from '../../../common/@types/nullable.type.js';
+import type { NullableType } from '../../../common/types/nullable.type.js';
 import { TeamMember } from './../entities/team-member.entity.js';
 import { AddTeamMemberDto } from '../dto/add-team-member.dto.js';
 

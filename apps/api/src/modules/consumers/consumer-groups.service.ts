@@ -4,7 +4,7 @@ import { Repository, In } from 'typeorm';
 import { IConsumerGroupsService } from './interfaces/consumer-groups-service.interface.js';
 import { ConsumerGroup } from './entities/consumer-group.entity.js';
 import { Consumer } from './entities/consumer.entity.js';
-import type { NullableType } from '../../common/@types/nullable.type.js';
+import type { NullableType } from '../../common/types/nullable.type.js';
 import { CreateConsumerGroupDto } from './dto/create-consumer-group.dto.js';
 import { UpdateConsumerGroupDto } from './dto/update-consumer-group.dto.js';
 

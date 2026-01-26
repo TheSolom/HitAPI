@@ -1,4 +1,4 @@
-import type { NullableType } from '../../../common/@types/nullable.type.js';
+import type { NullableType } from '../../../common/types/nullable.type.js';
 import { User } from '../entities/user.entity.js';
 import { FindUserOptions } from './find-user-options.interface.js';
 import { CreateUserDto } from '../dto/create-user.dto.js';

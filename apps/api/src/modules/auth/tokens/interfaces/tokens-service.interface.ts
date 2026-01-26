@@ -1,5 +1,5 @@
 import { JwtPayload } from 'jsonwebtoken';
-import { NullableType } from '../../../../common/@types/nullable.type.js';
+import { NullableType } from '../../../../common/types/nullable.type.js';
 import { RefreshToken } from '../entities/refresh-token.entity.js';
 import { LoginTokensDto } from '../dto/login-tokens.dto.js';
 import { AuthenticatedUser } from '../../../users/dto/auth-user.dto.js';

@@ -1,4 +1,4 @@
-import type { NullableType } from '../../../common/@types/nullable.type.js';
+import type { NullableType } from '../../../common/types/nullable.type.js';
 import type { Endpoint } from '../entities/endpoint.entity.js';
 import type { UpdateEndpointConfigDto } from '../dto/update-endpoint-config.dto.js';
 import type { UpdateEndpointErrorConfigDto } from '../dto/update-endpoint-error-config.dto.js';

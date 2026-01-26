@@ -9,7 +9,7 @@ import type { ITeamsService } from './interfaces/teams-service.interfaces.js';
 import { Team } from './entities/team.entity.js';
 import { CreateTeamDto } from './dto/create-team.dto.js';
 import { UpdateTeamDto } from './dto/update-team.dto.js';
-import type { NullableType } from '../../common/@types/nullable.type.js';
+import type { NullableType } from '../../common/types/nullable.type.js';
 import { createSlug } from '../../common/utils/slug.util.js';
 import { TeamMemberRoles } from './enums/team-member-roles.enum.js';
 

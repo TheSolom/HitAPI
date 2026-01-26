@@ -11,7 +11,7 @@ import type { ITokensService } from './interfaces/tokens-service.interface.js';
 import type { IHashingService } from '../../hashing/interfaces/hashing-service.interface.js';
 import type { EnvironmentVariablesDto } from '../../../config/env/dto/environment-variables.dto.js';
 import type { IJwtPayload } from './interfaces/jwt-payload.interface.js';
-import { NullableType } from '../../../common/@types/nullable.type.js';
+import { NullableType } from '../../../common/types/nullable.type.js';
 import { AuthenticatedUser } from '../../users/dto/auth-user.dto.js';
 import { LoginTokensDto } from './dto/login-tokens.dto.js';
 

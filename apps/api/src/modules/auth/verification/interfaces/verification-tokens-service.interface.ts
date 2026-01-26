@@ -1,5 +1,5 @@
 import { TokenCacheData } from './token-cache-data.interface.js';
-import { MaybeType } from '../../../../common/@types/maybe.type.js';
+import { MaybeType } from '../../../../common/types/maybe.type.js';
 
 export interface IVerificationTokensService {
     /**

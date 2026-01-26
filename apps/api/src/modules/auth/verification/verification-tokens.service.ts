@@ -1,4 +1,4 @@
-import { MaybeType } from '../../../common/@types/maybe.type.js';
+import { MaybeType } from '../../../common/types/maybe.type.js';
 import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util.js';
