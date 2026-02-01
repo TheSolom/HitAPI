@@ -6,7 +6,7 @@ import { Routes } from '../../../common/constants/routes.constant.js';
 export const bullBoardConfiguration: DynamicModule =
     BullBoardModule.forRootAsync({
         useFactory: () => ({
-            route: Routes.QUEUES,
+            route: `/${Routes.QUEUES}`,
             adapter: ExpressAdapter,
         }),
     });
