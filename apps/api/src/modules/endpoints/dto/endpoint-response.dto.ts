@@ -24,8 +24,8 @@ export class EndpointResponseDto {
     description: string | null;
 
     @Expose()
-    @ApiProperty({ type: 'number' })
-    targetResponseTimeMs: number;
+    @ApiPropertyOptional({ type: 'integer', nullable: true })
+    targetResponseTimeMs: number | null;
 
     @Expose()
     @ApiProperty({ type: 'boolean' })

@@ -54,7 +54,7 @@ export class GetRequestLogTimelineOptionsDto {
 
     @ApiPropertyOptional({ type: 'integer' })
     @Type(() => Number)
-    @Max(600)
+    @Max(599)
     @Min(100)
     @IsInt()
     @IsOptional()

@@ -10,10 +10,13 @@ export class CreateApplicationLogDto {
     @IsString()
     message: string;
 
-    @ApiPropertyOptional({ type: 'string' })
+    @ApiProperty({ type: 'string' })
     @IsString()
-    @IsOptional()
-    level?: string;
+    level: string;
+
+    @ApiProperty({ format: 'date-time' })
+    @IsDate()
+    timestamp: Date;
 
     @ApiPropertyOptional({ type: 'string' })
     @IsString()
@@ -29,8 +32,4 @@ export class CreateApplicationLogDto {
     @IsInt()
     @IsOptional()
     line?: number;
-
-    @ApiProperty()
-    @IsDate()
-    timestamp: Date;
 }

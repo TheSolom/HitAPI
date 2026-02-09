@@ -20,7 +20,7 @@ export class AppResponseDto {
     clientId: string;
 
     @Expose()
-    @ApiProperty({ type: 'number' })
+    @ApiProperty({ type: 'integer' })
     targetResponseTimeMs: number;
 
     @Expose()

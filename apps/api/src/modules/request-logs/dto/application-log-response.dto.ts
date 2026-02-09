@@ -7,22 +7,22 @@ export class ApplicationLogResponseDto {
     message: string;
 
     @Expose()
-    @ApiPropertyOptional({ type: 'string' })
-    level: string | null;
+    @ApiProperty({ format: 'date-time' })
+    timestamp: Date;
 
     @Expose()
     @ApiPropertyOptional({ type: 'string' })
-    logger: string | null;
+    level?: string;
 
     @Expose()
     @ApiPropertyOptional({ type: 'string' })
-    file: string | null;
+    logger?: string;
+
+    @Expose()
+    @ApiPropertyOptional({ type: 'string' })
+    file?: string;
 
     @Expose()
     @ApiPropertyOptional({ type: 'integer' })
-    line: number | null;
-
-    @Expose()
-    @ApiProperty({ format: 'date-time' })
-    timestamp: Date;
+    line?: number;
 }

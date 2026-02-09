@@ -7,6 +7,6 @@ export class EndpointConfigResponseDto {
     excluded: boolean;
 
     @Expose()
-    @ApiPropertyOptional({ type: 'number', nullable: true })
+    @ApiPropertyOptional({ type: 'integer', nullable: true })
     targetResponseTimeMs: number | null;
 }

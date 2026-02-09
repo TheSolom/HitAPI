@@ -16,13 +16,13 @@ export class CreateAppDto {
     @IsNotEmpty()
     name: string;
 
-    @ApiProperty({ type: 'number' })
+    @ApiProperty({ type: 'integer' })
     @Min(1)
     @IsInt()
     @IsNotEmpty()
     frameworkId: number;
 
-    @ApiPropertyOptional({ type: 'number', default: 500 })
+    @ApiPropertyOptional({ type: 'integer', default: 500 })
     @InStepRange(10, 10, 60000)
     @Max(60000)
     @Min(10)

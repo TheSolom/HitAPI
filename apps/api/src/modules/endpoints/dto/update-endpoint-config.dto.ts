@@ -28,7 +28,7 @@ export class UpdateEndpointConfigDto {
     @IsOptional()
     excluded?: boolean;
 
-    @ApiPropertyOptional({ type: 'number' })
+    @ApiPropertyOptional({ type: 'integer' })
     @InStepRange(10, 10, 60000)
     @Max(60000)
     @Min(10)
