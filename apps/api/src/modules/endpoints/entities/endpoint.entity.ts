@@ -11,7 +11,7 @@ import {
 import { App } from '../../apps/entities/app.entity.js';
 
 @Entity()
-@Unique(['app', 'method', 'path'])
+@Unique('AppEndpointMethodPath', ['app', 'method', 'path'])
 export class Endpoint {
     @PrimaryGeneratedColumn('uuid')
     id: string;

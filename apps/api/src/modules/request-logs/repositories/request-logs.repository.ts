@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, type QueryRunner } from 'typeorm';
 import type {
     IRequestLogsRepository,
     PartialRequestLog,
@@ -8,7 +8,7 @@ import type {
     RequestLogFilterCriteria,
 } from '../interfaces/request-logs-repository.interface.js';
 import { RequestLog } from '../entities/request-log.entity.js';
-import { calculatePeriodTimestamp } from '../../../common/utils/period.util.js';
+import { parsePeriod } from '../../../common/utils/period.util.js';
 import type { FindOptions } from '../../../common/types/find-options.type.js';
 import type { NullableType } from '../../../common/types/nullable.type.js';
 import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
@@ -41,11 +41,18 @@ export class RequestLogsRepository implements IRequestLogsRepository {
     ): void {
         if (!criteria.period) return;
 
-        const periodTimestamp = calculatePeriodTimestamp(criteria.period);
+        const periodTimestamp = parsePeriod(criteria.period);
 
-        qb.andWhere('rl.timestamp >= :periodTimestamp', {
-            periodTimestamp: periodTimestamp.toISOString(),
-        });
+        if (periodTimestamp instanceof Date) {
+            qb.andWhere('rl.timestamp >= :periodTimestamp', {
+                periodTimestamp: periodTimestamp.toISOString(),
+            });
+        } else {
+            qb.andWhere('rl.timestamp BETWEEN :startDate AND :endDate', {
+                startDate: periodTimestamp.startDate.toISOString(),
+                endDate: periodTimestamp.endDate.toISOString(),
+            });
+        }
     }
 
     private applyFilters(
@@ -111,16 +118,21 @@ export class RequestLogsRepository implements IRequestLogsRepository {
 
     async createRequestLogs(
         createRequestLogsDto: CreateRequestLogDto[],
+        queryRunner?: QueryRunner,
     ): Promise<void> {
+        const repository = queryRunner
+            ? queryRunner.manager.getRepository(RequestLog)
+            : this.requestLogRepository;
+
         const entities = createRequestLogsDto.map((dto) =>
-            this.requestLogRepository.create({
+            repository.create({
                 ...dto,
                 app: { id: dto.appId },
                 consumer: { id: dto.consumerId },
             }),
         );
 
-        await this.requestLogRepository.insert(entities);
+        await repository.insert(entities);
     }
 
     async findWithFilters(
@@ -142,7 +154,9 @@ export class RequestLogsRepository implements IRequestLogsRepository {
                 'rl.clientIp as "clientIp"',
                 'rl.clientCountryCode as "clientCountryCode"',
                 'rl.consumerId as "consumerId"',
+                'c.identifier as "consumerIdentifier"',
                 'c.name as "consumerName"',
+                'rl.traceId as "traceId"',
                 'rl.timestamp as "timestamp"',
             ])
             .leftJoin('rl.consumer', 'c')

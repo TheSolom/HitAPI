@@ -13,7 +13,7 @@ import { App } from '../../apps/entities/app.entity.js';
 import { Consumer } from './consumer.entity.js';
 
 @Entity()
-@Unique(['app', 'name'])
+@Unique('AppConsumerGroupName', ['app', 'name'])
 export class ConsumerGroup {
     @PrimaryGeneratedColumn()
     id: number;
