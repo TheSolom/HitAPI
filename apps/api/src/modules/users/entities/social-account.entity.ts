@@ -5,14 +5,14 @@ import {
     ManyToOne,
     CreateDateColumn,
     UpdateDateColumn,
-    Index,
+    Unique,
     type Relation,
 } from 'typeorm';
 import { AuthProvidersEnum } from '../../auth/enums/auth-providers.enum.js';
 import { User } from './user.entity.js';
 
 @Entity()
-@Index(['provider', 'socialId'], { unique: true })
+@Unique('SocialAccountProviderSocialId', ['provider', 'socialId'])
 export class SocialAccount {
     @PrimaryGeneratedColumn('uuid')
     id: string;

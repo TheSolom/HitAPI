@@ -3,11 +3,11 @@ import {
     PrimaryGeneratedColumn,
     Column,
     ManyToOne,
+    OneToMany,
     CreateDateColumn,
     DeleteDateColumn,
-    Index,
+    Unique,
     type Relation,
-    OneToMany,
 } from 'typeorm';
 import { TeamMemberRoles } from '../enums/team-member-roles.enum.js';
 import { Team } from './team.entity.js';
@@ -15,7 +15,7 @@ import { User } from '../../users/entities/user.entity.js';
 import { TeamInvite } from './team-invite.entity.js';
 
 @Entity()
-@Index(['team', 'user'], { unique: true })
+@Unique('TeamMember', ['team', 'user'])
 export class TeamMember {
     @PrimaryGeneratedColumn('uuid')
     id: string;

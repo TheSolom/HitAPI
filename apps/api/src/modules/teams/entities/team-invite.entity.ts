@@ -5,15 +5,15 @@ import {
     ManyToOne,
     CreateDateColumn,
     DeleteDateColumn,
+    Unique,
     type Relation,
-    Index,
 } from 'typeorm';
 import { InviteStatus } from '../enums/invite-status.enum.js';
 import { Team } from './team.entity.js';
 import { TeamMember } from './team-member.entity.js';
 
 @Entity()
-@Index(['email', 'team'], { unique: true })
+@Unique('TeamInviteEmail', ['team', 'email'])
 export class TeamInvite {
     @PrimaryGeneratedColumn('uuid')
     id: string;
