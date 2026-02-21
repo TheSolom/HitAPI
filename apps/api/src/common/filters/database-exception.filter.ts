@@ -127,14 +127,21 @@ export class PostgresExceptionFilter implements ExceptionFilter {
             return [{ field: 'unknown', detail: 'Duplicate data' }];
         }
 
-        const regex: RegExp = /\((\w+)\)[^)]*\((\w+)\)/;
+        const regex: RegExp = /Key\s*\(([^)]+)\)=\(([^)]+)\)/;
         const match = regex.exec(detail);
 
         if (match) {
+            const keys = match[1]
+                .split(',')
+                .map((k) => k.trim().replaceAll(/(?:^")|(?:"$)/g, ''));
+            const values = match[2].split(',').map((v) => v.trim());
+
+            const index = keys.length > 1 ? keys.length - 1 : 0;
+
             return [
                 {
-                    field: match[2],
-                    detail: `${match[2]} already exists`,
+                    field: keys[index],
+                    detail: `${values[index]} already exists`,
                 },
             ];
         }
