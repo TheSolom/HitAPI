@@ -1,3 +1,4 @@
+export * from './express.ts';
 export * from './auth-user.ts';
 export * from './user-app.ts';
 export * from './consumer.ts';
