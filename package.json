@@ -20,10 +20,10 @@
     ],
     "scripts": {
         "build:api": "npm run build --workspace=apps/api",
-        "build:sdk-js": "npm run build --workspace=packages/sdk-js",
+        "build:packages": "npm run build --workspace=packages",
         "format": "prettier --write \"**/*.{ts,js,json,md}\"",
         "start:dev:api": "npm run start:dev --workspace=apps/api",
-        "start:dev:sdk-js": "npm run build:watch --workspace=packages/sdk-js",
+        "start:prod:api": "npm run start --workspace=apps/api",
         "lint": "npm run lint --workspaces",
         "test": "npm test --workspaces"
     },
