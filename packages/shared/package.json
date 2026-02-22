@@ -1,0 +1,31 @@
+{
+    "name": "@hitapi/shared",
+    "version": "1.0.0",
+    "description": "HitAPI shared files",
+    "author": "TheSolom",
+    "license": "MIT",
+    "homepage": "https://github.com/TheSolom/HitAPI/packages/shared#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/TheSolom/HitAPI/packages/shared.git"
+    },
+    "bugs": {
+        "url": "https://github.com/TheSolom/HitAPI/packages/shared/issues"
+    },
+    "type": "module",
+    "files": [
+        "dist"
+    ],
+    "exports": {
+        "./utils": {
+            "types": "./dist/utils/index.d.ts",
+            "import": "./dist/utils/index.js",
+            "require": "./dist/utils/index.js"
+        }
+    },
+    "scripts": {
+        "build": "tsc",
+        "format": "prettier --write \"src/**/*.ts\"",
+        "format:check": "prettier --check \"src/**/*.ts\""
+    }
+}
