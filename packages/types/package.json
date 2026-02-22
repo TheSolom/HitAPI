@@ -1,0 +1,29 @@
+{
+    "name": "@hitapi/types",
+    "version": "1.0.0",
+    "description": "HitAPI types",
+    "author": "TheSolom",
+    "license": "MIT",
+    "homepage": "https://github.com/TheSolom/HitAPI/packages/types#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/TheSolom/HitAPI/packages/types.git"
+    },
+    "bugs": {
+        "url": "https://github.com/TheSolom/HitAPI/packages/types/issues"
+    },
+    "type": "module",
+    "types": "dist",
+    "files": [
+        "dist"
+    ],
+    "exports": {
+        "import": "./dist/index.d.ts",
+        "require": "./dist/index.d.ts"
+    },
+    "scripts": {
+        "build": "tsc",
+        "format": "prettier --write \"src/**/*.ts\"",
+        "format:check": "prettier --check \"src/**/*.ts\""
+    }
+}
