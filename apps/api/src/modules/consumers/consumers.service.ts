@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, In, type QueryRunner } from 'typeorm';
 import { IConsumersService } from './interfaces/consumers-service.interface.js';
 import { Consumer } from './entities/consumer.entity.js';
 import { Services } from '../../common/constants/services.constant.js';
@@ -18,10 +18,6 @@ export class ConsumersService implements IConsumersService {
         private readonly consumerGroupsService: IConsumerGroupsService,
     ) {}
 
-    private async saveConsumer(consumer: Consumer): Promise<Consumer> {
-        return this.consumerRepository.save(consumer);
-    }
-
     async findAllByAppId(appId: string): Promise<Consumer[]> {
         return this.consumerRepository.find({
             where: { app: { id: appId }, hidden: false },
@@ -33,8 +29,13 @@ export class ConsumersService implements IConsumersService {
     async findAllByIdentifiers(
         appId: string,
         identifiers: string[],
+        queryRunner?: QueryRunner,
     ): Promise<Consumer[]> {
-        return this.consumerRepository.find({
+        const repository = queryRunner
+            ? queryRunner.manager.getRepository(Consumer)
+            : this.consumerRepository;
+
+        return repository.find({
             where: { app: { id: appId }, identifier: In(identifiers) },
         });
     }
@@ -61,6 +62,7 @@ export class ConsumersService implements IConsumersService {
     async createConsumers(
         appId: string,
         createConsumersDto: CreateConsumerDto[],
+        queryRunner?: QueryRunner,
     ): Promise<{ id: number; identifier: string }[]> {
         const consumers = createConsumersDto.map((c) => ({
             ...c,
@@ -68,7 +70,11 @@ export class ConsumersService implements IConsumersService {
             group: { id: c.groupId },
         }));
 
-        const insertResult = await this.consumerRepository
+        const repository = queryRunner
+            ? queryRunner.manager.getRepository(Consumer)
+            : this.consumerRepository;
+
+        const insertResult = await repository
             .createQueryBuilder()
             .insert()
             .into(Consumer)
@@ -86,8 +92,16 @@ export class ConsumersService implements IConsumersService {
         appId: string,
         consumerId: number,
         updateConsumerDto: UpdateConsumerDto,
+        queryRunner?: QueryRunner,
     ): Promise<void> {
-        const consumer = await this.findById(appId, consumerId);
+        const repository = queryRunner
+            ? queryRunner.manager.getRepository(Consumer)
+            : this.consumerRepository;
+
+        const consumer = await repository.findOne({
+            where: { id: consumerId, app: { id: appId } },
+            relations: { group: true },
+        });
 
         if (!consumer) {
             throw new Error('Consumer not found');
@@ -108,6 +122,6 @@ export class ConsumersService implements IConsumersService {
             }
         }
 
-        await this.saveConsumer(consumer);
+        await repository.save(consumer);
     }
 }
