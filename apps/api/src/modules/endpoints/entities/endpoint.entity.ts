@@ -1,13 +1,15 @@
 import {
     Entity,
+    Unique,
     PrimaryGeneratedColumn,
     Column,
     ManyToOne,
     CreateDateColumn,
     UpdateDateColumn,
-    Unique,
+    DeleteDateColumn,
     type Relation,
 } from 'typeorm';
+import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
 import { App } from '../../apps/entities/app.entity.js';
 
 @Entity()
@@ -16,8 +18,8 @@ export class Endpoint {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
-    method: string;
+    @Column({ enum: RestfulMethods })
+    method: RestfulMethods;
 
     @Column()
     path: string;
@@ -48,4 +50,7 @@ export class Endpoint {
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @DeleteDateColumn()
+    deletedAt: Date;
 }
