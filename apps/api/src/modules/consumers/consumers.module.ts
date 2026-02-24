@@ -20,6 +20,6 @@ import { ConsumerGroupsService } from './consumer-groups.service.js';
             useClass: ConsumerGroupsService,
         },
     ],
-    exports: [Services.CONSUMERS],
+    exports: [Services.CONSUMERS, Services.CONSUMER_GROUPS],
 })
 export class ConsumersModule {}
