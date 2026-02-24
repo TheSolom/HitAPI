@@ -38,10 +38,11 @@ export class RateLimitService implements IRateLimitService {
         const key = this.getRateLimitKey(identifier, type);
         const current = (await this.cacheService.get<number>(key)) || 0;
 
+        const secondsLeft = Math.ceil(windowMs / 1000);
+
         if (current >= maxRequests) {
-            const minutes = Math.ceil(windowMs / 60000);
             throw new ThrottlerException(
-                `Too many requests. Please try again in ${minutes} minute${minutes > 1 ? 's' : ''}.`,
+                `Too many requests. Please try again in ${secondsLeft} second${secondsLeft > 1 ? 's' : ''}.`,
             );
         }
 
