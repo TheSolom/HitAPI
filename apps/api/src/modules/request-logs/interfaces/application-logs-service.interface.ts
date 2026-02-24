@@ -1,17 +1,7 @@
-import type { ApplicationLogResponseDto } from '../dto/application-log-response.dto.js';
 import type { CreateApplicationLogDto } from '../dto/create-application-log.dto.js';
+import type { ApplicationLog } from '../entities/application-log.entity.js';
 
 export interface IApplicationLogsService {
-    /**
-     * Get application logs
-     * @param requestUuid
-     * @param appId
-     * @returns {ApplicationLogResponseDto[]}
-     */
-    getApplicationLogs(
-        requestUuid: string,
-        appId: string,
-    ): Promise<ApplicationLogResponseDto[]>;
     /**
      * Create multiple application logs
      * @param applicationLogDto
@@ -20,4 +10,14 @@ export interface IApplicationLogsService {
     createApplicationLogs(
         applicationLogDto: CreateApplicationLogDto[],
     ): Promise<void>;
+    /**
+     * Get application logs
+     * @param requestUuid
+     * @param appId
+     * @returns {ApplicationLog[]}
+     */
+    getApplicationLogs(
+        requestUuid: string,
+        appId: string,
+    ): Promise<ApplicationLog[]>;
 }
