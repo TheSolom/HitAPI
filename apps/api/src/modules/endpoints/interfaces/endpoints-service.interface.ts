@@ -1,19 +1,17 @@
 import type { NullableType } from '../../../common/types/nullable.type.js';
 import type { Endpoint } from '../entities/endpoint.entity.js';
-import type { UpdateEndpointConfigDto } from '../dto/update-endpoint-config.dto.js';
-import type { UpdateEndpointErrorConfigDto } from '../dto/update-endpoint-error-config.dto.js';
-import type { EndpointConfigResponseDto } from '../dto/endpoint-config-response.dto.js';
-import type { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
+import type { CreateEndpointDto } from '../dto/create-endpoint.dto.js';
+import type { QueryRunner } from 'typeorm';
 
 export interface IEndpointsService {
     /**
      * Find all endpoints by app
      *
      * @param appId
+     * @param queryRunner
      * @returns {Promise<Endpoint[]>}
      */
-    findAllByApp(appId: string): Promise<Endpoint[]>;
-
+    findAllByApp(appId: string, queryRunner?: QueryRunner): Promise<Endpoint[]>;
     /**
      * Find one endpoint by id
      *
@@ -22,45 +20,31 @@ export interface IEndpointsService {
      * @returns {Promise<NullableType<Endpoint>>}
      */
     findOne(appId: string, endpointId: string): Promise<NullableType<Endpoint>>;
-
     /**
-     * Get endpoint configuration by method and path
+     * Create endpoint
      *
      * @param appId
-     * @param method
-     * @param path
-     * @returns {Promise<EndpointConfigResponseDto>}
-     * @throws {NotFoundException} Endpoint not found
+     * @param createEndpointDto
+     * @returns {Promise<Endpoint>}
      */
-    getConfig(
+    create(
         appId: string,
-        method: RestfulMethods,
-        path: string,
-    ): Promise<EndpointConfigResponseDto>;
-
+        createEndpointDto: CreateEndpointDto,
+    ): Promise<Endpoint>;
     /**
-     * Update endpoint configuration
+     * Restore deleted endpoint
      *
      * @param appId
-     * @param updateEndpointConfigDto
+     * @param endpointId
      * @returns {Promise<void>}
-     * @throws {NotFoundException} Endpoint not found
      */
-    updateConfig(
-        appId: string,
-        updateEndpointConfigDto: UpdateEndpointConfigDto,
-    ): Promise<void>;
-
+    restore(appId: string, endpointId: string): Promise<void>;
     /**
-     * Update endpoint error configuration
+     * Remove endpoint
      *
      * @param appId
-     * @param updateEndpointErrorConfigDto
+     * @param endpointId
      * @returns {Promise<void>}
-     * @throws {NotFoundException} Endpoint not found
      */
-    updateErrorConfig(
-        appId: string,
-        updateEndpointErrorConfigDto: UpdateEndpointErrorConfigDto,
-    ): Promise<void>;
+    remove(appId: string, endpointId: string): Promise<void>;
 }

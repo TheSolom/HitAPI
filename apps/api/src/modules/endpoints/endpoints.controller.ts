@@ -30,6 +30,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { IEndpointsService } from './interfaces/endpoints-service.interface.js';
+import type { IEndpointConfigsService } from './interfaces/endpoint-configs-service.interface.js';
 import { createCustomResponse } from '../../common/utils/create-custom-response.util.js';
 import { EndpointResponseDto } from './dto/endpoint-response.dto.js';
 import { EndpointConfigResponseDto } from './dto/endpoint-config-response.dto.js';
@@ -49,6 +50,8 @@ export class EndpointsController {
     constructor(
         @Inject(Services.ENDPOINTS)
         private readonly endpointsService: IEndpointsService,
+        @Inject(Services.ENDPOINT_CONFIGS)
+        private readonly endpointConfigsService: IEndpointConfigsService,
     ) {}
 
     @Get()
@@ -85,7 +88,7 @@ export class EndpointsController {
         @Query('method') method: RestfulMethods,
         @Query('path') path: string,
     ): Promise<EndpointConfigResponseDto> {
-        return this.endpointsService.getConfig(appId, method, path);
+        return this.endpointConfigsService.getConfig(appId, method, path);
     }
 
     @Put('config')
@@ -97,7 +100,7 @@ export class EndpointsController {
         @Param('appId', ParseUUIDPipe) appId: string,
         @Body() updateEndpointConfigDto: UpdateEndpointConfigDto,
     ): Promise<void> {
-        await this.endpointsService.updateConfig(
+        await this.endpointConfigsService.updateConfig(
             appId,
             updateEndpointConfigDto,
         );
@@ -112,7 +115,7 @@ export class EndpointsController {
         @Param('appId', ParseUUIDPipe) appId: string,
         @Body() updateEndpointErrorConfigDto: UpdateEndpointErrorConfigDto,
     ): Promise<void> {
-        await this.endpointsService.updateErrorConfig(
+        await this.endpointConfigsService.updateErrorConfig(
             appId,
             updateEndpointErrorConfigDto,
         );
