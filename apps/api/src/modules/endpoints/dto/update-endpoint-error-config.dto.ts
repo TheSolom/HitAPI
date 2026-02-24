@@ -21,7 +21,7 @@ export class UpdateEndpointErrorConfigDto {
     @IsNotEmpty()
     path: string;
 
-    @ApiProperty({ type: 'number' })
+    @ApiProperty({ type: 'integer' })
     @Max(599)
     @Min(100)
     @IsInt()
