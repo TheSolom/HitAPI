@@ -18,8 +18,8 @@ export class ApplicationLog {
     @Column({ type: 'text' })
     message: string;
 
-    @Column({ type: 'varchar', length: 20, nullable: true })
-    level: string | null;
+    @Column({ type: 'varchar', length: 20 })
+    level: string;
 
     @Column({ type: 'varchar', length: 255, nullable: true })
     logger: string | null;
@@ -30,7 +30,7 @@ export class ApplicationLog {
     @Column({ type: 'int', nullable: true })
     line: number | null;
 
-    @ManyToOne(() => RequestLog, { onDelete: 'CASCADE' })
+    @ManyToOne(() => RequestLog, { onDelete: 'CASCADE', nullable: false })
     @JoinColumn({ name: 'requestUuid', referencedColumnName: 'requestUuid' })
     requestLog: Relation<RequestLog>;
 
