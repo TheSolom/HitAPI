@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, In, type QueryRunner } from 'typeorm';
 import { IConsumerGroupsService } from './interfaces/consumer-groups-service.interface.js';
 import { ConsumerGroup } from './entities/consumer-group.entity.js';
 import { Consumer } from './entities/consumer.entity.js';
@@ -28,6 +28,18 @@ export class ConsumerGroupsService implements IConsumerGroupsService {
             where: { app: { id: appId } },
             order: { name: 'ASC' },
         });
+    }
+
+    async findAllByNames(
+        appId: string,
+        names: string[],
+        queryRunner?: QueryRunner,
+    ): Promise<ConsumerGroup[]> {
+        const repository =
+            queryRunner?.manager.getRepository(ConsumerGroup) ??
+            this.consumerGroupRepository;
+
+        return repository.findBy({ app: { id: appId }, name: In(names) });
     }
 
     async findConsumerGroup(
@@ -63,6 +75,31 @@ export class ConsumerGroupsService implements IConsumerGroupsService {
         }
 
         return this.saveConsumerGroup(group);
+    }
+
+    async createManyConsumerGroups(
+        appId: string,
+        names: string[],
+        queryRunner?: QueryRunner,
+    ): Promise<{ id: number; name: string }[]> {
+        const groups = names.map((name) => ({ name, app: { id: appId } }));
+
+        const repository =
+            queryRunner?.manager.getRepository(ConsumerGroup) ??
+            this.consumerGroupRepository;
+
+        const insertResult = await repository
+            .createQueryBuilder()
+            .insert()
+            .into(ConsumerGroup)
+            .values(groups)
+            .returning(['id', 'name'])
+            .execute();
+
+        return insertResult.generatedMaps as {
+            id: number;
+            name: string;
+        }[];
     }
 
     async updateConsumerGroup(
