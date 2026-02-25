@@ -33,29 +33,29 @@ export class RequestLog {
     @Column({ type: 'int' })
     statusCode: number;
 
-    @Column({ type: 'int' })
+    @Column({ type: 'varchar', length: 50 })
+    statusText: string;
+
+    @Column({ type: 'float8' })
     responseTime: number;
-
-    @Column({ type: 'int' })
-    responseSize: number;
-
-    @Column({ type: 'varchar', length: 50, nullable: true })
-    statusText: string | null;
 
     @Column({ type: 'int', nullable: true })
     requestSize: number | null;
 
-    @Column({ type: 'jsonb', nullable: true })
-    requestHeaders: Record<string, string> | null;
+    @Column({ type: 'jsonb', default: [] })
+    requestHeaders: [string, string][];
 
-    @Column({ type: 'text', nullable: true })
-    requestBody: string | null;
+    @Column({ type: 'bytea', nullable: true })
+    requestBody: Buffer | null;
 
-    @Column({ type: 'jsonb', nullable: true })
-    responseHeaders: Record<string, string> | null;
+    @Column({ type: 'int', nullable: true })
+    responseSize: number | null;
 
-    @Column({ type: 'text', nullable: true })
-    responseBody: string | null;
+    @Column({ type: 'jsonb', default: [] })
+    responseHeaders: [string, string][];
+
+    @Column({ type: 'bytea', nullable: true })
+    responseBody: Buffer | null;
 
     @Column({ type: 'inet', nullable: true })
     clientIp: string | null;
@@ -68,6 +68,9 @@ export class RequestLog {
 
     @Column({ type: 'text', nullable: true })
     exceptionMessage: string | null;
+
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    traceId: string | null;
 
     @Column({ type: 'text', nullable: true })
     exceptionStacktrace: string | null;

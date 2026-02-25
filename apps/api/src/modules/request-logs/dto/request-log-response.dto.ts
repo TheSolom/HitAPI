@@ -18,20 +18,27 @@ export class RequestLogResponseDto {
     @ApiProperty({ type: 'integer', minimum: 100, maximum: 599 })
     statusCode: number;
 
-    @ApiProperty({ type: 'integer', minimum: 0 })
+    @ApiProperty({ type: 'string' })
+    statusText: string;
+
+    @ApiProperty({ type: 'number', minimum: 0 })
     responseTime: number;
 
-    @ApiProperty({ type: 'integer', minimum: 0 })
-    responseSize: number;
+    @ApiProperty({
+        type: 'object',
+        additionalProperties: { type: 'integer', minimum: 1 },
+        example: { ERROR: 5, WARN: 2 },
+    })
+    applicationLogsCountByLevel: Record<string, number>;
 
     @ApiProperty({ format: 'date-time' })
     timestamp: Date;
 
-    @ApiPropertyOptional({ type: 'string' })
-    statusText?: string;
-
     @ApiPropertyOptional({ type: 'integer', minimum: 0 })
     requestSize?: number;
+
+    @ApiPropertyOptional({ type: 'integer', minimum: 0 })
+    responseSize?: number;
 
     @ApiPropertyOptional({ format: 'ip' })
     clientIp?: string;
@@ -46,14 +53,10 @@ export class RequestLogResponseDto {
     consumerId?: number;
 
     @ApiPropertyOptional({ type: 'string' })
-    consumerName?: string;
+    consumerIdentifier?: string;
 
-    @ApiPropertyOptional({
-        type: 'object',
-        additionalProperties: { type: 'integer', minimum: 0 },
-        example: { ERROR: 5, WARN: 2 },
-    })
-    applicationLogsCountByLevel?: Record<string, number>;
+    @ApiPropertyOptional({ type: 'string' })
+    consumerName?: string;
 }
 
 export class RequestLogResponsePaginatedDto {

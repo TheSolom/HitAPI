@@ -1,5 +1,6 @@
-import type { StringValue } from 'ms';
+import type { QueryRunner } from 'typeorm';
 import type { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
+import type { Period } from '../../../common/types/period.type.js';
 import type { FindOptions } from '../../../common/types/find-options.type.js';
 import type { NullableType } from '../../../common/types/nullable.type.js';
 import type { RequestLog } from '../entities/request-log.entity.js';
@@ -11,16 +12,18 @@ export interface PartialRequestLog {
     path: string;
     url: string;
     statusCode: number;
+    statusText: string;
     responseTime: number;
-    responseSize: number;
     timestamp: Date;
-    statusText?: string;
     requestSize?: number;
+    responseSize?: number;
     clientIp?: string;
     clientCountryCode?: string;
     clientCountryName?: string;
     consumerId?: number;
+    consumerIdentifier?: string;
     consumerName?: string;
+    traceId?: string;
 }
 
 export interface TimelineRawResult {
@@ -36,7 +39,7 @@ export interface RequestLogFilterCriteria {
     path?: string;
     pathExact?: boolean;
     statusCode?: number;
-    period?: StringValue;
+    period?: Period;
     url?: string;
     minRequestSize?: number;
     maxRequestSize?: number;
@@ -56,10 +59,12 @@ export interface IRequestLogsRepository {
     /**
      * Create multiple request logs
      * @param createRequestLogsDto
+     * @param queryRunner - The query runner.
      * @returns {Promise<void>}
      */
     createRequestLogs(
         createRequestLogsDto: CreateRequestLogDto[],
+        queryRunner?: QueryRunner,
     ): Promise<void>;
     /**
      * Find request logs with filtering, pagination and ordering

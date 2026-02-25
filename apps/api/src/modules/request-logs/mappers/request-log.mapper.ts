@@ -1,3 +1,4 @@
+import { getContentType } from '@hitapi/shared/utils';
 import { getCountryName } from '../../../common/utils/country.util.js';
 import type { RequestLogResponseDto } from '../dto/request-log-response.dto.js';
 import type { RequestLogDetailsResponseDto } from '../dto/request-log-details-response.dto.js';
@@ -16,17 +17,21 @@ export class RequestLogMapper {
             path: item.path,
             url: item.url,
             statusCode: item.statusCode,
-            responseTime: item.responseTime,
-            responseSize: item.responseSize,
-            applicationLogsCountByLevel: logCountMap.get(item.requestUuid),
-            timestamp: item.timestamp,
             statusText: item.statusText,
-            requestSize: item.requestSize,
-            clientIp: item.clientIp,
-            clientCountryCode: item.clientCountryCode,
-            clientCountryName: getCountryName(item.clientCountryCode),
+            responseTime: item.responseTime,
+            timestamp: item.timestamp,
+            requestSize: item.requestSize ?? undefined,
+            responseSize: item.responseSize ?? undefined,
+            clientIp: item.clientIp ?? undefined,
+            clientCountryCode: item.clientCountryCode ?? undefined,
+            clientCountryName: item.clientCountryCode
+                ? getCountryName(item.clientCountryCode)
+                : undefined,
             consumerId: item.consumerId ?? undefined,
+            consumerIdentifier: item.consumerIdentifier ?? undefined,
             consumerName: item.consumerName ?? undefined,
+            applicationLogsCountByLevel:
+                logCountMap.get(item.requestUuid) ?? {},
         }));
     }
 
@@ -41,31 +46,32 @@ export class RequestLogMapper {
             path: log.path,
             url: log.url,
             statusCode: log.statusCode,
+            statusText: log.statusText,
+            requestHeaders: log.requestHeaders,
+            requestContentType: getContentType(log.requestHeaders) ?? 'Unknown',
             responseTime: log.responseTime,
-            responseSize: log.responseSize,
-            applicationLogsCountByLevel: logCountByLevel,
-            applicationLogsCount: logsCount,
+            responseHeaders: log.responseHeaders,
+            responseContentType:
+                getContentType(log.responseHeaders) ?? 'Unknown',
             timestamp: log.timestamp,
-            statusText: log.statusText ?? undefined,
             requestSize: log.requestSize ?? undefined,
+            requestBody: log.requestBody?.toString() ?? undefined,
+            responseSize: log.responseSize ?? undefined,
+            responseBody: log.responseBody?.toString() ?? undefined,
             clientIp: log.clientIp ?? undefined,
             clientCountryCode: log.clientCountryCode ?? undefined,
             clientCountryName: log.clientCountryCode
                 ? getCountryName(log.clientCountryCode)
                 : undefined,
-            requestHeaders: log.requestHeaders ?? undefined,
-            requestContentType:
-                log.requestHeaders?.['content-type'] ?? undefined,
-            requestBody: log.requestBody ?? undefined,
-            responseHeaders: log.responseHeaders ?? undefined,
-            responseContentType:
-                log.responseHeaders?.['content-type'] ?? undefined,
-            responseBody: log.responseBody ?? undefined,
             exceptionType: log.exceptionType ?? undefined,
             exceptionMessage: log.exceptionMessage ?? undefined,
             exceptionStacktrace: log.exceptionStacktrace ?? undefined,
             consumerId: log.consumer?.id,
+            consumerIdentifier: log.consumer?.identifier,
             consumerName: log.consumer?.name ?? undefined,
+            traceId: log.traceId ?? undefined,
+            applicationLogsCountByLevel: logCountByLevel,
+            applicationLogsCount: logsCount,
         };
     }
 

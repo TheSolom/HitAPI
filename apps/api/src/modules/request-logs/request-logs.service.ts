@@ -1,4 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import type { QueryRunner } from 'typeorm';
 import type { IRequestLogsService } from './interfaces/request-logs-service.interface.js';
 import { Repositories } from '../../common/constants/repositories.constant.js';
 import type {
@@ -9,6 +10,7 @@ import type { IApplicationLogsRepository } from './interfaces/application-logs-r
 import type { CreateRequestLogDto } from './dto/create-request-log.dto.js';
 import type { GetRequestLogsOptionsDto } from './dto/get-request-logs-options.dto.js';
 import type { RequestLogResponsePaginatedDto } from './dto/request-log-response.dto.js';
+import type { GetRequestLogTimelineOptionsDto } from './dto/get-request-log-timeline-options.dto.js';
 import type { RequestLogTimelineResponseDto } from './dto/request-log-timeline-response.dto.js';
 import type { RequestLogDetailsResponseDto } from './dto/request-log-details-response.dto.js';
 import { RequestLogMapper } from './mappers/request-log.mapper.js';
@@ -38,8 +40,12 @@ export class RequestLogsService implements IRequestLogsService {
 
     async createRequestLogs(
         requestLogsDto: CreateRequestLogDto[],
+        queryRunner?: QueryRunner,
     ): Promise<void> {
-        return this.requestLogsRepository.createRequestLogs(requestLogsDto);
+        return this.requestLogsRepository.createRequestLogs(
+            requestLogsDto,
+            queryRunner,
+        );
     }
 
     async getRequestLogs({
@@ -64,10 +70,11 @@ export class RequestLogsService implements IRequestLogsService {
     }
 
     async getRequestLogsTimeline(
-        filters: GetRequestLogsOptionsDto,
+        getRequestLogTimelineOptionsDto: GetRequestLogTimelineOptionsDto,
     ): Promise<RequestLogTimelineResponseDto> {
-        const items =
-            await this.requestLogsRepository.findTimelineData(filters);
+        const items = await this.requestLogsRepository.findTimelineData(
+            getRequestLogTimelineOptionsDto,
+        );
 
         return {
             timeWindows: items.map((item) => item.timeWindow),
@@ -86,16 +93,17 @@ export class RequestLogsService implements IRequestLogsService {
             'path',
             'url',
             'statusCode',
+            'statusText',
             'responseTime',
-            'responseSize',
             'applicationLogsCountByLevel',
             'timestamp',
-            'statusText',
             'requestSize',
+            'responseSize',
             'clientIp',
             'clientCountryCode',
             'clientCountryName',
             'consumerId',
+            'consumerIdentifier',
             'consumerName',
         ];
 

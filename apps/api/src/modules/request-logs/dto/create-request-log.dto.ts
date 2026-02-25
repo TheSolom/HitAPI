@@ -1,11 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
 import {
+    ArrayMinSize,
+    IsArray,
     IsDate,
     IsEnum,
     IsInt,
     IsIP,
-    IsObject,
+    IsNumber,
     IsOptional,
     IsString,
     IsUUID,
@@ -18,6 +20,10 @@ export class CreateRequestLogDto {
     @ApiProperty({ format: 'uuid' })
     @IsUUID()
     requestUuid: string;
+
+    @ApiProperty({ format: 'uuid' })
+    @IsString()
+    appId: string;
 
     @ApiProperty({ enum: RestfulMethods })
     @IsEnum(RestfulMethods)
@@ -37,22 +43,27 @@ export class CreateRequestLogDto {
     @IsInt()
     statusCode: number;
 
-    @ApiProperty({ type: 'integer', minimum: 0 })
-    @IsInt()
+    @ApiProperty({ type: 'string' })
+    @IsString()
+    statusText: string;
+
+    @ApiProperty({ type: 'number', minimum: 0 })
+    @IsNumber()
     responseTime: number;
 
-    @ApiProperty({ type: 'integer', minimum: 0 })
-    @IsInt()
-    responseSize: number;
+    @ApiProperty({ type: 'array', items: { type: 'string' } })
+    @ArrayMinSize(1, { message: 'At least one header is required' })
+    @IsArray()
+    requestHeaders: [string, string][];
+
+    @ApiProperty({ type: 'array', items: { type: 'string' } })
+    @ArrayMinSize(1, { message: 'At least one header is required' })
+    @IsArray()
+    responseHeaders: [string, string][];
 
     @ApiProperty({ format: 'date-time' })
     @IsDate()
     timestamp: Date;
-
-    @ApiPropertyOptional({ type: 'string' })
-    @IsString()
-    @IsOptional()
-    statusText?: string;
 
     @ApiPropertyOptional({ type: 'integer', minimum: 0 })
     @Min(0)
@@ -60,31 +71,15 @@ export class CreateRequestLogDto {
     @IsOptional()
     requestSize?: number;
 
-    @ApiPropertyOptional({
-        type: 'object',
-        additionalProperties: { type: 'string' },
-    })
-    @IsObject()
-    @IsOptional()
-    requestHeaders?: Record<string, string>;
+    @ApiPropertyOptional({ type: Buffer })
+    requestBody?: Buffer;
 
-    @ApiPropertyOptional({ type: 'string' })
-    @IsString()
-    @IsOptional()
-    requestBody?: string;
+    @ApiProperty({ type: 'integer', minimum: 0 })
+    @IsInt()
+    responseSize?: number;
 
-    @ApiPropertyOptional({
-        type: 'object',
-        additionalProperties: { type: 'string' },
-    })
-    @IsObject()
-    @IsOptional()
-    responseHeaders?: Record<string, string>;
-
-    @ApiPropertyOptional({ type: 'string' })
-    @IsString()
-    @IsOptional()
-    responseBody?: string;
+    @ApiPropertyOptional({ type: Buffer })
+    responseBody?: Buffer;
 
     @ApiPropertyOptional({ format: 'ip' })
     @IsIP()
@@ -102,10 +97,6 @@ export class CreateRequestLogDto {
     @IsOptional()
     consumerId?: number;
 
-    @ApiProperty({ format: 'uuid' })
-    @IsString()
-    appId: string;
-
     @ApiPropertyOptional({ type: 'string' })
     @IsString()
     @IsOptional()
@@ -120,4 +111,9 @@ export class CreateRequestLogDto {
     @IsString()
     @IsOptional()
     exceptionStacktrace?: string;
+
+    @ApiPropertyOptional({ type: 'string' })
+    @IsString()
+    @IsOptional()
+    traceId?: string;
 }
