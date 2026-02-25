@@ -1,3 +1,4 @@
+import type { QueryRunner } from 'typeorm';
 import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
 import type { GetRequestLogsOptionsDto } from '../dto/get-request-logs-options.dto.js';
 import type { RequestLogResponsePaginatedDto } from '../dto/request-log-response.dto.js';
@@ -9,9 +10,13 @@ export interface IRequestLogsService {
     /**
      * Create request logs
      * @param requestLogsDto
+     * @param queryRunner - The query runner.
      * @returns {void}
      */
-    createRequestLogs(requestLogsDto: CreateRequestLogDto[]): Promise<void>;
+    createRequestLogs(
+        requestLogsDto: CreateRequestLogDto[],
+        queryRunner?: QueryRunner,
+    ): Promise<void>;
     /**
      * Get request logs
      * @param getRequestLogsOptionsDto

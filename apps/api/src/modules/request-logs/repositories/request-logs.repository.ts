@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, type QueryRunner } from 'typeorm';
+import { Repository, type SelectQueryBuilder, type QueryRunner } from 'typeorm';
 import type {
     IRequestLogsRepository,
     PartialRequestLog,
@@ -13,8 +13,6 @@ import type { FindOptions } from '../../../common/types/find-options.type.js';
 import type { NullableType } from '../../../common/types/nullable.type.js';
 import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
 
-type QueryBuilder = ReturnType<Repository<RequestLog>['createQueryBuilder']>;
-
 @Injectable()
 export class RequestLogsRepository implements IRequestLogsRepository {
     constructor(
@@ -23,7 +21,7 @@ export class RequestLogsRepository implements IRequestLogsRepository {
     ) {}
 
     private applyPathFilter(
-        qb: QueryBuilder,
+        qb: SelectQueryBuilder<RequestLog>,
         criteria: RequestLogFilterCriteria,
     ): void {
         if (!criteria.path) return;
@@ -36,7 +34,7 @@ export class RequestLogsRepository implements IRequestLogsRepository {
     }
 
     private applyPeriodFilter(
-        qb: QueryBuilder,
+        qb: SelectQueryBuilder<RequestLog>,
         criteria: RequestLogFilterCriteria,
     ): void {
         if (!criteria.period) return;
@@ -56,7 +54,7 @@ export class RequestLogsRepository implements IRequestLogsRepository {
     }
 
     private applyFilters(
-        qb: QueryBuilder,
+        qb: SelectQueryBuilder<RequestLog>,
         criteria: RequestLogFilterCriteria,
     ): void {
         // prettier-ignore
