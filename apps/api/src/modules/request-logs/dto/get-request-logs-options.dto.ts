@@ -14,9 +14,9 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import type { StringValue } from 'ms';
-import { IsStringValue } from '../../../common/validators/is-string-value.validator.js';
 import { OffsetPaginationOptionsDto } from '../../../common/dto/offset-pagination-options.dto.js';
+import { IsPeriod } from '../../../common/validators/is-period.validator.js';
+import type { Period } from '../../../common/types/period.type.js';
 import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
 import { OrderDirection } from '../../../common/enums/order-direction.enum.js';
 
@@ -25,6 +25,11 @@ export class GetRequestLogsOptionsDto extends OffsetPaginationOptionsDto {
     @IsUUID()
     @IsNotEmpty()
     appId: string;
+
+    @ApiPropertyOptional({ type: 'string', default: '24h' })
+    @IsPeriod()
+    @IsOptional()
+    period: Period = '24h';
 
     @ApiPropertyOptional({ type: 'integer' })
     @Type(() => Number)
@@ -61,11 +66,6 @@ export class GetRequestLogsOptionsDto extends OffsetPaginationOptionsDto {
     @IsInt()
     @IsOptional()
     statusCode?: number;
-
-    @ApiPropertyOptional({ type: 'string' })
-    @IsStringValue()
-    @IsOptional()
-    period?: StringValue;
 
     @ApiPropertyOptional({ format: 'date-time' })
     @IsDateString()

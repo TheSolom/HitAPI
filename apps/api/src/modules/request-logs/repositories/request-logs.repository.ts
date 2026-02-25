@@ -48,16 +48,16 @@ export class RequestLogsRepository
     ): void {
         if (!criteria.period) return;
 
-        const periodTimestamp = parsePeriod(criteria.period);
+        const period = parsePeriod(criteria.period);
 
-        if (periodTimestamp instanceof Date) {
+        if (period.type === 'relative') {
             qb.andWhere('rl.timestamp >= :periodTimestamp', {
-                periodTimestamp: periodTimestamp.toISOString(),
+                periodTimestamp: period.since.toISOString(),
             });
         } else {
             qb.andWhere('rl.timestamp BETWEEN :startDate AND :endDate', {
-                startDate: periodTimestamp.startDate.toISOString(),
-                endDate: periodTimestamp.endDate.toISOString(),
+                startDate: period.startDate.toISOString(),
+                endDate: period.endDate.toISOString(),
             });
         }
     }
