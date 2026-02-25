@@ -14,11 +14,20 @@ import type { NullableType } from '../../../common/types/nullable.type.js';
 import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
 
 @Injectable()
-export class RequestLogsRepository implements IRequestLogsRepository {
+export class RequestLogsRepository
+    extends Repository<RequestLog>
+    implements IRequestLogsRepository
+{
     constructor(
         @InjectRepository(RequestLog)
         private readonly requestLogRepository: Repository<RequestLog>,
-    ) {}
+    ) {
+        super(
+            requestLogRepository.target,
+            requestLogRepository.manager,
+            requestLogRepository.queryRunner,
+        );
+    }
 
     private applyPathFilter(
         qb: SelectQueryBuilder<RequestLog>,
