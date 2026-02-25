@@ -31,6 +31,10 @@ import { ApplicationLogsService } from './application-logs.service.js';
             useClass: ApplicationLogsService,
         },
     ],
-    exports: [Services.REQUEST_LOGS, Services.APPLICATION_LOGS],
+    exports: [
+        Repositories.REQUEST_LOGS,
+        Services.REQUEST_LOGS,
+        Services.APPLICATION_LOGS,
+    ],
 })
 export class RequestLogsModule {}
