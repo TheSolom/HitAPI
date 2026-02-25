@@ -11,5 +11,6 @@ export enum Routes {
     CONSUMERS = 'apps/:appId',
     GEO_IP = 'geo-ip',
     REQUEST_LOGS = 'request-logs',
+    RESOURCES = 'resources',
     INGESTION = 'ingest',
 }

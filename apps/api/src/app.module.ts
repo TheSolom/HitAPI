@@ -19,6 +19,7 @@ import { EndpointsModule } from './modules/endpoints/endpoints.module.js';
 import { ConsumersModule } from './modules/consumers/consumers.module.js';
 import { GeoIPModule } from './modules/geo-ip/geo-ip.module.js';
 import { RequestLogsModule } from './modules/request-logs/request-logs.module.js';
+import { ResourcesModule } from './modules/resources/resources.module.js';
 import { IngestionModule } from './modules/ingestion/ingestion.module.js';
 
 @Module({
@@ -45,6 +46,7 @@ import { IngestionModule } from './modules/ingestion/ingestion.module.js';
         ConsumersModule,
         GeoIPModule,
         RequestLogsModule,
+        ResourcesModule,
         IngestionModule,
     ],
     providers: [
