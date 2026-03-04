@@ -6,7 +6,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 export class GzipUtil {
     async decompress(buffer: Buffer): Promise<Buffer> {
         try {
-            return promisify(gunzip)(buffer);
+            return await promisify(gunzip)(buffer);
         } catch {
             throw new BadRequestException('Invalid gzip data');
         }
@@ -16,7 +16,7 @@ export class GzipUtil {
     async compress(data: string): Promise<Buffer>;
     async compress(data: Buffer | string): Promise<Buffer> {
         const buffer = typeof data === 'string' ? Buffer.from(data) : data;
-        return promisify(gzip)(buffer);
+        return await promisify(gzip)(buffer);
     }
 
     async parseJsonGzip<T>(
