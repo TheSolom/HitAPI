@@ -1,6 +1,6 @@
 import {
     Entity,
-    Index,
+    Unique,
     PrimaryGeneratedColumn,
     Column,
     CreateDateColumn,
@@ -10,7 +10,7 @@ import {
 import { App } from '../../apps/entities/app.entity.js';
 
 @Entity()
-@Index(['timeWindow'])
+@Unique('AppResourceTimeWindow', ['timeWindow', 'app'])
 export class Resource {
     @PrimaryGeneratedColumn('increment', { type: 'bigint' })
     id: bigint;
