@@ -85,7 +85,7 @@ export class ResourcesRepository implements IResourcesRepository {
                 app: { id: appId },
             },
             {
-                conflictPaths: ['app', 'timeWindow'],
+                conflictPaths: ['timeWindow', 'app'],
                 skipUpdateIfNoValuesChanged: true,
             },
         );
