@@ -1,5 +1,5 @@
 import type { QueryRunner } from 'typeorm';
-import type { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
+import type { RestfulMethod } from '@hitapi/shared/enums';
 import type { Period } from '../../../common/types/period.type.js';
 import type { FindOptions } from '../../../common/types/find-options.type.js';
 import type { NullableType } from '../../../common/types/nullable.type.js';
@@ -8,7 +8,7 @@ import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
 
 export interface PartialRequestLog {
     requestUuid: string;
-    method: RestfulMethods;
+    method: RestfulMethod;
     path: string;
     url: string;
     statusCode: number;

@@ -26,6 +26,7 @@ import {
     ApiQuery,
 } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
+import { RestfulMethod } from '@hitapi/shared/enums';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
@@ -36,7 +37,6 @@ import { EndpointResponseDto } from './dto/endpoint-response.dto.js';
 import { EndpointConfigResponseDto } from './dto/endpoint-config-response.dto.js';
 import { UpdateEndpointConfigDto } from './dto/update-endpoint-config.dto.js';
 import { UpdateEndpointErrorConfigDto } from './dto/update-endpoint-error-config.dto.js';
-import { RestfulMethods } from '../../common/enums/restful-methods.enum.js';
 
 @ApiTags('Endpoints')
 @ApiBearerAuth('JWT')
@@ -81,11 +81,11 @@ export class EndpointsController {
     @Get('config')
     @ApiOkResponse({ type: createCustomResponse(EndpointConfigResponseDto) })
     @ApiNotFoundResponse({ description: 'Endpoint not found' })
-    @ApiQuery({ name: 'method', enum: RestfulMethods })
+    @ApiQuery({ name: 'method', enum: RestfulMethod })
     @ApiQuery({ name: 'path' })
     async getEndpointConfig(
         @Param('appId', ParseUUIDPipe) appId: string,
-        @Query('method') method: RestfulMethods,
+        @Query('method') method: RestfulMethod,
         @Query('path') path: string,
     ): Promise<EndpointConfigResponseDto> {
         return this.endpointConfigsService.getConfig(appId, method, path);

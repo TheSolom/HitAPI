@@ -8,13 +8,13 @@ import {
     Min,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
+import { RestfulMethod } from '@hitapi/shared/enums';
 import { InStepRange } from '../../../common/validators/in-step-range.validator.js';
 
 export class CreateEndpointDto {
-    @ApiProperty({ enum: RestfulMethods })
-    @IsEnum(RestfulMethods)
-    method: RestfulMethods;
+    @ApiProperty({ enum: RestfulMethod })
+    @IsEnum(RestfulMethod)
+    method: RestfulMethod;
 
     @ApiProperty({ type: 'string' })
     @IsString()

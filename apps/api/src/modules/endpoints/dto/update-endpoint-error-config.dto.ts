@@ -8,13 +8,13 @@ import {
     Max,
     Min,
 } from 'class-validator';
-import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
+import { RestfulMethod } from '@hitapi/shared/enums';
 
 export class UpdateEndpointErrorConfigDto {
-    @ApiProperty({ enum: RestfulMethods })
-    @IsEnum(RestfulMethods)
+    @ApiProperty({ enum: RestfulMethod })
+    @IsEnum(RestfulMethod)
     @IsNotEmpty()
-    method: RestfulMethods;
+    method: RestfulMethod;
 
     @ApiProperty({ type: 'string' })
     @IsString()

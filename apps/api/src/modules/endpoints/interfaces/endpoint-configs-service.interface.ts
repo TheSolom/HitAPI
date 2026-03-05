@@ -1,7 +1,7 @@
+import type { RestfulMethod } from '@hitapi/shared/enums';
 import type { UpdateEndpointConfigDto } from '../dto/update-endpoint-config.dto.js';
 import type { UpdateEndpointErrorConfigDto } from '../dto/update-endpoint-error-config.dto.js';
 import type { EndpointConfigResponseDto } from '../dto/endpoint-config-response.dto.js';
-import type { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
 
 export interface IEndpointConfigsService {
     /**
@@ -15,7 +15,7 @@ export interface IEndpointConfigsService {
      */
     getConfig(
         appId: string,
-        method: RestfulMethods,
+        method: RestfulMethod,
         path: string,
     ): Promise<EndpointConfigResponseDto>;
     /**
@@ -29,7 +29,7 @@ export interface IEndpointConfigsService {
      */
     getExpectedStatusCodes(
         appId: string,
-        method: RestfulMethods,
+        method: RestfulMethod,
         path: string,
     ): Promise<number[]>;
     /**

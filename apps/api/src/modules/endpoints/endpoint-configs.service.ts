@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import type { RestfulMethod } from '@hitapi/shared/enums';
 import type { IEndpointConfigsService } from './interfaces/endpoint-configs-service.interface.js';
 import { Endpoint } from './entities/endpoint.entity.js';
 import type { UpdateEndpointConfigDto } from './dto/update-endpoint-config.dto.js';
 import type { UpdateEndpointErrorConfigDto } from './dto/update-endpoint-error-config.dto.js';
 import type { EndpointConfigResponseDto } from './dto/endpoint-config-response.dto.js';
-import type { RestfulMethods } from '../../common/enums/restful-methods.enum.js';
 
 @Injectable()
 export class EndpointConfigsService implements IEndpointConfigsService {
@@ -21,7 +21,7 @@ export class EndpointConfigsService implements IEndpointConfigsService {
 
     async getConfig(
         appId: string,
-        method: RestfulMethods,
+        method: RestfulMethod,
         path: string,
     ): Promise<EndpointConfigResponseDto> {
         const endpoint = await this.endpointsRepository.findOne({
@@ -41,7 +41,7 @@ export class EndpointConfigsService implements IEndpointConfigsService {
 
     async getExpectedStatusCodes(
         appId: string,
-        method: RestfulMethods,
+        method: RestfulMethod,
         path: string,
     ): Promise<number[]> {
         const endpoint = await this.endpointsRepository.findOne({

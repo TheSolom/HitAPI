@@ -1,13 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
+import { RestfulMethod } from '@hitapi/shared/enums';
 import { MetadataResponseDto } from '../../../common/dto/metadata.response.dto.js';
 
 export class RequestLogResponseDto {
     @ApiProperty({ format: 'uuid' })
     requestUuid: string;
 
-    @ApiProperty({ enum: RestfulMethods })
-    method: RestfulMethods;
+    @ApiProperty({ enum: RestfulMethod })
+    method: RestfulMethod;
 
     @ApiProperty({ type: 'string' })
     path: string;

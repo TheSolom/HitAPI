@@ -1,4 +1,4 @@
-export enum RestfulMethods {
+export enum RestfulMethod {
     GET = 'GET',
     POST = 'POST',
     PUT = 'PUT',

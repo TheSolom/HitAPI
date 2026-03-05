@@ -9,7 +9,7 @@ import {
     DeleteDateColumn,
     type Relation,
 } from 'typeorm';
-import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
+import { RestfulMethod } from '@hitapi/shared/enums';
 import { App } from '../../apps/entities/app.entity.js';
 
 @Entity()
@@ -18,8 +18,8 @@ export class Endpoint {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ enum: RestfulMethods })
-    method: RestfulMethods;
+    @Column({ enum: RestfulMethod })
+    method: RestfulMethod;
 
     @Column()
     path: string;

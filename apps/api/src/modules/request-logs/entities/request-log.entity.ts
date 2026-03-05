@@ -6,7 +6,7 @@ import {
     ManyToOne,
     type Relation,
 } from 'typeorm';
-import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
+import { RestfulMethod } from '@hitapi/shared/enums';
 import { Consumer } from '../../consumers/entities/consumer.entity.js';
 import { App } from '../../apps/entities/app.entity.js';
 
@@ -21,8 +21,8 @@ export class RequestLog {
     @Column({ type: 'uuid', unique: true })
     requestUuid: string;
 
-    @Column({ enum: RestfulMethods })
-    method: RestfulMethods;
+    @Column({ enum: RestfulMethod })
+    method: RestfulMethod;
 
     @Column({ type: 'text' })
     path: string;

@@ -15,8 +15,8 @@ import {
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import type { StringValue } from 'ms';
+import { RestfulMethod } from '@hitapi/shared/enums';
 import { IsStringValue } from '../../../common/validators/is-string-value.validator.js';
-import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
 
 export class GetRequestLogTimelineOptionsDto {
     @ApiProperty({ format: 'uuid' })
@@ -36,10 +36,10 @@ export class GetRequestLogTimelineOptionsDto {
     @IsOptional()
     consumerGroupId?: number;
 
-    @ApiPropertyOptional({ enum: RestfulMethods })
-    @IsEnum(RestfulMethods)
+    @ApiPropertyOptional({ enum: RestfulMethod })
+    @IsEnum(RestfulMethod)
     @IsOptional()
-    method?: RestfulMethods;
+    method?: RestfulMethod;
 
     @ApiPropertyOptional({ type: 'string' })
     @IsString()

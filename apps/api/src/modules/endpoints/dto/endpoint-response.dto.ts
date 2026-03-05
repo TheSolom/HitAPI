@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
+import { RestfulMethod } from '@hitapi/shared/enums';
 
 export class EndpointResponseDto {
     @Expose()
@@ -8,8 +8,8 @@ export class EndpointResponseDto {
     id: string;
 
     @Expose()
-    @ApiProperty({ enum: RestfulMethods })
-    method: RestfulMethods;
+    @ApiProperty({ enum: RestfulMethod })
+    method: RestfulMethod;
 
     @Expose()
     @ApiProperty({ type: 'string' })

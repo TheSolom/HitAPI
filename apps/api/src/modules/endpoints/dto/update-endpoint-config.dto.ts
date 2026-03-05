@@ -9,14 +9,14 @@ import {
     Max,
     Min,
 } from 'class-validator';
+import { RestfulMethod } from '@hitapi/shared/enums';
 import { InStepRange } from '../../../common/validators/in-step-range.validator.js';
-import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
 
 export class UpdateEndpointConfigDto {
-    @ApiProperty({ enum: RestfulMethods })
-    @IsEnum(RestfulMethods)
+    @ApiProperty({ enum: RestfulMethod })
+    @IsEnum(RestfulMethod)
     @IsNotEmpty()
-    method: RestfulMethods;
+    method: RestfulMethod;
 
     @ApiProperty({ type: 'string' })
     @IsString()

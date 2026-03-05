@@ -1,5 +1,4 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { RestfulMethods } from '../../../common/enums/restful-methods.enum.js';
 import {
     ArrayMinSize,
     IsArray,
@@ -15,6 +14,7 @@ import {
     Max,
     Min,
 } from 'class-validator';
+import { RestfulMethod } from '@hitapi/shared/enums';
 
 export class CreateRequestLogDto {
     @ApiProperty({ format: 'uuid' })
@@ -25,9 +25,9 @@ export class CreateRequestLogDto {
     @IsString()
     appId: string;
 
-    @ApiProperty({ enum: RestfulMethods })
-    @IsEnum(RestfulMethods)
-    method: RestfulMethods;
+    @ApiProperty({ enum: RestfulMethod })
+    @IsEnum(RestfulMethod)
+    method: RestfulMethod;
 
     @ApiProperty({ type: 'string' })
     @IsString()
