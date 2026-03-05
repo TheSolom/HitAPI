@@ -4,13 +4,13 @@
     "description": "HitAPI shared files",
     "author": "TheSolom",
     "license": "MIT",
-    "homepage": "https://github.com/TheSolom/HitAPI/packages/shared#readme",
+    "homepage": "https://github.com/TheSolom/HitAPI#readme",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/TheSolom/HitAPI/packages/shared.git"
+        "url": "git+https://github.com/TheSolom/HitAPI.git"
     },
     "bugs": {
-        "url": "https://github.com/TheSolom/HitAPI/packages/shared/issues"
+        "url": "https://github.com/TheSolom/HitAPI/issues"
     },
     "type": "module",
     "files": [

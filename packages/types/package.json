@@ -4,13 +4,13 @@
     "description": "HitAPI types",
     "author": "TheSolom",
     "license": "MIT",
-    "homepage": "https://github.com/TheSolom/HitAPI/packages/types#readme",
+    "homepage": "https://github.com/TheSolom/HitAPI#readme",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/TheSolom/HitAPI/packages/types.git"
+        "url": "git+https://github.com/TheSolom/HitAPI.git"
     },
     "bugs": {
-        "url": "https://github.com/TheSolom/HitAPI/packages/types/issues"
+        "url": "https://github.com/TheSolom/HitAPI/issues"
     },
     "type": "module",
     "types": "dist",
