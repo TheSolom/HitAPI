@@ -1,14 +1,12 @@
-import type { IngestRequestLogsDto } from '../dto/ingest-request-logs.dto.js';
-import type { IngestApplicationLogsDto } from '../dto/ingest-application-logs.dto.js';
+import type { RequestLogItemDto } from '../dto/request-log-item.dto.js';
 
 export type IngestRequestLogsJobData = {
     appId: string;
-    requests: IngestRequestLogsDto['requests'];
-    timestamp: Date;
+    fileUuid: string;
+    items: RequestLogItemDto[];
 };
 
 export type IngestApplicationLogsJobData = {
-    appId: string;
-    logs: IngestApplicationLogsDto['logs'];
-    timestamp: Date;
+    fileUuid: string;
+    items: RequestLogItemDto[];
 };

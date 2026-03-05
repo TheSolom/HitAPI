@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+    Module,
+    RequestMethod,
+    type NestModule,
+    type MiddlewareConsumer,
+} from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -21,6 +26,8 @@ import { GeoIPModule } from './modules/geo-ip/geo-ip.module.js';
 import { RequestLogsModule } from './modules/request-logs/request-logs.module.js';
 import { ResourcesModule } from './modules/resources/resources.module.js';
 import { IngestionModule } from './modules/ingestion/ingestion.module.js';
+import { NdjsonBodyMiddleware } from './common/middlewares/ndjson-body.middleware.js';
+import { Routes } from './common/constants/routes.constant.js';
 
 @Module({
     imports: [
@@ -56,4 +63,12 @@ import { IngestionModule } from './modules/ingestion/ingestion.module.js';
         },
     ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(NdjsonBodyMiddleware).forRoutes({
+            path: `${Routes.INGESTION}/logs`,
+            method: RequestMethod.POST,
+            version: '1',
+        });
+    }
+}

@@ -6,7 +6,10 @@ import { RequestLogsModule } from '../request-logs/request-logs.module.js';
 import { ConsumersModule } from '../consumers/consumers.module.js';
 import { GeoIPModule } from '../geo-ip/geo-ip.module.js';
 import { AppsModule } from '../apps/apps.module.js';
-import { QUEUES } from '../../common/constants/queue.constant.js';
+import {
+    QUEUES,
+    FLOW_PRODUCERS,
+} from '../../common/constants/queue.constant.js';
 import { IngestionController } from './ingestion.controller.js';
 import { Services } from '../../common/constants/services.constant.js';
 import { IngestionService } from './ingestion.service.js';
@@ -39,15 +42,12 @@ import { ApplicationLogsIngestionProcessor } from './processors/application-logs
                 },
             },
         ),
+        BullModule.registerFlowProducer({
+            name: FLOW_PRODUCERS.LOGS_INGESTION,
+        }),
         BullBoardModule.forFeature(
-            {
-                name: QUEUES.REQUEST_LOGS,
-                adapter: BullMQAdapter,
-            },
-            {
-                name: QUEUES.APPLICATION_LOGS,
-                adapter: BullMQAdapter,
-            },
+            { name: QUEUES.REQUEST_LOGS, adapter: BullMQAdapter },
+            { name: QUEUES.APPLICATION_LOGS, adapter: BullMQAdapter },
         ),
     ],
     controllers: [IngestionController],

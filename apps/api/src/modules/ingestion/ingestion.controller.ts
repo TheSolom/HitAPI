@@ -6,30 +6,33 @@ import {
     UseGuards,
     HttpCode,
     HttpStatus,
+    Query,
+    ParseUUIDPipe,
 } from '@nestjs/common';
 import {
     ApiTags,
     ApiHeader,
+    ApiBody,
+    ApiQuery,
+    ApiConsumes,
     ApiTooManyRequestsResponse,
     ApiUnauthorizedResponse,
     ApiAcceptedResponse,
-    ApiBody,
+    ApiBadRequestResponse,
 } from '@nestjs/swagger';
+import type { UserApp as UserAppType } from '@hitapi/types';
 import { Routes } from '../../common/constants/routes.constant.js';
 import { ClientAuthGuard } from '../auth/guards/client-auth.guard.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { IIngestionService } from './interfaces/ingestion-service.interface.js';
-import { UserApp } from './decorators/user-app.decorator.js';
 import type { IRateLimitService } from '../rate-limit/interfaces/rate-limit-service.interface.js';
+import { RequestLogItemDto } from './dto/request-log-item.dto.js';
+import { UserApp } from './decorators/user-app.decorator.js';
 import { RateLimitType } from '../rate-limit/enums/rate-limit.enum.js';
-import type { App } from '../apps/entities/app.entity.js';
-import { IngestRequestLogsDto } from './dto/ingest-request-logs.dto.js';
-import { IngestApplicationLogsDto } from './dto/ingest-application-logs.dto.js';
 
 @ApiTags('Ingestion')
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
-@ApiAcceptedResponse({ description: 'Accepted for processing' })
 @ApiHeader({ name: 'X-Client-ID' })
 @UseGuards(ClientAuthGuard)
 @Controller(Routes.INGESTION)
@@ -41,38 +44,32 @@ export class IngestionController {
         private readonly rateLimitService: IRateLimitService,
     ) {}
 
-    @Post('requests')
+    @Post('logs')
     @HttpCode(HttpStatus.ACCEPTED)
-    @ApiBody({ type: IngestRequestLogsDto })
-    async ingestRequests(
-        @Body() requestLogs: IngestRequestLogsDto,
-        @UserApp() app: App,
+    @ApiConsumes('application/x-ndjson')
+    @ApiAcceptedResponse({ description: 'Accepted for processing' })
+    @ApiBadRequestResponse({ description: 'Invalid gzip data or NDJSON' })
+    @ApiBody({ type: RequestLogItemDto, isArray: true })
+    @ApiQuery({ name: 'fileUuid', format: 'uuid' })
+    async ingestRequestLog(
+        @Query('fileUuid', ParseUUIDPipe) fileUuid: string,
+        @Body() requestLogItems: RequestLogItemDto[],
+        @UserApp() app: UserAppType,
     ) {
         await this.rateLimitService.checkRateLimit(
             app.id,
             RateLimitType.API_CALL,
         );
 
-        await this.ingestionService.ingestRequestLogs(requestLogs, app);
+        await this.ingestionService.ingestRequestLogs(
+            app,
+            fileUuid,
+            requestLogItems,
+        );
 
         return {
-            queued: requestLogs.requests.length,
-            batchId: `batch_${Date.now()}`,
-        };
-    }
-
-    @Post('logs')
-    @HttpCode(HttpStatus.ACCEPTED)
-    @ApiBody({ type: IngestApplicationLogsDto })
-    async ingestLogs(
-        @Body() logs: IngestApplicationLogsDto,
-        @UserApp() app: App,
-    ) {
-        await this.ingestionService.ingestApplicationLogs(logs, app);
-
-        return {
-            queued: logs.logs.length,
-            batchId: `batch_${Date.now()}`,
+            fileUuid,
+            received: requestLogItems.length,
         };
     }
 }

@@ -1,24 +1,15 @@
-import type { App } from '../../apps/entities/app.entity.js';
-import type { IngestRequestLogsDto } from '../dto/ingest-request-logs.dto.js';
-import type { IngestApplicationLogsDto } from '../dto/ingest-application-logs.dto.js';
+import type { UserApp, RequestLogItem } from '@hitapi/types';
 
 export interface IIngestionService {
     /**
-     * Ingests request logs into the database.
-     * @param requestLogs The request logs to ingest.
-     * @param app The app to which the request logs belong.
+     * Ingests request log items into the database.
+     * @param app The app to which the request log items belong.
+     * @param fileUuid The UUID of the file to which the request log items belong.
+     * @param items The request log items to ingest.
      */
     ingestRequestLogs(
-        requestLogs: IngestRequestLogsDto,
-        app: App,
-    ): Promise<void>;
-    /**
-     * Ingests application logs into the database.
-     * @param applicationLogs The application logs to ingest.
-     * @param app The app to which the application logs belong.
-     */
-    ingestApplicationLogs(
-        applicationLogs: IngestApplicationLogsDto,
-        app: App,
+        app: UserApp,
+        fileUuid: string,
+        items: RequestLogItem[],
     ): Promise<void>;
 }
