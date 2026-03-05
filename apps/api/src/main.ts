@@ -10,7 +10,16 @@ import { configureGracefulShutdown } from './bootstrap/shutdown.bootstrap.js';
 import { startApp } from './bootstrap/start.bootstrap.js';
 
 async function bootstrap(): Promise<void> {
-    const app = await NestFactory.create<NestExpressApplication>(AppModule);
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+        bodyParser: false,
+        rawBody: true,
+    });
+
+    app.useBodyParser('json', { type: ['application/json'] });
+    app.useBodyParser('raw', { type: ['application/x-ndjson'] });
+    app.useBodyParser('urlencoded', {
+        type: ['application/x-www-form-urlencoded'],
+    });
 
     const configService =
         app.get<ConfigService<EnvironmentVariablesDto, true>>(ConfigService);
