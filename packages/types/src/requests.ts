@@ -1,8 +1,9 @@
+import type { RestfulMethod } from '@hitapi/shared/enums';
 import type { ServerErrorsItem, ValidationErrorsItem } from './errors.js';
 import type { ConsumerInfo } from './consumer.js';
 
 export type PathInfo = {
-    method: string;
+    method: RestfulMethod;
     path: string;
 };
 
