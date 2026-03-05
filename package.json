@@ -20,7 +20,8 @@
     ],
     "scripts": {
         "build:api": "npm run build --workspace=apps/api",
-        "build:packages": "npm run build --workspace=packages",
+        "build:types": "npm run build --workspace=packages/types",
+        "build:shared": "npm run build --workspace=packages/shared",
         "format": "prettier --write \"**/*.{ts,js,json,md}\"",
         "start:dev:api": "npm run start:dev --workspace=apps/api",
         "start:prod:api": "npm run start --workspace=apps/api",
