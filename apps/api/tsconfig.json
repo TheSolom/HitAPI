@@ -9,7 +9,7 @@
         }
     },
     "include": ["src/**/*", "test/**/*"],
-    "exclude": ["node_modules", "test", "dist", "**/*spec.ts"],
+    "exclude": ["node_modules", "dist"],
     "references": [
         { "path": "../../packages/types" },
         { "path": "../../packages/shared" }
