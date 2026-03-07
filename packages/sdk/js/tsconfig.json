@@ -1,0 +1,14 @@
+{
+    "extends": "../../../tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": ".",
+        "outDir": "dist",
+        "paths": {
+            "@hitapi/types": ["../../types/dist/index.d.ts"],
+            "@hitapi/shared": ["../../shared/dist/index.d.ts"]
+        }
+    },
+    "include": ["src/**/*", "test/**/*"],
+    "exclude": ["node_modules", "dist"],
+    "references": [{ "path": "../../types" }, { "path": "../../shared" }]
+}
