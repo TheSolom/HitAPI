@@ -15,18 +15,20 @@
     },
     "type": "module",
     "workspaces": [
-        "packages/*",
+        "packages/**",
         "apps/*"
     ],
     "scripts": {
         "build:api": "npm run build --workspace=apps/api",
         "build:types": "npm run build --workspace=packages/types",
         "build:shared": "npm run build --workspace=packages/shared",
+        "build:sdk:js": "npm run build --workspace=packages/sdk/js",
         "format": "prettier --write \"**/*.{ts,js,json,md}\"",
         "start:dev:api": "npm run start:dev --workspace=apps/api",
         "start:prod:api": "npm run start --workspace=apps/api",
         "lint": "npm run lint --workspaces",
-        "test": "npm test --workspaces"
+        "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+        "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.1",
