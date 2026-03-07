@@ -60,5 +60,14 @@
         "express": "^4 || ^5",
         "@types/async-lock": "^1.4.2",
         "@types/request-ip": "^0.0.41"
+    },
+    "lint-staged": {
+        "*.ts": [
+            "eslint --fix",
+            "prettier --write"
+        ],
+        "*.{json,md,yml,yaml}": [
+            "prettier --write"
+        ]
     }
 }
