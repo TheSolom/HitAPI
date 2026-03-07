@@ -1,0 +1,34 @@
+import { createRequire } from 'node:module';
+import type { Config } from 'jest';
+
+const require = createRequire(import.meta.url);
+
+const sharedProjectConfig = (
+    displayName: string,
+    rootDir: string,
+    testMatch: string[],
+): NonNullable<Config['projects']>[number] => ({
+    displayName,
+    rootDir,
+    testMatch,
+    moduleFileExtensions: ['js', 'json', 'ts'],
+    transform: {
+        '^.+\\.(t|j)s$': [require.resolve('ts-jest'), { useESM: true }],
+    },
+    moduleNameMapper: {
+        '^(\\.{1,2}/.*)\\.js$': '$1',
+    },
+    extensionsToTreatAsEsm: ['.ts'],
+    testEnvironment: 'node',
+});
+
+const config: Config = {
+    projects: [
+        sharedProjectConfig('api', 'apps/api', ['<rootDir>/src/**/*.spec.ts']),
+        sharedProjectConfig('sdk', 'packages/sdk/js', [
+            '<rootDir>/test/**/*.spec.ts',
+        ]),
+    ],
+};
+
+export default config;
