@@ -117,4 +117,4 @@ That's it! HitAPI will now automatically start collecting metrics for all your A
 
 ## License
 
-This library is licensed under the terms of the [MIT license](LICENSE).
+This library is licensed under the terms of the [MIT license](LICENSE.txt).
