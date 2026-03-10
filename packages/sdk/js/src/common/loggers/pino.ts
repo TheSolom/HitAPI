@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
-import type { DestinationStream } from 'pino';
+import { type DestinationStream, Logger } from 'pino';
 import type { LogRecord } from '@hitapi/types';
 import { MAX_BUFFER_SIZE } from '../constants/logger.constant.js';
 import { removeKeys, formatMessage } from './utils.js';
@@ -25,17 +25,13 @@ const BASE_IGNORE_KEYS = [
     'res',
 ];
 
-export interface PinoLogger {
-    [key: symbol]: unknown;
-    levels?: Record<string, number>;
-}
-
 export async function patchPino(
-    logger: PinoLogger,
+    logger: Logger,
     logsContext: AsyncLocalStorage<LogRecord[]>,
 ): Promise<boolean> {
     try {
-        // Find stream and message key symbols on the logger and its prototype
+        const loggerAsRecord = logger as unknown as Record<symbol, unknown>;
+
         const symbols = [
             ...Object.getOwnPropertySymbols(logger),
             ...Object.getOwnPropertySymbols(Object.getPrototypeOf(logger)),
@@ -50,15 +46,16 @@ export async function patchPino(
 
         if (!streamSym || !messageKeySym) return false;
 
-        if (!(originalStreamSym in logger))
-            logger[originalStreamSym] = logger[streamSym];
+        if (!(originalStreamSym in loggerAsRecord))
+            loggerAsRecord[originalStreamSym] = loggerAsRecord[streamSym];
 
-        const originalStream = logger[originalStreamSym] as DestinationStream;
+        const originalStream = loggerAsRecord[
+            originalStreamSym
+        ] as DestinationStream;
         if (!originalStream) return false;
 
         const pino = await import('pino');
-
-        const messageKey = logger[messageKeySym];
+        const messageKey = loggerAsRecord[messageKeySym];
         if (typeof messageKey !== 'string') return false;
 
         const captureStream = new HitAPILogCaptureStream(
@@ -66,19 +63,16 @@ export async function patchPino(
             messageKey,
         );
 
-        logger[streamSym] = pino.default.multistream(
+        loggerAsRecord[streamSym] = pino.default.multistream(
             [
-                { level: 0, stream: originalStream }, // Original destination
-                { level: 0, stream: captureStream }, // HitAPI capture stream
+                { level: 0, stream: originalStream },
+                { level: 0, stream: captureStream },
             ],
-            {
-                levels: logger.levels,
-            },
+            { levels: logger.levels.values },
         );
 
         return true;
     } catch {
-        // ignore errors
         return false;
     }
 }
