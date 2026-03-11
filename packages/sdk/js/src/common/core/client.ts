@@ -180,7 +180,7 @@ export class HitAPIClient {
         if (error instanceof HTTPError) {
             const { status } = error.response;
 
-            if (status === 404) {
+            if (status === 401) {
                 this.#logger.error(
                     `Invalid HitAPI client ID: '${this.#clientId}'`,
                 );
