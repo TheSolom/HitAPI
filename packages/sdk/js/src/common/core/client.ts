@@ -95,9 +95,16 @@ export class HitAPIClient {
         return this.#consumerRegistry;
     }
 
-    public static getInstance(config: HitAPIConfig): HitAPIClient {
+    public static init(config: HitAPIConfig): HitAPIClient {
+        if (HitAPIClient.#instance) {
+            return HitAPIClient.#instance;
+        }
+        return new HitAPIClient(config);
+    }
+
+    public static getInstance(): HitAPIClient {
         if (!HitAPIClient.#instance) {
-            HitAPIClient.#instance = new HitAPIClient(config);
+            throw new Error('HitAPI client is not initialized');
         }
         return HitAPIClient.#instance;
     }
