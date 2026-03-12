@@ -14,12 +14,14 @@ A complete, open-source observability platform built with NestJS and Node.js, fo
 ## 🏗️ **Architecture**
 
 ### **Monorepo Structure**
+
 ```
 HitAPI/
 ├── apps/
 │   ├── api/                   # NestJS Backend API
 ├── packages/
-│   ├── sdk-js/                # Official Node.js SDK
+│   ├── sdk/
+│       ├── js/                # Official Node.js SDK
 │   └── shared/                # Shared files
 │   └── types/                 # TypeScript types
 ├── .husky/                    # Git hooks
@@ -28,6 +30,7 @@ HitAPI/
 ```
 
 ### **Technology Stack**
+
 - **Backend**: NestJS, TypeScript, TypeORM
 - **Database**: PostgreSQL, Redis
 - **Queue**: BullMQ
@@ -40,11 +43,11 @@ HitAPI/
 
 ```javascript
 // Install the SDK
-npm install @hitapi/sdk-js
+npm install @hitapi/js
 
 // Express.js integration
 import express from 'express';
-import { useHitAPI, setConsumer } from '@hitapi/sdk-js/express';
+import { useHitAPI, setConsumer } from '@hitapi/js/express';
 
 const app = express();
 useHitAPI(app, { clientId: '65973e74-3b71-4392-bbfa-d108a8a5d9d8' });
@@ -60,6 +63,7 @@ app.listen(3000, () => console.log('Server started on port 3000'));
 ## 🔧 **Development**
 
 ### **Workspace Commands**
+
 ```bash
 # Install all dependencies
 npm install
@@ -74,13 +78,14 @@ npm run build
 npm run dev --workspace=apps/api
 
 # Run SDK tests
-npm test --workspace=packages/sdk-js
+npm test --workspace=packages/sdk/js
 
 # Lint all packages
 npm run lint --workspaces
 ```
 
 ### **Development Workflow**
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'feat(scope): add amazing feature'`)
@@ -90,16 +95,19 @@ npm run lint --workspaces
 ## 📈 **Roadmap**
 
 ### **Phase 1: Foundation** ✅
+
 - [x] Authentication & user management
 - [x] Team/workspace system
 - [x] Application management
 
 ### **Phase 2: Data Collection** 🚧
+
 - [x] Request logging infrastructure
 - [x] Data ingestion API
 - Node.js SDK development
 
 ### **Phase 3: Analytics** 🔄
+
 - [ ] Traffic analytics dashboard
 - [ ] Error tracking & aggregation
 - [ ] Performance monitoring
