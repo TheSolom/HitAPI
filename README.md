@@ -1,4 +1,4 @@
-# HitAPI - API Analytics and Monitoring Platform
+# HitAPI - API Monitoring and Analytics Platform
 
 A complete, open-source observability platform built with NestJS and Node.js, focused on API monitoring and analytics without the operational overhead of traditional observability tools.
 
