@@ -4,6 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConflictException } from '@nestjs/common';
 import { TeamsService } from '../teams.service.js';
+import type { ITeamsService } from '../interfaces/teams-service.interfaces.js';
 import { Team } from '../entities/team.entity.js';
 import { CreateTeamDto } from '../dto/create-team.dto.js';
 import { UpdateTeamDto } from '../dto/update-team.dto.js';
@@ -21,7 +22,7 @@ const mockTeamRepository = () => ({
 });
 
 describe('TeamsService', () => {
-    let teamsService: TeamsService;
+    let teamsService: ITeamsService;
     let teamRepository: Repository<Team>;
 
     beforeEach(async () => {
@@ -35,7 +36,7 @@ describe('TeamsService', () => {
             ],
         }).compile();
 
-        teamsService = module.get<TeamsService>(TeamsService);
+        teamsService = module.get<ITeamsService>(TeamsService);
         teamRepository = module.get<Repository<Team>>(getRepositoryToken(Team));
     });
 
@@ -48,7 +49,7 @@ describe('TeamsService', () => {
         expect(teamsService).toBeDefined();
     });
 
-    describe('findAll', () => {
+    describe('findAllByUser', () => {
         it('should return teams for the given user', async () => {
             const mockTeams = [
                 {
@@ -67,12 +68,14 @@ describe('TeamsService', () => {
                 } as Team,
             ];
 
-            jest.spyOn(teamRepository, 'find').mockResolvedValue(mockTeams);
+            const findSpy = jest
+                .spyOn(teamRepository, 'find')
+                .mockResolvedValue(mockTeams);
 
-            const result = await teamsService.findAll(mockUserId);
+            const result = await teamsService.findAllByUser(mockUserId);
 
             expect(result).toEqual(mockTeams);
-            expect(teamRepository.find).toHaveBeenCalledWith({
+            expect(findSpy).toHaveBeenCalledWith({
                 where: { teamMembers: { user: { id: mockUserId } } },
                 order: { createdAt: 'DESC' },
             });
@@ -83,17 +86,19 @@ describe('TeamsService', () => {
 
             jest.spyOn(teamRepository, 'find').mockResolvedValue(mockTeams);
 
-            const result = await teamsService.findAll(mockUserId);
+            const result = await teamsService.findAllByUser(mockUserId);
 
             expect(result).toEqual([]);
         });
 
         it('should order teams by createdAt descending', async () => {
-            jest.spyOn(teamRepository, 'find').mockResolvedValue([]);
+            const findSpy = jest
+                .spyOn(teamRepository, 'find')
+                .mockResolvedValue([]);
 
-            await teamsService.findAll(mockUserId);
+            await teamsService.findAllByUser(mockUserId);
 
-            expect(teamRepository.find).toHaveBeenCalledWith(
+            expect(findSpy).toHaveBeenCalledWith(
                 expect.objectContaining({
                     order: { createdAt: 'DESC' },
                 }),
@@ -117,37 +122,58 @@ describe('TeamsService', () => {
                 ],
             } as Team;
 
-            jest.spyOn(teamRepository, 'findOne').mockResolvedValue(mockTeam);
+            const findOneSpy = jest
+                .spyOn(teamRepository, 'findOne')
+                .mockResolvedValue(mockTeam);
 
             const result = await teamsService.findOne('1');
 
             expect(result).toEqual(mockTeam);
-            expect(teamRepository.findOne).toHaveBeenCalledWith({
+            expect(findOneSpy).toHaveBeenCalledWith({
                 where: { id: '1' },
-                relations: ['teamMembers', 'teamMembers.user'],
+                relations: [
+                    'teamMembers',
+                    'teamMembers.user',
+                    'invites',
+                    'invites.inviter',
+                ],
             });
         });
 
         it('should return null if team not found', async () => {
-            jest.spyOn(teamRepository, 'findOne').mockResolvedValue(null);
+            const findOneSpy = jest
+                .spyOn(teamRepository, 'findOne')
+                .mockResolvedValue(null);
 
             const result = await teamsService.findOne('non-existent-id');
 
             expect(result).toBeNull();
-            expect(teamRepository.findOne).toHaveBeenCalledWith({
+            expect(findOneSpy).toHaveBeenCalledWith({
                 where: { id: 'non-existent-id' },
-                relations: ['teamMembers', 'teamMembers.user'],
+                relations: [
+                    'teamMembers',
+                    'teamMembers.user',
+                    'invites',
+                    'invites.inviter',
+                ],
             });
         });
 
         it('should load teamMembers and user relations', async () => {
-            jest.spyOn(teamRepository, 'findOne').mockResolvedValue({} as Team);
+            const findOneSpy = jest
+                .spyOn(teamRepository, 'findOne')
+                .mockResolvedValue({} as Team);
 
             await teamsService.findOne('1');
 
-            expect(teamRepository.findOne).toHaveBeenCalledWith(
+            expect(findOneSpy).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    relations: ['teamMembers', 'teamMembers.user'],
+                    relations: [
+                        'teamMembers',
+                        'teamMembers.user',
+                        'invites',
+                        'invites.inviter',
+                    ],
                 }),
             );
         });
@@ -168,9 +194,15 @@ describe('TeamsService', () => {
                 stealth: createTeamDto.stealth,
             } as Team;
 
-            jest.spyOn(teamRepository, 'findOneBy').mockResolvedValue(null);
-            jest.spyOn(teamRepository, 'create').mockReturnValue(createdTeam);
-            jest.spyOn(teamRepository, 'save').mockResolvedValue(createdTeam);
+            const findOneBySpy = jest
+                .spyOn(teamRepository, 'findOneBy')
+                .mockResolvedValue(null);
+            const createSpy = jest
+                .spyOn(teamRepository, 'create')
+                .mockReturnValue(createdTeam);
+            const saveSpy = jest
+                .spyOn(teamRepository, 'save')
+                .mockResolvedValue(createdTeam);
 
             const result = await teamsService.createTeam(
                 mockUserId,
@@ -178,16 +210,16 @@ describe('TeamsService', () => {
             );
 
             expect(result).toEqual(createdTeam);
-            expect(teamRepository.findOneBy).toHaveBeenCalled();
-            expect(teamRepository.create).toHaveBeenCalledWith(
+            expect(findOneBySpy).toHaveBeenCalled();
+            expect(createSpy).toHaveBeenCalledWith(
                 expect.objectContaining({
                     name: createTeamDto.name,
                     demo: createTeamDto.demo,
                     stealth: createTeamDto.stealth,
-                    slug: expect.any(String),
+                    slug: expect.any(String) as string,
                 }),
             );
-            expect(teamRepository.save).toHaveBeenCalled();
+            expect(saveSpy).toHaveBeenCalled();
         });
 
         it('should throw ConflictException if slug already exists', async () => {
@@ -202,9 +234,11 @@ describe('TeamsService', () => {
                 slug: 'existing-team',
             } as Team;
 
-            jest.spyOn(teamRepository, 'findOneBy').mockResolvedValue(
-                existingTeam,
-            );
+            const findOneBySpy = jest
+                .spyOn(teamRepository, 'findOneBy')
+                .mockResolvedValue(existingTeam);
+            const createSpy = jest.spyOn(teamRepository, 'create');
+            const saveSpy = jest.spyOn(teamRepository, 'save');
 
             await expect(
                 teamsService.createTeam(mockUserId, createTeamDto),
@@ -213,9 +247,9 @@ describe('TeamsService', () => {
                 teamsService.createTeam(mockUserId, createTeamDto),
             ).rejects.toThrow('Team already exists');
 
-            expect(teamRepository.findOneBy).toHaveBeenCalled();
-            expect(teamRepository.create).not.toHaveBeenCalled();
-            expect(teamRepository.save).not.toHaveBeenCalled();
+            expect(findOneBySpy).toHaveBeenCalled();
+            expect(createSpy).not.toHaveBeenCalled();
+            expect(saveSpy).not.toHaveBeenCalled();
         });
 
         it('should save the created team', async () => {
@@ -260,21 +294,25 @@ describe('TeamsService', () => {
             jest.spyOn(teamRepository, 'findOneBy').mockResolvedValue(
                 existingTeam,
             );
-            jest.spyOn(teamRepository, 'merge').mockReturnValue(updatedTeam);
-            jest.spyOn(teamRepository, 'save').mockResolvedValue(updatedTeam);
+            const mergeSpy = jest
+                .spyOn(teamRepository, 'merge')
+                .mockReturnValue(updatedTeam);
+            const saveSpy = jest
+                .spyOn(teamRepository, 'save')
+                .mockResolvedValue(updatedTeam);
 
             const result = await teamsService.updateTeam('1', updateTeamDto);
 
             expect(result).toEqual(updatedTeam);
-            expect(teamRepository.merge).toHaveBeenCalledWith(
+            expect(mergeSpy).toHaveBeenCalledWith(
                 existingTeam,
                 expect.objectContaining({
                     name: updateTeamDto.name,
                     demo: updateTeamDto.demo,
-                    slug: expect.any(String),
+                    slug: expect.any(String) as unknown as string,
                 }),
             );
-            expect(teamRepository.save).toHaveBeenCalledWith(updatedTeam);
+            expect(saveSpy).toHaveBeenCalledWith(updatedTeam);
         });
 
         it('should update team without slug when name does not change', async () => {
@@ -300,17 +338,18 @@ describe('TeamsService', () => {
             jest.spyOn(teamRepository, 'findOneBy').mockResolvedValue(
                 existingTeam,
             );
-            jest.spyOn(teamRepository, 'merge').mockReturnValue(updatedTeam);
-            jest.spyOn(teamRepository, 'save').mockResolvedValue(updatedTeam);
+            const mergeSpy = jest
+                .spyOn(teamRepository, 'merge')
+                .mockReturnValue(updatedTeam);
+            const saveSpy = jest
+                .spyOn(teamRepository, 'save')
+                .mockResolvedValue(updatedTeam);
 
             const result = await teamsService.updateTeam('1', updateTeamDto);
 
             expect(result).toEqual(updatedTeam);
-            expect(teamRepository.merge).toHaveBeenCalledWith(
-                existingTeam,
-                updateTeamDto,
-            );
-            expect(teamRepository.save).toHaveBeenCalledWith(updatedTeam);
+            expect(mergeSpy).toHaveBeenCalledWith(existingTeam, updateTeamDto);
+            expect(saveSpy).toHaveBeenCalledWith(updatedTeam);
         });
 
         it('should throw NotFoundException if team not found', async () => {
@@ -340,15 +379,14 @@ describe('TeamsService', () => {
             jest.spyOn(teamRepository, 'findOneBy').mockResolvedValue(
                 existingTeam,
             );
-            jest.spyOn(teamRepository, 'merge').mockReturnValue(updatedTeam);
+            const mergeSpy = jest
+                .spyOn(teamRepository, 'merge')
+                .mockReturnValue(updatedTeam);
             jest.spyOn(teamRepository, 'save').mockResolvedValue(updatedTeam);
 
             await teamsService.updateTeam('1', updateTeamDto);
 
-            expect(teamRepository.merge).toHaveBeenCalledWith(
-                existingTeam,
-                updateTeamDto,
-            );
+            expect(mergeSpy).toHaveBeenCalledWith(existingTeam, updateTeamDto);
         });
     });
 
