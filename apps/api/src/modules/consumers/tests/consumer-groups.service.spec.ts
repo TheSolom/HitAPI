@@ -3,11 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import type { UpdateResult } from 'typeorm';
 import { ConsumerGroupsService } from '../consumer-groups.service.js';
+import type { IConsumerGroupsService } from '../interfaces/consumer-groups-service.interface.js';
 import { ConsumerGroup } from '../entities/consumer-group.entity.js';
 import { Consumer } from '../entities/consumer.entity.js';
 
 describe('ConsumerGroupsService', () => {
-    let service: ConsumerGroupsService;
+    let service: IConsumerGroupsService;
 
     const mockConsumerGroupRepository = {
         find: jest.fn(),
@@ -36,7 +37,7 @@ describe('ConsumerGroupsService', () => {
             ],
         }).compile();
 
-        service = module.get<ConsumerGroupsService>(ConsumerGroupsService);
+        service = module.get<IConsumerGroupsService>(ConsumerGroupsService);
     });
 
     afterEach(() => {
