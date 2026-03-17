@@ -1,32 +1,26 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service.js';
+import type { IAuthService } from '../interfaces/auth-service.interface.js';
 import type { IUsersService } from '../../users/interfaces/users-service.interface.js';
-import type { ITokensService } from '../tokens/interfaces/tokens-service.interface.js';
 import type { IHashingService } from '../../hashing/interfaces/hashing-service.interface.js';
 import { Services } from '../../../common/constants/services.constant.js';
 import { User } from '../../users/entities/user.entity.js';
 import { AuthenticatedUser } from '../../users/dto/auth-user.dto.js';
-import { LoginTokensDto } from '../tokens/dto/login-tokens.dto.js';
 import { EmailLoginDto } from '../dto/email-login.dto.js';
 
 describe('AuthService', () => {
-    let authService: AuthService;
+    let authService: IAuthService;
     let usersService: jest.Mocked<
         Pick<IUsersService, 'findByEmail' | 'findById'>
     >;
-    let tokensService: jest.Mocked<Pick<ITokensService, 'generateTokenPair'>>;
     let hashingService: jest.Mocked<Pick<IHashingService, 'verifyPassword'>>;
 
     const TEST_USER_ID = '1';
     const TEST_EMAIL = 'test@example.com';
     const TEST_PASSWORD = 'password123';
     const HASHED_PASSWORD = 'hashedPassword';
-    const TEST_DEVICE = 'test-device';
-    const TEST_IP = '127.0.0.1';
-    const ACCESS_TOKEN = 'access-token';
-    const REFRESH_TOKEN = 'refresh-token';
 
     const createMockUser = (overrides?: Partial<User>): User =>
         ({
@@ -36,29 +30,12 @@ describe('AuthService', () => {
             ...overrides,
         }) as User;
 
-    const createMockTokens = (
-        overrides?: Partial<LoginTokensDto>,
-    ): LoginTokensDto => ({
-        access_token: ACCESS_TOKEN,
-        token_type: 'Bearer',
-        expires_in: 3600,
-        refresh_token: REFRESH_TOKEN,
-        refresh_token_expires_in: 3600,
-        ...overrides,
-    });
-
     beforeEach(async () => {
         const usersServiceMock: jest.Mocked<
             Pick<IUsersService, 'findByEmail' | 'findById'>
         > = {
             findByEmail: jest.fn(),
             findById: jest.fn(),
-        };
-
-        const tokensServiceMock: jest.Mocked<
-            Pick<ITokensService, 'generateTokenPair'>
-        > = {
-            generateTokenPair: jest.fn(),
         };
 
         const hashingServiceMock: jest.Mocked<
@@ -75,19 +52,14 @@ describe('AuthService', () => {
                     useValue: usersServiceMock,
                 },
                 {
-                    provide: Services.TOKENS,
-                    useValue: tokensServiceMock,
-                },
-                {
                     provide: Services.HASHING,
                     useValue: hashingServiceMock,
                 },
             ],
         }).compile();
 
-        authService = module.get<AuthService>(AuthService);
+        authService = module.get<IAuthService>(AuthService);
         usersService = module.get(Services.USERS);
-        tokensService = module.get(Services.TOKENS);
         hashingService = module.get(Services.HASHING);
     });
 
@@ -114,6 +86,7 @@ describe('AuthService', () => {
 
             expect(usersService.findByEmail).toHaveBeenCalledWith(
                 loginDto.email,
+                { includePassword: true },
             );
             expect(usersService.findByEmail).toHaveBeenCalledTimes(1);
             expect(hashingService.verifyPassword).not.toHaveBeenCalled();
@@ -131,6 +104,7 @@ describe('AuthService', () => {
 
             expect(usersService.findByEmail).toHaveBeenCalledWith(
                 loginDto.email,
+                { includePassword: true },
             );
             expect(hashingService.verifyPassword).toHaveBeenCalledWith(
                 loginDto.password,
@@ -152,6 +126,7 @@ describe('AuthService', () => {
             expect(result.id).toBe(user.id);
             expect(usersService.findByEmail).toHaveBeenCalledWith(
                 loginDto.email,
+                { includePassword: true },
             );
             expect(hashingService.verifyPassword).toHaveBeenCalledWith(
                 loginDto.password,
@@ -173,80 +148,8 @@ describe('AuthService', () => {
             expect(result).toBeInstanceOf(AuthenticatedUser);
             expect(usersService.findByEmail).toHaveBeenCalledWith(
                 upperCaseLoginDto.email,
+                { includePassword: true },
             );
-        });
-    });
-
-    describe('refreshToken', () => {
-        it('should throw NotFoundException if user is not found', async () => {
-            const user = createMockUser();
-
-            usersService.findById.mockResolvedValue(null);
-
-            await expect(
-                tokensService.generateTokenPair(user, TEST_DEVICE, TEST_IP),
-            ).rejects.toThrow(NotFoundException);
-
-            expect(usersService.findById).toHaveBeenCalledWith(user.id);
-            expect(usersService.findById).toHaveBeenCalledTimes(1);
-            expect(tokensService.generateTokenPair).not.toHaveBeenCalled();
-        });
-
-        it('should return LoginTokensDto if user is found', async () => {
-            const user = createMockUser();
-            const tokens = createMockTokens();
-
-            usersService.findById.mockResolvedValue(user);
-            tokensService.generateTokenPair.mockResolvedValue(tokens);
-
-            const result = await tokensService.generateTokenPair(
-                user,
-                TEST_DEVICE,
-                TEST_IP,
-            );
-
-            expect(result).toEqual(tokens);
-            expect(usersService.findById).toHaveBeenCalledWith(TEST_USER_ID);
-            expect(tokensService.generateTokenPair).toHaveBeenCalledWith(
-                user,
-                TEST_DEVICE,
-                TEST_IP,
-            );
-            expect(tokensService.generateTokenPair).toHaveBeenCalledTimes(1);
-        });
-
-        it('should handle different device info and IP addresses', async () => {
-            const user = createMockUser();
-            const tokens = createMockTokens();
-            const differentDevice = 'mobile-device';
-            const differentIp = '192.168.1.1';
-
-            usersService.findById.mockResolvedValue(user);
-            tokensService.generateTokenPair.mockResolvedValue(tokens);
-
-            await tokensService.generateTokenPair(
-                user,
-                differentDevice,
-                differentIp,
-            );
-
-            expect(tokensService.generateTokenPair).toHaveBeenCalledWith(
-                user,
-                differentDevice,
-                differentIp,
-            );
-        });
-
-        it('should propagate errors from token generation', async () => {
-            const user = createMockUser();
-            const tokenError = new Error('Token generation failed');
-
-            usersService.findById.mockResolvedValue(user);
-            tokensService.generateTokenPair.mockRejectedValue(tokenError);
-
-            await expect(
-                tokensService.generateTokenPair(user, TEST_DEVICE, TEST_IP),
-            ).rejects.toThrow('Token generation failed');
         });
     });
 });
