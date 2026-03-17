@@ -2,12 +2,13 @@ import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConsumersService } from '../consumers.service.js';
+import type { IConsumersService } from '../interfaces/consumers-service.interface.js';
 import { Consumer } from '../entities/consumer.entity.js';
 import { ConsumerGroup } from '../entities/consumer-group.entity.js';
 import { Services } from '../../../common/constants/services.constant.js';
 
 describe('ConsumersService', () => {
-    let consumersService: ConsumersService;
+    let consumersService: IConsumersService;
 
     const mockConsumerRepository = {
         find: jest.fn(),
@@ -38,7 +39,7 @@ describe('ConsumersService', () => {
             ],
         }).compile();
 
-        consumersService = module.get<ConsumersService>(ConsumersService);
+        consumersService = module.get<IConsumersService>(ConsumersService);
     });
 
     afterEach(() => {
@@ -49,14 +50,14 @@ describe('ConsumersService', () => {
         expect(consumersService).toBeDefined();
     });
 
-    describe('findAllConsumers', () => {
+    describe('findAllByAppId', () => {
         it('should return an array of consumers', async () => {
             const result = [new Consumer()];
             (mockConsumerRepository.find as jest.Mock<any>).mockResolvedValue(
                 result,
             );
 
-            expect(await consumersService.findAllConsumers('app-id-1')).toBe(
+            expect(await consumersService.findAllByAppId('app-id-1')).toBe(
                 result,
             );
             expect(mockConsumerRepository.find).toHaveBeenCalledWith({
@@ -67,16 +68,14 @@ describe('ConsumersService', () => {
         });
     });
 
-    describe('findConsumer', () => {
+    describe('findById', () => {
         it('should return a consumer', async () => {
             const result = new Consumer();
             (
                 mockConsumerRepository.findOne as jest.Mock<any>
             ).mockResolvedValue(result);
 
-            expect(await consumersService.findConsumer('app-id-1', 1)).toBe(
-                result,
-            );
+            expect(await consumersService.findById('app-id-1', 1)).toBe(result);
             expect(mockConsumerRepository.findOne).toHaveBeenCalledWith({
                 where: { id: 1, app: { id: 'app-id-1' } },
                 relations: { group: true },
@@ -88,9 +87,7 @@ describe('ConsumersService', () => {
                 mockConsumerRepository.findOne as jest.Mock<any>
             ).mockResolvedValue(null);
 
-            expect(
-                await consumersService.findConsumer('app-id-1', 1),
-            ).toBeNull();
+            expect(await consumersService.findById('app-id-1', 1)).toBeNull();
         });
     });
 
