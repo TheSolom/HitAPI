@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-    ArrayMinSize,
     IsArray,
     IsDate,
     IsEnum,
@@ -48,16 +47,27 @@ export class CreateRequestLogDto {
     statusText: string;
 
     @ApiProperty({ type: 'number', minimum: 0 })
+    @Min(0)
     @IsNumber()
     responseTime: number;
 
-    @ApiProperty({ type: 'array', items: { type: 'string' } })
-    @ArrayMinSize(1, { message: 'At least one header is required' })
+    @ApiProperty({
+        type: 'array',
+        items: {
+            type: 'array',
+            items: { type: 'string', minItems: 2, maxItems: 2 },
+        },
+    })
     @IsArray()
     requestHeaders: [string, string][];
 
-    @ApiProperty({ type: 'array', items: { type: 'string' } })
-    @ArrayMinSize(1, { message: 'At least one header is required' })
+    @ApiProperty({
+        type: 'array',
+        items: {
+            type: 'array',
+            items: { type: 'string', minItems: 2, maxItems: 2 },
+        },
+    })
     @IsArray()
     responseHeaders: [string, string][];
 
@@ -74,8 +84,10 @@ export class CreateRequestLogDto {
     @ApiPropertyOptional({ type: Buffer })
     requestBody?: Buffer;
 
-    @ApiProperty({ type: 'integer', minimum: 0 })
+    @ApiPropertyOptional({ type: 'integer', minimum: 0 })
+    @Min(0)
     @IsInt()
+    @IsOptional()
     responseSize?: number;
 
     @ApiPropertyOptional({ type: Buffer })
@@ -93,6 +105,7 @@ export class CreateRequestLogDto {
     clientCountryCode?: string;
 
     @ApiPropertyOptional({ type: 'integer' })
+    @Min(0)
     @IsInt()
     @IsOptional()
     consumerId?: number;
