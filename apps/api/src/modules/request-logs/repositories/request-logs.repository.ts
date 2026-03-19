@@ -187,8 +187,8 @@ export class RequestLogsRepository
     ): Promise<TimelineRawResult[]> {
         const qb = this.requestLogRepository
             .createQueryBuilder('rl')
-            .select("DATE_TRUNC('hour', rl.timestamp)", 'timeWindow')
-            .addSelect('COUNT(*)', 'itemCount')
+            .select("DATE_TRUNC('hour', rl.timestamp)", '"timeWindow"')
+            .addSelect('COUNT(*)', '"itemCount"')
             .leftJoin('rl.consumer', 'c')
             .where({ app: { id: criteria.appId } })
             .groupBy('"timeWindow"')
