@@ -4,6 +4,7 @@ import {
     PrimaryGeneratedColumn,
     Column,
     ManyToOne,
+    OneToMany,
     CreateDateColumn,
     UpdateDateColumn,
     DeleteDateColumn,
@@ -11,6 +12,8 @@ import {
 } from 'typeorm';
 import { RestfulMethod } from '@hitapi/shared/enums';
 import { App } from '../../apps/entities/app.entity.js';
+import { ValidationError } from '../../errors/entities/validation-error.entity.js';
+import { ServerError } from '../../errors/entities/server-error.entity.js';
 
 @Entity()
 @Unique('AppEndpointMethodPath', ['app', 'method', 'path'])
@@ -39,11 +42,20 @@ export class Endpoint {
     @Column({ type: 'int', array: true, default: [] })
     expectedStatusCodes: number[];
 
-    @ManyToOne(() => App, {
-        onDelete: 'CASCADE',
-        nullable: false,
-    })
+    @ManyToOne(() => App, { onDelete: 'CASCADE', nullable: false })
     app: Relation<App>;
+
+    @OneToMany(
+        () => ValidationError,
+        (validationError) => validationError.endpoint,
+        { cascade: true },
+    )
+    validationErrors: Relation<ValidationError[]>;
+
+    @OneToMany(() => ServerError, (serverError) => serverError.endpoint, {
+        cascade: true,
+    })
+    serverErrors: Relation<ServerError[]>;
 
     @CreateDateColumn()
     createdAt: Date;
