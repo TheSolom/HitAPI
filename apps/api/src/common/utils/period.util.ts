@@ -1,4 +1,5 @@
 import ms, { type StringValue } from 'ms';
+import type { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 import type {
     RelativePeriod,
     RangePeriod,
@@ -31,7 +32,6 @@ function pickGranularity(durationMs: number): TruncUnit {
 export function parsePeriod(period: RelativePeriod): ParsedPeriod;
 export function parsePeriod(period: RangePeriod): ParsedPeriod;
 export function parsePeriod(period: Period): ParsedPeriod;
-
 export function parsePeriod(period: Period): ParsedPeriod {
     // Relative period (e.g., "1h", "7d")
     const duration = ms(period as StringValue);
@@ -83,4 +83,29 @@ export function parsePeriod(period: Period): ParsedPeriod {
         endDate,
         granularity: pickGranularity(durationMs),
     };
+}
+
+/**
+ * Apply period filter to a query builder
+ */
+export function applyPeriodFilter<T extends ObjectLiteral>(
+    qb: SelectQueryBuilder<T>,
+    period: ParsedPeriod,
+    alias: string,
+    column: string,
+): void {
+    if (!period) return;
+
+    const path = `${alias}.${column}`;
+
+    if (period.type === 'relative') {
+        qb.andWhere(`${path} >= :periodTimestamp`, {
+            periodTimestamp: period.since.toISOString(),
+        });
+    } else {
+        qb.andWhere(`${path} BETWEEN :startDate AND :endDate`, {
+            startDate: period.startDate.toISOString(),
+            endDate: period.endDate.toISOString(),
+        });
+    }
 }
