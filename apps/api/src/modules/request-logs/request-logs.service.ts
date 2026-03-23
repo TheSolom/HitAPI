@@ -77,7 +77,7 @@ export class RequestLogsService implements IRequestLogsService {
         );
 
         return {
-            timeWindows: items.map((item) => item.timeWindow),
+            timeWindows: items.map((item) => item.timeWindow.toISOString()),
             itemCounts: items.map((item) => Number.parseInt(item.itemCount)),
         };
     }
