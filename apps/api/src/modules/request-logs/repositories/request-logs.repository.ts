@@ -8,7 +8,10 @@ import type {
     RequestLogFilterCriteria,
 } from '../interfaces/request-logs-repository.interface.js';
 import { RequestLog } from '../entities/request-log.entity.js';
-import { parsePeriod } from '../../../common/utils/period.util.js';
+import {
+    applyPeriodFilter,
+    parsePeriod,
+} from '../../../common/utils/period.util.js';
 import type { FindOptions } from '../../../common/types/find-options.type.js';
 import type { NullableType } from '../../../common/types/nullable.type.js';
 import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
@@ -39,26 +42,6 @@ export class RequestLogsRepository
             qb.andWhere('rl.path = :path', { path: criteria.path });
         } else {
             qb.andWhere('rl.path LIKE :path', { path: `%${criteria.path}%` });
-        }
-    }
-
-    private applyPeriodFilter(
-        qb: SelectQueryBuilder<RequestLog>,
-        criteria: RequestLogFilterCriteria,
-    ): void {
-        if (!criteria.period) return;
-
-        const period = parsePeriod(criteria.period);
-
-        if (period.type === 'relative') {
-            qb.andWhere('rl.timestamp >= :periodTimestamp', {
-                periodTimestamp: period.since.toISOString(),
-            });
-        } else {
-            qb.andWhere('rl.timestamp BETWEEN :startDate AND :endDate', {
-                startDate: period.startDate.toISOString(),
-                endDate: period.endDate.toISOString(),
-            });
         }
     }
 
@@ -120,7 +103,12 @@ export class RequestLogsRepository
         }
 
         this.applyPathFilter(qb, criteria);
-        this.applyPeriodFilter(qb, criteria);
+        applyPeriodFilter<RequestLog>(
+            qb,
+            parsePeriod(criteria.period),
+            'rl',
+            'timestamp',
+        );
     }
 
     async createRequestLogs(
@@ -149,22 +137,22 @@ export class RequestLogsRepository
         const qb = this.requestLogRepository
             .createQueryBuilder('rl')
             .select([
-                'rl.requestUuid as "requestUuid"',
-                'rl.method as "method"',
-                'rl.path as "path"',
-                'rl.url as "url"',
-                'rl.requestSize as "requestSize"',
-                'rl.statusCode as "statusCode"',
-                'rl.statusText as "statusText"',
-                'rl.responseTime as "responseTime"',
-                'rl.responseSize as "responseSize"',
-                'rl.clientIp as "clientIp"',
-                'rl.clientCountryCode as "clientCountryCode"',
-                'rl.consumerId as "consumerId"',
-                'c.identifier as "consumerIdentifier"',
-                'c.name as "consumerName"',
-                'rl.traceId as "traceId"',
-                'rl.timestamp as "timestamp"',
+                'rl.requestUuid AS "requestUuid"',
+                'rl.method AS "method"',
+                'rl.path AS "path"',
+                'rl.url AS "url"',
+                'rl.requestSize AS "requestSize"',
+                'rl.statusCode AS "statusCode"',
+                'rl.statusText AS "statusText"',
+                'rl.responseTime AS "responseTime"',
+                'rl.responseSize AS "responseSize"',
+                'rl.clientIp AS "clientIp"',
+                'rl.clientCountryCode AS "clientCountryCode"',
+                'rl.consumerId AS "consumerId"',
+                'c.identifier AS "consumerIdentifier"',
+                'c.name AS "consumerName"',
+                'rl.traceId AS "traceId"',
+                'rl.timestamp AS "timestamp"',
             ])
             .leftJoin('rl.consumer', 'c')
             .where({ app: { id: criteria.appId } })
@@ -187,10 +175,10 @@ export class RequestLogsRepository
     ): Promise<TimelineRawResult[]> {
         const qb = this.requestLogRepository
             .createQueryBuilder('rl')
-            .select("DATE_TRUNC('hour', rl.timestamp)", '"timeWindow"')
-            .addSelect('COUNT(*)', '"itemCount"')
-            .leftJoin('rl.consumer', 'c')
+            .select("DATE_TRUNC('hour', rl.timestamp)", 'timeWindow')
+            .addSelect('COUNT(*)', 'itemCount')
             .where({ app: { id: criteria.appId } })
+            .leftJoin('rl.consumer', 'c')
             .groupBy('"timeWindow"')
             .orderBy('"timeWindow"', 'ASC');
 
