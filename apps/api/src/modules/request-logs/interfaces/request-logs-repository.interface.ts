@@ -27,19 +27,19 @@ export interface PartialRequestLog {
 }
 
 export interface TimelineRawResult {
-    timeWindow: string;
+    timeWindow: Date;
     itemCount: string;
 }
 
 export interface RequestLogFilterCriteria {
     appId: string;
+    period: Period;
     consumerId?: number;
     consumerGroupId?: number;
     method?: string;
     path?: string;
     pathExact?: boolean;
     statusCode?: number;
-    period?: Period;
     url?: string;
     minRequestSize?: number;
     maxRequestSize?: number;
