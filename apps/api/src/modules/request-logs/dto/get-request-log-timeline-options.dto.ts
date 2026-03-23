@@ -14,15 +14,20 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import type { StringValue } from 'ms';
 import { RestfulMethod } from '@hitapi/shared/enums';
-import { IsStringValue } from '../../../common/validators/is-string-value.validator.js';
+import { IsPeriod } from '../../../common/validators/is-period.validator.js';
+import type { Period } from '../../../common/types/period.type.js';
 
 export class GetRequestLogTimelineOptionsDto {
     @ApiProperty({ format: 'uuid' })
     @IsUUID()
     @IsNotEmpty()
     appId: string;
+
+    @ApiPropertyOptional({ type: 'string', default: '24h' })
+    @IsPeriod()
+    @IsOptional()
+    period: Period = '24h';
 
     @ApiPropertyOptional({ type: 'integer' })
     @Type(() => Number)
@@ -59,11 +64,6 @@ export class GetRequestLogTimelineOptionsDto {
     @IsInt()
     @IsOptional()
     statusCode?: number;
-
-    @ApiPropertyOptional({ type: 'string' })
-    @IsStringValue()
-    @IsOptional()
-    period?: StringValue;
 
     @ApiPropertyOptional({ format: 'date-time' })
     @IsDateString()
