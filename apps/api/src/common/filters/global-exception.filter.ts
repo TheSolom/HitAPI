@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
+import { STATUS_CODES } from 'node:http';
 import type { Request, Response } from 'express';
 import type {
     RFC9457Response,
@@ -125,7 +126,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
             };
         }
 
-        const title = this.getHttpStatusTitle(statusCode);
+        const title = STATUS_CODES[statusCode] ?? 'HTTP Error';
         const detail = this.extractErrorMessage(exceptionResponse, exception);
 
         return {
@@ -229,20 +230,5 @@ export class GlobalExceptionFilter implements ExceptionFilter {
                 detail: (error.message as string) || 'Validation failed',
             });
         }
-    }
-
-    private getHttpStatusTitle(status: number): string {
-        const titles: Record<number, string> = {
-            [HttpStatus.BAD_REQUEST]: 'Bad Request',
-            [HttpStatus.UNAUTHORIZED]: 'Unauthorized',
-            [HttpStatus.FORBIDDEN]: 'Forbidden',
-            [HttpStatus.NOT_FOUND]: 'Not Found',
-            [HttpStatus.CONFLICT]: 'Conflict',
-            [HttpStatus.UNPROCESSABLE_ENTITY]: 'Unprocessable Entity',
-            [HttpStatus.INTERNAL_SERVER_ERROR]: 'Internal Server Error',
-            [HttpStatus.SERVICE_UNAVAILABLE]: 'Service Unavailable',
-        };
-
-        return titles[status] || 'HTTP Error';
     }
 }
