@@ -13,16 +13,16 @@ export class ApplicationLogsRepository implements IApplicationLogsRepository {
         private readonly applicationLogRepository: Repository<ApplicationLog>,
     ) {}
 
-        async createApplicationLogs(
-            applicationLogDto: CreateApplicationLogDto[],
-        ): Promise<void> {
-            await this.applicationLogRepository.insert(
-                applicationLogDto.map(({ requestUuid, ...rest }) => ({
-                    ...rest,
-                    requestLog: { requestUuid },
-                })),
-            );
-        }
+    async createApplicationLogs(
+        applicationLogDto: CreateApplicationLogDto[],
+    ): Promise<void> {
+        await this.applicationLogRepository.insert(
+            applicationLogDto.map(({ requestUuid, ...rest }) => ({
+                ...rest,
+                requestLog: { requestUuid },
+            })),
+        );
+    }
 
     async findLogCountsByRequestUuids(
         requestUuids: string[],
