@@ -24,7 +24,9 @@
     "scripts": {
         "build": "tsc",
         "format": "prettier --write \"src/**/*.ts\"",
-        "format:check": "prettier --check \"src/**/*.ts\""
+        "format:check": "prettier --check \"src/**/*.ts\"",
+        "lint": "eslint \"src/**/*.ts\"",
+        "lint:fix": "eslint \"src/**/*.ts\" --fix"
     },
     "dependencies": {
         "@hitapi/shared": "^1.0.0"
