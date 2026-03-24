@@ -35,7 +35,8 @@ HitAPI/
 - **Backend**: NestJS, TypeScript, TypeORM
 - **Database**: PostgreSQL, Redis
 - **Queue**: BullMQ
-- **Infrastructure**: Docker, Swagger
+- **Infrastructure**: Docker, GitHub Actions, Swagger
+- **Testing**: Jest, Supertest, Nock
 - **SDK**: Node.js, Express middleware
 
 ## 🚀 **Quick Start**
