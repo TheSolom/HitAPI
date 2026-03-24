@@ -1,4 +1,9 @@
-import type { UserApp, RequestLogItem, StartupPayload } from '@hitapi/types';
+import type {
+    UserApp,
+    RequestLogItem,
+    StartupPayload,
+    SyncPayload,
+} from '@hitapi/types';
 import type { StartupResponseDto } from '../dto/startup-response.dto.js';
 
 export interface IIngestionService {
@@ -22,4 +27,10 @@ export interface IIngestionService {
         app: UserApp,
         startupPayload: StartupPayload,
     ): Promise<StartupResponseDto>;
+    /**
+     * Ingests sync data into the database.
+     * @param app The app to which the sync data belongs.
+     * @param syncPayload The sync data to ingest.
+     */
+    ingestSyncData(app: UserApp, syncPayload: SyncPayload): Promise<void>;
 }

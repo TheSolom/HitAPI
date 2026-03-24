@@ -1,7 +1,12 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { InjectFlowProducer } from '@nestjs/bullmq';
-import { FlowProducer } from 'bullmq';
-import type { UserApp, RequestLogItem, StartupPayload } from '@hitapi/types';
+import { InjectFlowProducer, InjectQueue } from '@nestjs/bullmq';
+import { FlowProducer, Queue } from 'bullmq';
+import type {
+    UserApp,
+    RequestLogItem,
+    StartupPayload,
+    SyncPayload,
+} from '@hitapi/types';
 import type { IIngestionService } from './interfaces/ingestion-service.interface.js';
 import {
     FLOW_PRODUCERS,
@@ -18,6 +23,8 @@ export class IngestionService implements IIngestionService {
     constructor(
         @InjectFlowProducer(FLOW_PRODUCERS.LOGS_INGESTION)
         private readonly logsFlowProducer: FlowProducer,
+        @InjectQueue(QUEUES.SYNC_DATA)
+        private readonly syncDataQueue: Queue,
         @Inject(Services.ENDPOINTS)
         private readonly endpointsService: IEndpointsService,
     ) {}
@@ -101,5 +108,15 @@ export class IngestionService implements IIngestionService {
             removed,
             total: startupPayload.paths.length,
         };
+    }
+
+    async ingestSyncData(
+        app: UserApp,
+        syncPayload: SyncPayload,
+    ): Promise<void> {
+        await this.syncDataQueue.add(JOBS.INGEST_SYNC_DATA, {
+            appId: app.id,
+            payload: syncPayload,
+        });
     }
 }

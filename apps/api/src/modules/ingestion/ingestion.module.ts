@@ -7,6 +7,9 @@ import { ConsumersModule } from '../consumers/consumers.module.js';
 import { GeoIPModule } from '../geo-ip/geo-ip.module.js';
 import { AppsModule } from '../apps/apps.module.js';
 import { EndpointsModule } from '../endpoints/endpoints.module.js';
+import { ErrorsModule } from '../errors/errors.module.js';
+import { TrafficModule } from '../traffic/traffic.module.js';
+import { ResourcesModule } from '../resources/resources.module.js';
 import {
     QUEUES,
     FLOW_PRODUCERS,
@@ -16,6 +19,7 @@ import { Services } from '../../common/constants/services.constant.js';
 import { IngestionService } from './ingestion.service.js';
 import { RequestLogIngestionProcessor } from './processors/request-log-ingestion.processor.js';
 import { ApplicationLogsIngestionProcessor } from './processors/application-logs-ingestion.processor.js';
+import { SyncDataIngestionProcessor } from './processors/sync-data-ingestion.processor.js';
 
 @Module({
     imports: [
@@ -24,6 +28,9 @@ import { ApplicationLogsIngestionProcessor } from './processors/application-logs
         GeoIPModule,
         AppsModule,
         EndpointsModule,
+        ErrorsModule,
+        TrafficModule,
+        ResourcesModule,
         BullModule.registerQueue(
             {
                 name: QUEUES.REQUEST_LOGS,
@@ -43,6 +50,15 @@ import { ApplicationLogsIngestionProcessor } from './processors/application-logs
                     removeOnFail: false,
                 },
             },
+            {
+                name: QUEUES.SYNC_DATA,
+                defaultJobOptions: {
+                    attempts: 3,
+                    backoff: { type: 'exponential', delay: 2000 },
+                    removeOnComplete: true,
+                    removeOnFail: false,
+                },
+            },
         ),
         BullModule.registerFlowProducer({
             name: FLOW_PRODUCERS.LOGS_INGESTION,
@@ -50,6 +66,7 @@ import { ApplicationLogsIngestionProcessor } from './processors/application-logs
         BullBoardModule.forFeature(
             { name: QUEUES.REQUEST_LOGS, adapter: BullMQAdapter },
             { name: QUEUES.APPLICATION_LOGS, adapter: BullMQAdapter },
+            { name: QUEUES.SYNC_DATA, adapter: BullMQAdapter },
         ),
     ],
     controllers: [IngestionController],
@@ -60,6 +77,7 @@ import { ApplicationLogsIngestionProcessor } from './processors/application-logs
         },
         RequestLogIngestionProcessor,
         ApplicationLogsIngestionProcessor,
+        SyncDataIngestionProcessor,
     ],
 })
 export class IngestionModule {}
