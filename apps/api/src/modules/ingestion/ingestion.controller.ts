@@ -19,6 +19,7 @@ import {
     ApiUnauthorizedResponse,
     ApiAcceptedResponse,
     ApiBadRequestResponse,
+    ApiNoContentResponse,
 } from '@nestjs/swagger';
 import type { UserApp as UserAppType } from '@hitapi/types';
 import { Routes } from '../../common/constants/routes.constant.js';
@@ -29,6 +30,7 @@ import type { IRateLimitService } from '../rate-limit/interfaces/rate-limit-serv
 import { RequestLogItemDto } from './dto/request-log-item.dto.js';
 import { UserApp } from './decorators/user-app.decorator.js';
 import { RateLimitType } from '../rate-limit/enums/rate-limit.enum.js';
+import { StartupPayloadDto } from './dto/startup-payload.dto.js';
 
 @ApiTags('Ingestion')
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -71,5 +73,22 @@ export class IngestionController {
             fileUuid,
             received: requestLogItems.length,
         };
+    }
+
+    @Post('startup')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiNoContentResponse()
+    @ApiBadRequestResponse({ description: 'Invalid startup payload' })
+    @ApiBody({ type: StartupPayloadDto })
+    async ingestStartupData(
+        @Body() startupPayload: StartupPayloadDto,
+        @UserApp() app: UserAppType,
+    ) {
+        await this.rateLimitService.checkRateLimit(
+            app.id,
+            RateLimitType.API_CALL,
+        );
+
+        await this.ingestionService.ingestStartupData(app, startupPayload);
     }
 }

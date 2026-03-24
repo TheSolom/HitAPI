@@ -6,6 +6,7 @@ import { RequestLogsModule } from '../request-logs/request-logs.module.js';
 import { ConsumersModule } from '../consumers/consumers.module.js';
 import { GeoIPModule } from '../geo-ip/geo-ip.module.js';
 import { AppsModule } from '../apps/apps.module.js';
+import { EndpointsModule } from '../endpoints/endpoints.module.js';
 import {
     QUEUES,
     FLOW_PRODUCERS,
@@ -22,6 +23,7 @@ import { ApplicationLogsIngestionProcessor } from './processors/application-logs
         ConsumersModule,
         GeoIPModule,
         AppsModule,
+        EndpointsModule,
         BullModule.registerQueue(
             {
                 name: QUEUES.REQUEST_LOGS,

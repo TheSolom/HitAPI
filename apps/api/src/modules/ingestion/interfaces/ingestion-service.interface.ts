@@ -1,4 +1,5 @@
-import type { UserApp, RequestLogItem } from '@hitapi/types';
+import type { UserApp, RequestLogItem, StartupPayload } from '@hitapi/types';
+import type { StartupResponseDto } from '../dto/startup-response.dto.js';
 
 export interface IIngestionService {
     /**
@@ -12,4 +13,13 @@ export interface IIngestionService {
         fileUuid: string,
         items: RequestLogItem[],
     ): Promise<void>;
+    /**
+     * Ingests startup data into the database.
+     * @param app The app to which the startup data belongs.
+     * @param startupPayload The startup data to ingest.
+     */
+    ingestStartupData(
+        app: UserApp,
+        startupPayload: StartupPayload,
+    ): Promise<StartupResponseDto>;
 }
