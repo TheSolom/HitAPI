@@ -25,7 +25,8 @@ HitAPI/
 │   └── shared/                # Shared files
 │   └── types/                 # TypeScript types
 ├── .husky/                    # Git hooks
-├── LICENSE                    # MIT License
+├── .github/                   # GitHub actions
+├── LICENSE.txt                # MIT License
 └── package.json               # Root workspace config
 ```
 
@@ -97,21 +98,22 @@ npm run lint --workspaces
 ### **Phase 1: Foundation** ✅
 
 - [x] Authentication & user management
-- [x] Team/workspace system
-- [x] Application management
+- [x] Teams/Apps system
+- [x] Endpoints management
+- [x] Consumers management
 
 ### **Phase 2: Data Collection** 🚧
 
 - [x] Request logging infrastructure
 - [x] Data ingestion API
-- [x] Node.js SDK development -> { Express (Done), NestJS (In Progress) }
+- [x] Node.js SDK support (Express ✅, NestJS 🚧 [in progress])
 
 ### **Phase 3: Analytics** 🔄 (In Progress)
 
-- Traffic analytics dashboard
-- Error tracking & aggregation
-- Performance monitoring
-- Consumer analytics
+- [x] Traffic analytics
+- [x] Error tracking & aggregation
+- [x] Resource analytics
+- [ ] Performance monitoring
 
 ## 📄 **License**
 
