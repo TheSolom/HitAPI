@@ -3,12 +3,14 @@ import {
     PrimaryGeneratedColumn,
     Column,
     ManyToOne,
+    OneToMany,
     CreateDateColumn,
     UpdateDateColumn,
     type Relation,
 } from 'typeorm';
 import { Team } from '../../teams/entities/team.entity.js';
 import { Framework } from './framework.entity.js';
+import { Endpoint } from '../../endpoints/entities/endpoint.entity.js';
 
 @Entity()
 export class App {
@@ -30,17 +32,17 @@ export class App {
     @Column({ type: 'boolean', default: true })
     active: boolean;
 
-    @ManyToOne(() => Framework, {
-        onDelete: 'CASCADE',
-        nullable: false,
-    })
+    @ManyToOne(() => Framework, { onDelete: 'CASCADE', nullable: false })
     framework: Relation<Framework>;
 
-    @ManyToOne(() => Team, (team: Team) => team.apps, {
+    @ManyToOne(() => Team, (team) => team.apps, {
         onDelete: 'CASCADE',
         nullable: false,
     })
     team: Relation<Team>;
+
+    @OneToMany(() => Endpoint, (endpoint) => endpoint.app, { cascade: true })
+    endpoints: Relation<Endpoint[]>;
 
     @CreateDateColumn()
     createdAt: Date;
