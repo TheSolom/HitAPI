@@ -28,7 +28,8 @@
         "start:prod:api": "npm run start --workspace=apps/api",
         "lint": "npm run lint --workspaces",
         "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-        "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch"
+        "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+        "prepare": "husky"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.1",
@@ -36,7 +37,9 @@
         "@types/express": "^5.0.5",
         "@types/jest": "^30.0.0",
         "@types/node": "^24.9.2",
+        "@types/request-ip": "^0.0.41",
         "@types/supertest": "^6.0.3",
+        "@types/winston": "^2.4.4",
         "eslint": "^9.39.1",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-prettier": "^5.5.4",
