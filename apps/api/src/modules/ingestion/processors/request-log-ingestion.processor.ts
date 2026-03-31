@@ -1,8 +1,11 @@
-import { Processor, WorkerHost } from '@nestjs/bullmq';
-import { DataSource, type QueryRunner } from 'typeorm';
+import { Processor } from '@nestjs/bullmq';
+import { Injectable, Inject } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { DataSource, type QueryRunner } from 'typeorm';
 import { STATUS_CODES } from 'node:http';
+import { ClsService } from 'nestjs-cls';
+import { BaseProcessor } from '../../../common/queues/base.processor.js';
+import { AppLoggerService } from '../../logger/logger.service.js';
 import { QUEUES, JOBS } from '../../../common/constants/queue.constant.js';
 import { Services } from '../../../common/constants/services.constant.js';
 import type { IConsumersService } from '../../consumers/interfaces/consumers-service.interface.js';
@@ -12,12 +15,17 @@ import type { IngestRequestLogsJobData } from '../types/job-data.type.js';
 
 @Processor(QUEUES.REQUEST_LOGS)
 @Injectable()
-export class RequestLogIngestionProcessor extends WorkerHost {
-    private readonly logger = new Logger(RequestLogIngestionProcessor.name);
+export class RequestLogIngestionProcessor extends BaseProcessor<
+    IngestRequestLogsJobData,
+    void,
+    JOBS.INGEST_REQUEST_LOGS
+> {
     private static readonly GEO_IP_CONCURRENCY = 10;
     private static readonly INSERT_CHUNK_SIZE = 500;
 
     constructor(
+        protected readonly logger: AppLoggerService,
+        protected readonly cls: ClsService,
         private readonly dataSource: DataSource,
         @Inject(Services.CONSUMERS)
         private readonly consumersService: IConsumersService,
@@ -27,48 +35,51 @@ export class RequestLogIngestionProcessor extends WorkerHost {
         private readonly geoIPService: IGeoIPService,
     ) {
         super();
+        this.logger.setContext(RequestLogIngestionProcessor.name);
     }
 
-    async process(
+    protected async processJob(
         job: Job<IngestRequestLogsJobData, void, JOBS.INGEST_REQUEST_LOGS>,
     ): Promise<void> {
         const { appId, items } = job.data;
+
+        this.logger.debug('Processing request log batch', {
+            appId,
+            batchSize: items.length,
+        });
 
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
 
         try {
-            const consumerMap = await this.processConsumers(
-                queryRunner,
-                appId,
-                items,
-            );
-            const ipMap = this.processGeoIPs(items);
+            const [consumerMap, ipMap] = await Promise.all([
+                this.processConsumers(queryRunner, appId, items),
+                Promise.resolve(this.processGeoIPs(items)),
+            ]);
 
-            const requestLogEntities = this.buildRequestLogEntities(
+            const entities = this.buildRequestLogEntities(
                 appId,
                 items,
                 consumerMap,
                 ipMap,
             );
-            await this.bulkInsertRequestLogs(queryRunner, requestLogEntities);
+            await this.bulkInsertRequestLogs(queryRunner, entities);
 
             await queryRunner.commitTransaction();
 
-            this.logger.log(
-                `Successfully processed ${items.length} request logs`,
-            );
+            this.logger.log('Transaction committed', {
+                appId,
+                batchSize: items.length,
+                consumers: consumerMap.size,
+                geoIPResolved: ipMap.size,
+                chunks: Math.ceil(
+                    entities.length /
+                        RequestLogIngestionProcessor.INSERT_CHUNK_SIZE,
+                ),
+            });
         } catch (error) {
             await queryRunner.rollbackTransaction();
-            if (error instanceof Error) {
-                this.logger.error(
-                    `Failed to process request logs: ${error.message}`,
-                    error.stack,
-                );
-            } else {
-                this.logger.error(`Failed to process request logs: ${error}`);
-            }
             throw error;
         } finally {
             await queryRunner.release();
@@ -80,36 +91,28 @@ export class RequestLogIngestionProcessor extends WorkerHost {
         appId: string,
         items: IngestRequestLogsJobData['items'],
     ): Promise<Map<string, number>> {
-        const uniqueConsumers = new Set<string>();
-        for (const item of items) {
-            if (item.request.consumer)
-                uniqueConsumers.add(item.request.consumer);
-        }
-
+        const uniqueConsumers = new Set(
+            items.map((i) => i.request.consumer).filter(Boolean) as string[],
+        );
         if (uniqueConsumers.size === 0) return new Map();
 
         const identifiers = Array.from(uniqueConsumers);
-
-        const existingConsumers =
-            await this.consumersService.findAllByIdentifiers(
-                appId,
-                identifiers,
-                queryRunner,
-            );
-
-        const consumerMap = new Map<string, number>();
-        existingConsumers.forEach((c) => consumerMap.set(c.identifier, c.id));
-
-        const newConsumers = identifiers.filter(
-            (identifier) => !consumerMap.has(identifier),
+        const existing = await this.consumersService.findAllByIdentifiers(
+            appId,
+            identifiers,
+            queryRunner,
         );
-        if (newConsumers.length > 0) {
+        const consumerMap = new Map<string, number>(
+            existing.map((c) => [c.identifier, c.id]),
+        );
+        const newIdentifiers = identifiers.filter((id) => !consumerMap.has(id));
+
+        if (newIdentifiers.length > 0) {
             const inserted = await this.consumersService.createConsumers(
                 appId,
-                newConsumers.map((identifier) => ({ identifier })),
+                newIdentifiers.map((identifier) => ({ identifier })),
                 queryRunner,
             );
-
             inserted.forEach((c) => consumerMap.set(c.identifier, c.id));
         }
 
@@ -119,35 +122,23 @@ export class RequestLogIngestionProcessor extends WorkerHost {
     private processGeoIPs(
         items: IngestRequestLogsJobData['items'],
     ): Map<string, string | null> {
-        const uniqueIps = new Set<string>();
-
-        for (const item of items) {
-            const { clientIp } = item.request;
-            if (clientIp) uniqueIps.add(clientIp);
-        }
-
+        const uniqueIps = new Set(
+            items.map((i) => i.request.clientIp).filter(Boolean) as string[],
+        );
         if (uniqueIps.size === 0) return new Map();
 
         const ipArray = Array.from(uniqueIps);
         const ipMap = new Map<string, string | null>();
+        const chunk = RequestLogIngestionProcessor.GEO_IP_CONCURRENCY;
 
-        for (
-            let i = 0;
-            i < ipArray.length;
-            i += RequestLogIngestionProcessor.GEO_IP_CONCURRENCY
-        ) {
-            const batch = ipArray.slice(
-                i,
-                i + RequestLogIngestionProcessor.GEO_IP_CONCURRENCY,
-            );
-
-            const results = batch.map((ip) => this.geoIPService.getCountry(ip));
-
-            results.forEach((country, index) => {
-                ipMap.set(batch[index], country?.countryCode ?? null);
+        for (let i = 0; i < ipArray.length; i += chunk) {
+            ipArray.slice(i, i + chunk).forEach((ip) => {
+                ipMap.set(
+                    ip,
+                    this.geoIPService.getCountry(ip)?.countryCode ?? null,
+                );
             });
         }
-
         return ipMap;
     }
 
@@ -182,7 +173,7 @@ export class RequestLogIngestionProcessor extends WorkerHost {
             exceptionType: item.exception?.type,
             exceptionMessage: item.exception?.message,
             exceptionStacktrace: item.exception?.stacktrace,
-            traceId: item?.traceId,
+            traceId: item.traceId,
             timestamp: new Date(item.request.timestamp),
         }));
     }
@@ -193,24 +184,20 @@ export class RequestLogIngestionProcessor extends WorkerHost {
             RequestLogIngestionProcessor['buildRequestLogEntities']
         >,
     ): Promise<void> {
-        for (
-            let i = 0;
-            i < entities.length;
-            i += RequestLogIngestionProcessor.INSERT_CHUNK_SIZE
-        ) {
-            const chunk = entities.slice(
-                i,
-                i + RequestLogIngestionProcessor.INSERT_CHUNK_SIZE,
-            );
+        const chunkSize = RequestLogIngestionProcessor.INSERT_CHUNK_SIZE;
+        const totalEntities = entities.length;
 
-            await this.requestLogsService.createRequestLogs(chunk, queryRunner);
+        for (let i = 0; i < totalEntities; i += chunkSize) {
+            await this.requestLogsService.createRequestLogs(
+                entities.slice(i, i + chunkSize),
+                queryRunner,
+            );
         }
     }
 
     private extractPath(url: string): string {
         try {
-            const parsedUrl = new URL(url);
-            return parsedUrl.pathname;
+            return new URL(url).pathname;
         } catch {
             return url;
         }
