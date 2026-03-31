@@ -22,6 +22,10 @@ export class EnvironmentVariablesDto {
     @IsBoolean()
     ENABLE_SWAGGER: boolean;
 
+    @Type(() => Boolean)
+    @IsBoolean()
+    ENABLE_BULLBOARD: boolean;
+
     @Type(() => Number)
     @Min(3000)
     @Max(65535)
@@ -90,6 +94,15 @@ export class EnvironmentVariablesDto {
     @Min(0)
     @IsInt()
     REDIS_DATABASE: number;
+
+    // BullBoard Configuration
+    @IsString()
+    @IsNotEmpty()
+    BULL_BOARD_USER: string;
+
+    @IsString()
+    @IsNotEmpty()
+    BULL_BOARD_PASSWORD: string;
 
     // JWT Configuration
     @IsString()
