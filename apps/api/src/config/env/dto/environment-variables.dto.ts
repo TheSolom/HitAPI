@@ -93,7 +93,8 @@ export class EnvironmentVariablesDto {
     @Type(() => Number)
     @Min(0)
     @IsInt()
-    REDIS_DATABASE: number;
+    @IsOptional()
+    REDIS_DATABASE?: number;
 
     // BullBoard Configuration
     @IsString()
