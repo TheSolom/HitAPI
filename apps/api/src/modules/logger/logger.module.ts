@@ -34,6 +34,7 @@ import type { AppClsStore } from './interfaces/logger.interface.js';
                             format: winston.format.combine(
                                 winston.format.timestamp(),
                                 winston.format.json(),
+                                winston.format.errors({ stack: true }),
                             ),
                         }),
                         new winston.transports.DailyRotateFile({
@@ -46,6 +47,7 @@ import type { AppClsStore } from './interfaces/logger.interface.js';
                             format: winston.format.combine(
                                 winston.format.timestamp(),
                                 winston.format.json(),
+                                winston.format.errors({ stack: true }),
                             ),
                         }),
                         new winston.transports.DailyRotateFile({
@@ -54,6 +56,7 @@ import type { AppClsStore } from './interfaces/logger.interface.js';
                             zippedArchive: true,
                             maxSize: '20m',
                             maxFiles: '14d',
+                            level: 'info',
                             format: winston.format.combine(
                                 winston.format.timestamp(),
                                 winston.format.json(),
