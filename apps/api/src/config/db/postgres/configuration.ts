@@ -2,6 +2,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DynamicModule } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { EnvironmentVariablesDto } from '../../../config/env/dto/environment-variables.dto.js';
+import { Environment } from '../../../common/enums/environment.enum.js';
 
 export const postgresConfiguration: DynamicModule = TypeOrmModule.forRootAsync({
     useFactory: (
@@ -15,7 +16,8 @@ export const postgresConfiguration: DynamicModule = TypeOrmModule.forRootAsync({
         database: configService.getOrThrow<string>('POSTGRES_DATABASE'),
         autoLoadEntities: true,
         synchronize:
-            configService.getOrThrow<string>('NODE_ENV') !== 'production',
+            configService.getOrThrow<Environment>('NODE_ENV') !==
+            Environment.Production,
     }),
     inject: [ConfigService],
 });
