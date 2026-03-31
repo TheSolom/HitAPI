@@ -1,13 +1,13 @@
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { ConfigService } from '@nestjs/config';
-import type { Logger } from '@nestjs/common';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import type { ConfigService } from '@nestjs/config';
 import type { EnvironmentVariablesDto } from '../config/env/dto/environment-variables.dto.js';
+import type { AppLoggerService } from '../modules/logger/logger.service.js';
 import { Routes } from '../common/constants/routes.constant.js';
 
 export async function startApp(
     app: NestExpressApplication,
     config: ConfigService<EnvironmentVariablesDto, true>,
-    logger: Logger,
+    logger: AppLoggerService,
 ): Promise<void> {
     const PORT = config.get<number>('PORT', 3000);
     const HOST = config.get<string>('HOST', '0.0.0.0');

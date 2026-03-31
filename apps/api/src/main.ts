@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '@nestjs/common';
 import type { EnvironmentVariablesDto } from './config/env/dto/environment-variables.dto.js';
 import { AppModule } from './app.module.js';
+import { AppLoggerService } from './modules/logger/logger.service.js';
 import { configureApp } from './bootstrap/app.bootstrap.js';
 import { configureSwagger } from './bootstrap/swagger.bootstrap.js';
 import { configureGracefulShutdown } from './bootstrap/shutdown.bootstrap.js';
@@ -24,7 +24,10 @@ async function bootstrap(): Promise<void> {
 
     const configService =
         app.get<ConfigService<EnvironmentVariablesDto, true>>(ConfigService);
-    const logger = new Logger('Bootstrap');
+
+    const logger = await app.resolve(AppLoggerService);
+    logger.setContext('Bootstrap');
+    app.useLogger(logger);
 
     await configureApp(app, configService, logger);
     configureSwagger(app, configService, logger);

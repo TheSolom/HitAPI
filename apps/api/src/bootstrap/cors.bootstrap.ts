@@ -1,13 +1,13 @@
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import type { ConfigService } from '@nestjs/config';
-import { Logger } from '@nestjs/common';
 import type { EnvironmentVariablesDto } from '../config/env/dto/environment-variables.dto.js';
+import type { AppLoggerService } from '../modules/logger/logger.service.js';
 import { Environment } from '../common/enums/environment.enum.js';
 
 export function configureCors(
     app: NestExpressApplication,
     config: ConfigService<EnvironmentVariablesDto, true>,
-    logger: Logger,
+    logger: AppLoggerService,
 ): void {
     const isProduction =
         config.get<Environment>('NODE_ENV') === Environment.Production;
