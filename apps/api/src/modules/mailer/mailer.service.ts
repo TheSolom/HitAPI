@@ -1,15 +1,15 @@
 import fs from 'node:fs/promises';
-import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import nodemailer, { Transporter, SendMailOptions } from 'nodemailer';
 import { OAuth2Client } from 'google-auth-library';
 import Handlebars from 'handlebars';
 import type { IMailerService } from './interfaces/mailer-service.interface.js';
+import { AppLoggerService } from '../logger/logger.service.js';
 import type { EnvironmentVariablesDto } from '../../config/env/dto/environment-variables.dto.js';
 
 @Injectable()
 export class MailerService implements IMailerService, OnModuleInit {
-    private readonly logger = new Logger(MailerService.name);
     private transporter?: Transporter;
     private readonly googleOAuth2: OAuth2Client;
     private readonly templateCache = new Map<
@@ -18,11 +18,14 @@ export class MailerService implements IMailerService, OnModuleInit {
     >();
 
     constructor(
+        private readonly logger: AppLoggerService,
         private readonly configService: ConfigService<
             EnvironmentVariablesDto,
             true
         >,
     ) {
+        this.logger.setContext(MailerService.name);
+
         this.googleOAuth2 = new OAuth2Client(
             this.configService.getOrThrow<string>('GOOGLE_CLIENT_ID'),
             this.configService.getOrThrow<string>('GOOGLE_CLIENT_SECRET'),
@@ -68,7 +71,12 @@ export class MailerService implements IMailerService, OnModuleInit {
                 },
             });
         } catch (error) {
-            this.logger.error('Failed to initialize mailer transporter', error);
+            this.logger.error('Failed to initialize mailer transporter', {
+                error:
+                    error instanceof Error
+                        ? error.stack
+                        : JSON.stringify(error),
+            });
         }
     }
 
