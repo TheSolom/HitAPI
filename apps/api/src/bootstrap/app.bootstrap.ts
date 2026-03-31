@@ -16,6 +16,6 @@ export async function configureApp(
     configureCors(app, config, logger);
     configureApi(app, config, logger);
     await configureGlobalProviders(app, config, logger);
-    configureMiddleware(app, config, logger);
+    configureMiddleware(app, logger);
     configureSecurity(app, config, logger);
 }
