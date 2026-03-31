@@ -27,9 +27,6 @@ export class ValidationError {
     @Column({ type: 'int', default: 1 })
     errorCount: number;
 
-    @Column({ type: 'timestamptz' })
-    timestamp: Date;
-
     @ManyToOne(() => Endpoint, (endpoint) => endpoint.validationErrors, {
         onDelete: 'CASCADE',
         nullable: false,

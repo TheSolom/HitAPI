@@ -27,9 +27,6 @@ export class ServerError {
     @Column({ type: 'int', default: 1 })
     errorCount: number;
 
-    @Column({ type: 'timestamptz' })
-    timestamp: Date;
-
     @ManyToOne(() => Endpoint, (endpoint) => endpoint.serverErrors, {
         onDelete: 'CASCADE',
         nullable: false,
