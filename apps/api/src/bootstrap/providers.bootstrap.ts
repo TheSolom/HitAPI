@@ -1,5 +1,4 @@
 import {
-    Logger,
     ClassSerializerInterceptor,
     ValidationPipe,
     BadRequestException,
@@ -7,20 +6,24 @@ import {
 import { Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
+import { ClsService } from 'nestjs-cls';
+import type { EnvironmentVariablesDto } from '../config/env/dto/environment-variables.dto.js';
+import { AppLoggerService } from '../modules/logger/logger.service.js';
+import { HttpLoggerInterceptor } from '../common/interceptors/http-logger.interceptor.js';
 import { ResponseInterceptor } from '../common/interceptors/response.interceptor.js';
+import { Environment } from '../common/enums/environment.enum.js';
 import { GlobalExceptionFilter } from '../common/filters/global-exception.filter.js';
 import { PostgresExceptionFilter } from '../common/filters/database-exception.filter.js';
-import type { EnvironmentVariablesDto } from '../config/env/dto/environment-variables.dto.js';
 
-export function configureGlobalProviders(
+export async function configureGlobalProviders(
     app: NestExpressApplication,
     config: ConfigService<EnvironmentVariablesDto, true>,
-    logger: Logger,
-): void {
+    logger: AppLoggerService,
+): Promise<void> {
     const reflector = app.get(Reflector);
-    const isProduction = config.get<string>('NODE_ENV') === 'production';
 
     app.useGlobalInterceptors(
+        new HttpLoggerInterceptor(logger, app.get(ClsService)),
         new ResponseInterceptor(reflector),
         new ClassSerializerInterceptor(reflector, {
             excludeExtraneousValues: true,
@@ -33,14 +36,19 @@ export function configureGlobalProviders(
             forbidNonWhitelisted: true,
             transform: true,
             transformOptions: { enableImplicitConversion: true },
-            enableDebugMessages: !isProduction,
+            enableDebugMessages:
+                config.get<Environment>('NODE_ENV') === Environment.Development,
             exceptionFactory: (errors) => new BadRequestException(errors),
         }),
     );
 
     app.useGlobalFilters(
         new GlobalExceptionFilter(),
-        new PostgresExceptionFilter(),
+        new PostgresExceptionFilter(
+            await app.resolve(AppLoggerService),
+            app.get(ClsService),
+            config,
+        ),
     );
 
     logger.log('Global providers configured');

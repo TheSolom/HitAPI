@@ -3,13 +3,18 @@ import {
     ExceptionFilter,
     ArgumentsHost,
     HttpStatus,
-    Logger,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { randomUUID } from 'node:crypto';
-import { QueryFailedError } from 'typeorm';
 import type { DatabaseError } from 'pg';
+import { QueryFailedError } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
+import { ClsService } from 'nestjs-cls';
 import type { Response, Request } from 'express';
+import { hrtime } from 'node:process';
+import { STATUS_CODES } from 'node:http';
+import type { EnvironmentVariablesDto } from '../../config/env/dto/environment-variables.dto.js';
+import { Environment } from '../enums/environment.enum.js';
+import { AppLoggerService } from '../../modules/logger/logger.service.js';
+import type { AppClsStore } from '../../modules/logger/interfaces/logger.interface.js';
 import type { RFC9457Response } from '../interfaces/RFC9457-response.interface.js';
 
 interface PostgresError extends DatabaseError {
@@ -30,94 +35,113 @@ function isPostgresError(error: unknown): error is PostgresError {
 
 @Catch(QueryFailedError<DatabaseError>)
 export class PostgresExceptionFilter implements ExceptionFilter {
-    private readonly logger = new Logger(PostgresExceptionFilter.name);
-    private readonly IS_PRODUCTION =
-        new ConfigService().get<string>('NODE_ENV') === 'production';
+    constructor(
+        private readonly logger: AppLoggerService,
+        private readonly cls: ClsService<AppClsStore>,
+        private readonly config: ConfigService<EnvironmentVariablesDto, true>,
+    ) {
+        this.logger.setContext(PostgresExceptionFilter.name);
+    }
 
     catch(exception: QueryFailedError<DatabaseError>, host: ArgumentsHost) {
-        const req = host.switchToHttp().getRequest<Request>();
-        const res = host.switchToHttp().getResponse<Response>();
+        const httpCtx = host.switchToHttp();
+        const req = httpCtx.getRequest<Request>();
+        const res = httpCtx.getResponse<Response>();
 
-        const traceId = (req.headers['x-trace-id'] as string) || randomUUID();
+        const traceId = this.cls.get('traceId');
+        const { method, originalUrl: path } = req;
+        const durationMs = Number(
+            (hrtime.bigint() - this.cls.get('startTime')) / 1_000_000n,
+        );
+        const { statusCode } = res;
+        const logMessage = `${method} ${path} ${statusCode} - ${durationMs}ms`;
+
+        const logMeta = {
+            userId: req.user?.id,
+            userApp: req.userApp?.id,
+            method,
+            path,
+            statusCode,
+            duration: durationMs,
+            ip: this.cls.get('ip'),
+            userAgent: this.cls.get('userAgent'),
+        };
+
         const driverError = exception.driverError;
 
         if (!isPostgresError(driverError)) {
             this.logger.error(
-                `[${traceId}] [${req.method}] ${req.url} - Database error without driver error`,
-                exception.stack,
+                'Database error without driver error: ' + logMessage,
+                { ...logMeta, error: exception.stack },
             );
 
             const response: RFC9457Response = {
-                title: 'Internal Server Error',
+                title: STATUS_CODES[HttpStatus.INTERNAL_SERVER_ERROR]!,
                 status: HttpStatus.INTERNAL_SERVER_ERROR,
                 detail: 'An unexpected database error occurred',
                 instance: req.url,
                 traceId,
             };
-            res.setHeader('X-Trace-Id', traceId);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(response);
-            return;
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(response);
         }
 
         const { code, detail } = driverError;
 
-        this.logger.warn(
-            `[${traceId}] [${req.method}] ${req.url} - PostgreSQL Error Code: ${code}`,
-            this.IS_PRODUCTION ? undefined : detail,
-        );
-
         if (code === '23505') {
+            this.logger.info(`PostgreSQL Error Code [${code}]: ` + logMessage, {
+                ...logMeta,
+                error: detail,
+            });
+
             const errors = this.extractDuplicateMessage(detail);
             const response: RFC9457Response = {
-                title: 'Conflict',
+                title: STATUS_CODES[HttpStatus.CONFLICT]!,
                 status: HttpStatus.CONFLICT,
-                detail: 'A unique constraint violation occurred',
+                detail: 'This value already exists',
                 instance: req.url,
                 traceId,
                 errors,
             };
+            return res.status(HttpStatus.CONFLICT).json(response);
+        }
+        if (code === '23503') {
+            this.logger.info(`PostgreSQL Error Code [${code}]: ` + logMessage, {
+                ...logMeta,
+                error: detail,
+            });
 
-            this.logger.warn(
-                `[${traceId}] Unique constraint violation: ${JSON.stringify(errors)}`,
-            );
-
-            res.setHeader('X-Trace-Id', traceId);
-            res.status(HttpStatus.CONFLICT).json(response);
-        } else if (code === '23503') {
             const errors = this.extractForeignKeyMessage(detail);
             const response: RFC9457Response = {
-                title: 'Bad Request',
+                title: STATUS_CODES[HttpStatus.BAD_REQUEST]!,
                 status: HttpStatus.BAD_REQUEST,
-                detail: 'A foreign key constraint violation occurred',
+                detail: 'Invalid value',
                 instance: req.url,
                 traceId,
                 errors,
             };
+            return res.status(HttpStatus.BAD_REQUEST).json(response);
+        }
 
-            this.logger.warn(
-                `[${traceId}] Foreign key constraint violation: ${JSON.stringify(errors)}`,
-            );
+        this.logger.error(
+            `Unhandled PostgreSQL error code [${code}]: ` + logMessage,
+            {
+                ...logMeta,
+                error: detail,
+            },
+        );
 
-            res.setHeader('X-Trace-Id', traceId);
-            res.status(HttpStatus.BAD_REQUEST).json(response);
-        } else {
-            this.logger.error(
-                `[${traceId}] [${req.method}] ${req.url} - Unhandled PostgreSQL error code: ${code}`,
-                this.IS_PRODUCTION ? undefined : detail,
-            );
-
-            const response: RFC9457Response = {
-                title: 'Internal Server Error',
-                status: HttpStatus.INTERNAL_SERVER_ERROR,
-                detail: this.IS_PRODUCTION
+        const response: RFC9457Response = {
+            title: STATUS_CODES[HttpStatus.INTERNAL_SERVER_ERROR]!,
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            detail:
+                this.config.get<Environment>('NODE_ENV') ===
+                Environment.Production
                     ? 'An unexpected database error occurred'
                     : `Database error: ${code}`,
-                instance: req.url,
-                traceId,
-            };
-            res.setHeader('X-Trace-Id', traceId);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(response);
-        }
+            instance: req.url,
+            traceId,
+        };
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(response);
     }
 
     private extractDuplicateMessage(
