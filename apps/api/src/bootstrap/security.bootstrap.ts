@@ -1,15 +1,17 @@
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { ConfigService } from '@nestjs/config';
-import { Logger } from '@nestjs/common';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import type { ConfigService } from '@nestjs/config';
+import type { Logger } from '@nestjs/common';
 import helmet from 'helmet';
 import type { EnvironmentVariablesDto } from '../config/env/dto/environment-variables.dto.js';
+import { Environment } from '../common/enums/environment.enum.js';
 
 export function configureSecurity(
     app: NestExpressApplication,
     config: ConfigService<EnvironmentVariablesDto, true>,
     logger: Logger,
 ): void {
-    const isProduction = config.get<string>('NODE_ENV') === 'production';
+    const isProduction =
+        config.get<Environment>('NODE_ENV') === Environment.Production;
 
     app.use(
         helmet({

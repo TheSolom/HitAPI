@@ -1,17 +1,18 @@
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { ConfigService } from '@nestjs/config';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import type { ConfigService } from '@nestjs/config';
 import type { Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import type { EnvironmentVariablesDto } from '../config/env/dto/environment-variables.dto.js';
+import { Environment } from '../common/enums/environment.enum.js';
 
 export function configureSwagger(
     app: NestExpressApplication,
     config: ConfigService<EnvironmentVariablesDto, true>,
     logger: Logger,
 ): void {
-    const isProduction = config.get<string>('NODE_ENV') === 'production';
     const enableSwagger =
-        !isProduction || config.get<boolean>('ENABLE_SWAGGER', false);
+        config.get<Environment>('NODE_ENV') !== Environment.Production ||
+        config.get<boolean>('ENABLE_SWAGGER', false);
 
     if (!enableSwagger) {
         logger.warn('Swagger documentation is disabled');
