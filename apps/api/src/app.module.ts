@@ -15,6 +15,7 @@ import { CacheModule } from './config/cache/cache.module.js';
 import { QueueModule } from './config/queue/queue.module.js';
 import { RateLimitModule } from './modules/rate-limit/rate-limit.module.js';
 import { ClsModule } from './config/cls/cls.module.js';
+import { LoggerModule } from './modules/logger/logger.module.js';
 import { UsersModule } from './modules/users/users.module.js';
 import { MailsModule } from './modules/mails/mails.module.js';
 import { MailerModule } from './modules/mailer/mailer.module.js';
@@ -47,6 +48,7 @@ import { Routes } from './common/constants/routes.constant.js';
         QueueModule,
         RateLimitModule,
         ClsModule,
+        LoggerModule,
         UsersModule,
         MailsModule,
         MailerModule,
