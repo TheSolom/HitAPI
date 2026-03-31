@@ -26,6 +26,7 @@ export function configureCors(
             'Content-Type',
             'Accept',
             'X-Requested-With',
+            'X-Client-Id',
         ],
         exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
         credentials: true,
