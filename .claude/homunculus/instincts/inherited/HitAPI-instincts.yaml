@@ -1,0 +1,706 @@
+# Instincts generated from https://github.com/TheSolom/HitAPI
+# Generated: 2026-03-31T13:02:35.732Z
+# Version: 2.0
+# NOTE: This file supplements (does not replace) any existing curated instincts.
+# High-confidence manually curated instincts should be preserved alongside these.
+
+---
+id: HitAPI-commit-conventional
+trigger: "when writing a commit message"
+confidence: 0.85
+domain: git
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Commit Conventional
+
+## Action
+
+Use conventional commit format with prefixes: feat, refactor, chore, test, fix
+
+## Evidence
+
+- 200 commits analyzed
+- Detected conventional commit pattern
+- Examples: feat(logging): include error stack traces and adjust log levels for production transports, refactor(ingestion): add contextual logging and traceId propagation to ingestion flows
+
+---
+id: HitAPI-commit-length
+trigger: "when writing a commit message"
+confidence: 0.6
+domain: git
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Commit Length
+
+## Action
+
+Write moderate-length commit messages (~57 characters)
+
+## Evidence
+
+- Average commit message length: 57 chars
+- Based on 200 commits
+
+---
+id: HitAPI-naming-files
+trigger: "when creating a new file"
+confidence: 0.8
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Naming Files
+
+## Action
+
+Use kebab-case naming convention
+
+## Evidence
+
+- Analyzed file naming patterns in repository
+- Dominant pattern: kebab-case
+
+---
+id: HitAPI-import-relative
+trigger: "when importing modules"
+confidence: 0.75
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Import Relative
+
+## Action
+
+Use relative imports for project files
+
+## Evidence
+
+- Import analysis shows relative import pattern
+- Example: import { x } from '../lib/x'
+
+---
+id: HitAPI-export-style
+trigger: "when exporting from a module"
+confidence: 0.7
+domain: code-style
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Export Style
+
+## Action
+
+Prefer named exports
+
+## Evidence
+
+- Export pattern analysis
+- Dominant style: named
+
+---
+id: HitAPI-arch-feature-based
+trigger: "when adding a new feature"
+confidence: 0.85
+domain: architecture
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Arch Feature Based
+
+## Action
+
+Create a new folder in src/features/ with all related code colocated
+
+## Evidence
+
+- Feature-based module organization detected
+- Structure: src/features/[feature-name]/
+
+---
+id: HitAPI-test-framework
+trigger: "when writing tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Test Framework
+
+## Action
+
+Use jest as the test framework
+
+## Evidence
+
+- Test framework detected: jest
+- File pattern: *.spec.ts
+
+---
+id: HitAPI-test-naming
+trigger: "when creating a test file"
+confidence: 0.85
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Test Naming
+
+## Action
+
+Name test files using the pattern: *.spec.ts
+
+## Evidence
+
+- File pattern: *.spec.ts
+- Consistent across test files
+
+---
+id: HitAPI-test-types
+trigger: "when planning tests for a feature"
+confidence: 0.7
+domain: testing
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Test Types
+
+## Action
+
+Write unit, integration, e2e tests to match project standards
+
+## Evidence
+
+- Test types detected: unit, integration, e2e
+- Coverage config: no
+
+---
+id: HitAPI-workflow-feature-development
+trigger: "when implementing a new feature"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Workflow Feature Development
+
+## Action
+
+Follow the feature-development workflow:
+1. Add feature implementation
+2. Add tests for feature
+3. Update documentation
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~19x per month
+- Files: apps/api/src/common/utils/*, apps/api/src/modules/request-logs/dto/*, apps/api/src/*
+
+---
+id: HitAPI-workflow-refactoring
+trigger: "when refactoring code"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Workflow Refactoring
+
+## Action
+
+Follow the refactoring workflow:
+1. Ensure tests pass before refactor
+2. Refactor code structure
+3. Verify tests still pass
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~13x per month
+- Files: src/**/*
+
+---
+id: HitAPI-workflow-add-new-feature-module
+trigger: "when doing add new feature module"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Workflow Add New Feature Module
+
+## Action
+
+Follow the add-new-feature-module workflow:
+1. Create DTO files in apps/api/src/modules/<feature>/dto/
+2. Create entity files in apps/api/src/modules/<feature>/entities/
+3. Create enums and interfaces in apps/api/src/modules/<feature>/enums/ and interfaces/
+4. Create repository files in apps/api/src/modules/<feature>/repositories/
+5. Create service files in apps/api/src/modules/<feature>/
+6. Create controller file in apps/api/src/modules/<feature>/
+7. Create module file in apps/api/src/modules/<feature>/
+8. Update constants in apps/api/src/common/constants/
+9. Register module in apps/api/src/app.module.ts
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: apps/api/src/modules/<feature>/dto/*.ts, apps/api/src/modules/<feature>/entities/*.ts, apps/api/src/modules/<feature>/enums/*.ts
+
+---
+id: HitAPI-workflow-refactor-module-logging-to-apploggerservice
+trigger: "when doing refactor module logging to apploggerservice"
+confidence: 0.7
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Workflow Refactor Module Logging To Apploggerservice
+
+## Action
+
+Follow the refactor-module-logging-to-apploggerservice workflow:
+1. Replace NestJS Logger imports with AppLoggerService in target files
+2. Inject AppLoggerService via constructor where needed
+3. Update all logger calls to use AppLoggerService
+4. Update or add AppLoggerService mocks in related test files
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~4x per month
+- Files: apps/api/src/modules/*/*.ts, apps/api/src/bootstrap/*.ts, apps/api/src/common/filters/*.ts
+
+---
+id: HitAPI-workflow-add-or-update-env-configuration
+trigger: "when doing add or update env configuration"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Workflow Add Or Update Env Configuration
+
+## Action
+
+Follow the add-or-update-env-configuration workflow:
+1. Edit or add environment variable in apps/api/src/config/env/dto/environment-variables.dto.ts
+2. Update related configuration files in apps/api/src/config/*/configuration.ts
+3. Update .env.example and/or .env.local.example with new variable
+4. Update code to use new/changed environment variable
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: apps/api/src/config/env/dto/environment-variables.dto.ts, apps/api/src/config/*/configuration.ts, apps/api/.env.example
+
+---
+id: HitAPI-workflow-add-ingestion-pipeline-or-processor
+trigger: "when doing add ingestion pipeline or processor"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Workflow Add Ingestion Pipeline Or Processor
+
+## Action
+
+Follow the add-ingestion-pipeline-or-processor workflow:
+1. Create or update DTOs in apps/api/src/modules/ingestion/dto/
+2. Add or update processor files in apps/api/src/modules/ingestion/processors/
+3. Update job data types in apps/api/src/modules/ingestion/types/
+4. Update or create service/controller logic in apps/api/src/modules/ingestion/
+5. Update module registration in apps/api/src/modules/ingestion/ingestion.module.ts
+6. Update queue constants if needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: apps/api/src/modules/ingestion/dto/*.ts, apps/api/src/modules/ingestion/processors/*.ts, apps/api/src/modules/ingestion/types/*.ts
+
+---
+id: HitAPI-workflow-add-or-update-unit-tests-for-module-service
+trigger: "when doing add or update unit tests for module service"
+confidence: 0.6
+domain: workflow
+source: repo-analysis
+source_repo: https://github.com/TheSolom/HitAPI
+---
+
+# HitAPI Workflow Add Or Update Unit Tests For Module Service
+
+## Action
+
+Follow the add-or-update-unit-tests-for-module-service workflow:
+1. Create or update .spec.ts files in the module's tests directory
+2. Add/expand test cases for service logic and edge cases
+3. Update mocks or test utilities as needed
+
+## Evidence
+
+- Workflow detected from commit patterns
+- Frequency: ~2x per month
+- Files: apps/api/src/modules/*/tests/*.spec.ts
+
+---
+id: hitapi-naming-files-kebab-case
+trigger: "When creating a new file"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Naming Files Kebab Case
+
+## Action
+
+Name the file using kebab-case (e.g., my-feature.service.ts)
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.files
+- All files in apps/api/src/modules/*/*.ts follow kebab-case
+
+---
+id: hitapi-naming-functions-camelCase
+trigger: "When defining a new function"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Naming Functions CamelCase
+
+## Action
+
+Name the function using camelCase (e.g., getRequestLogs)
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.functions
+- Functions in apps/api/src/common/utils/period.util.ts use camelCase
+
+---
+id: hitapi-naming-classes-pascal-case
+trigger: "When defining a new class"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Naming Classes Pascal Case
+
+## Action
+
+Name the class using PascalCase (e.g., RequestLogService)
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.classes
+- Classes in apps/api/src/modules/request-logs/dto/*.ts use PascalCase
+
+---
+id: hitapi-naming-constants-screaming-snake-case
+trigger: "When defining a constant"
+confidence: 0.9
+domain: code-style
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Naming Constants Screaming Snake Case
+
+## Action
+
+Name the constant using SCREAMING_SNAKE_CASE (e.g., REDIS_DATABASE)
+
+## Evidence
+
+- Pattern in codeStyle.namingConventions.constants
+- Seen in apps/api/src/common/constants/*.constant.ts
+
+---
+id: hitapi-imports-relative
+trigger: "When importing modules within the repo"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Imports Relative
+
+## Action
+
+Use relative import paths (e.g., import { X } from '../../utils/x')
+
+## Evidence
+
+- Pattern in codeStyle.importStyle
+- Imports in apps/api/src/modules/request-logs/dto/get-request-log-timeline-options.dto.ts
+
+---
+id: hitapi-exports-named
+trigger: "When exporting from a module"
+confidence: 0.85
+domain: code-style
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Exports Named
+
+## Action
+
+Use named exports (e.g., export { MyService })
+
+## Evidence
+
+- Pattern in codeStyle.exportStyle
+- Seen in apps/api/src/common/utils/period.util.ts
+
+---
+id: hitapi-test-file-pattern
+trigger: "When creating a test file"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Test File Pattern
+
+## Action
+
+Name the file with a .spec.ts suffix (e.g., my-feature.service.spec.ts)
+
+## Evidence
+
+- Pattern in testing.filePattern
+- Seen in apps/api/src/modules/*/tests/*.spec.ts
+
+---
+id: hitapi-test-framework-jest
+trigger: "When writing tests"
+confidence: 0.9
+domain: testing
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Test Framework Jest
+
+## Action
+
+Use Jest as the testing framework
+
+## Evidence
+
+- Pattern in testing.framework
+- Seen in package.json and test files
+
+---
+id: hitapi-test-types
+trigger: "When planning tests for a module"
+confidence: 0.8
+domain: testing
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Test Types
+
+## Action
+
+Include unit, integration, and e2e tests as appropriate
+
+## Evidence
+
+- Pattern in testing.testTypes
+- Seen in test files and workflow descriptions
+
+---
+id: hitapi-git-conventional-commits
+trigger: "When writing a commit message"
+confidence: 0.95
+domain: git
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Git Conventional Commits
+
+## Action
+
+Use Conventional Commits format: <type>(<scope>): <description>
+
+## Evidence
+
+- Pattern in commits.type
+- Examples like 'feat(logging): include error stack traces...'
+
+---
+id: hitapi-git-commit-prefixes
+trigger: "When choosing a commit type"
+confidence: 0.9
+domain: git
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Git Commit Prefixes
+
+## Action
+
+Use one of the allowed prefixes: feat, refactor, chore, test, fix, docs, build
+
+## Evidence
+
+- Pattern in commits.prefixes
+- Examples in commit history
+
+---
+id: hitapi-git-commit-length
+trigger: "When writing a commit message"
+confidence: 0.7
+domain: git
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Git Commit Length
+
+## Action
+
+Keep the commit message concise, around 57 characters on average
+
+## Evidence
+
+- Pattern in commits.averageLength
+- Examples in commit history
+
+---
+id: hitapi-workflow-add-new-feature-module
+trigger: "When adding a new feature area to the API"
+confidence: 0.95
+domain: workflow
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Workflow Add New Feature Module
+
+## Action
+
+Create DTOs, entities, enums, interfaces, repositories, service, controller, module file, update constants, and register module in app.module.ts
+
+## Evidence
+
+- Workflow: add-new-feature-module
+- Example commit sequences and files
+
+---
+id: hitapi-workflow-refactor-logging-to-apploggerservice
+trigger: "When standardizing logging in a module"
+confidence: 0.9
+domain: workflow
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Workflow Refactor Logging To Apploggerservice
+
+## Action
+
+Replace NestJS Logger with AppLoggerService, update DI, logger calls, and test mocks
+
+## Evidence
+
+- Workflow: refactor-module-logging-to-apploggerservice
+- Example commit sequences and files
+
+---
+id: hitapi-workflow-add-or-update-env-configuration
+trigger: "When introducing or modifying environment variables or config"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Workflow Add Or Update Env Configuration
+
+## Action
+
+Update environment-variables.dto.ts, related config files, .env.example, and code usage
+
+## Evidence
+
+- Workflow: add-or-update-env-configuration
+- Example commit sequences and files
+
+---
+id: hitapi-workflow-add-ingestion-pipeline-or-processor
+trigger: "When adding a new ingestion flow to the system"
+confidence: 0.85
+domain: workflow
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Workflow Add Ingestion Pipeline Or Processor
+
+## Action
+
+Create/update DTOs, processors, types, service/controller logic, module registration, and queue constants
+
+## Evidence
+
+- Workflow: add-ingestion-pipeline-or-processor
+- Example commit sequences and files
+
+---
+id: hitapi-workflow-add-or-update-unit-tests-for-module-service
+trigger: "When adding or improving unit tests for a service"
+confidence: 0.8
+domain: workflow
+source: repo-analysis
+source_repo: TheSolom/HitAPI
+---
+
+# Hitapi Workflow Add Or Update Unit Tests For Module Service
+
+## Action
+
+Create/update .spec.ts files, add/expand test cases, and update mocks/utilities
+
+## Evidence
+
+- Workflow: add-or-update-unit-tests-for-module-service
+- Example commit sequences and files
+
