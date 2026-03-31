@@ -4,12 +4,19 @@ import {
     ArgumentsHost,
     HttpException,
     HttpStatus,
-    Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { randomUUID } from 'node:crypto';
+import { ClsService } from 'nestjs-cls';
+import { hrtime } from 'node:process';
 import { STATUS_CODES } from 'node:http';
 import type { Request, Response } from 'express';
+import { AppLoggerService } from '../../modules/logger/logger.service.js';
+import type { EnvironmentVariablesDto } from '../../config/env/dto/environment-variables.dto.js';
+import { Environment } from '../enums/environment.enum.js';
+import type {
+    AppClsStore,
+    LogMeta,
+} from '../../modules/logger/interfaces/logger.interface.js';
 import type {
     RFC9457Response,
     ValidationErrorDetail,
@@ -17,64 +24,96 @@ import type {
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-    private readonly logger = new Logger(GlobalExceptionFilter.name);
-    private readonly IS_PRODUCTION =
-        new ConfigService().get<string>('NODE_ENV') === 'production';
+    constructor(
+        private readonly logger: AppLoggerService,
+        private readonly cls: ClsService<AppClsStore>,
+        private readonly config: ConfigService<EnvironmentVariablesDto, true>,
+    ) {
+        this.logger.setContext(GlobalExceptionFilter.name);
+    }
 
     catch(exception: unknown, host: ArgumentsHost): void {
-        const ctx = host.switchToHttp();
-        const res = ctx.getResponse<Response>();
-        const req = ctx.getRequest<Request>();
-
-        const traceId = (req.headers['x-trace-id'] as string) || randomUUID();
-        res.setHeader('X-Trace-Id', traceId);
+        const httpCtx = host.switchToHttp();
+        const req = httpCtx.getRequest<Request>();
+        const res = httpCtx.getResponse<Response>();
 
         const { statusCode, response } = this.parseException(
             exception,
             req.url,
-            traceId,
         );
 
-        this.logException(exception, req, statusCode, traceId);
+        this.logException(exception, req);
 
         res.status(statusCode).json(response);
     }
 
-    private logException(
-        exception: unknown,
-        req: Request,
-        statusCode: number,
-        traceId: string,
-    ): void {
-        const isClientError = statusCode >= 400 && statusCode < 500;
-        const isServerError = statusCode >= 500;
+    private logException(exception: unknown, req: Request): void {
+        const statusCode =
+            exception instanceof HttpException
+                ? exception.getStatus()
+                : HttpStatus.INTERNAL_SERVER_ERROR;
+        const isServerError =
+            <number>HttpStatus.INTERNAL_SERVER_ERROR <= statusCode;
+        const isClientError =
+            <number>HttpStatus.BAD_REQUEST <= statusCode &&
+            <number>HttpStatus.INTERNAL_SERVER_ERROR > statusCode;
 
-        const logMessage = `[${traceId}] [${req.method}] ${req.url} - ${statusCode}`;
+        const { method, originalUrl: path } = req;
+        const durationMs = Number(
+            (hrtime.bigint() - (this.cls.get('startTime') ?? 0n)) / 1_000_000n,
+        );
+        const logMessage = `${method} ${path} ${statusCode} - ${durationMs}ms`;
+
+        const logMeta: LogMeta = {
+            userId: req.user?.id,
+            userApp: req.userApp?.id,
+            method,
+            path,
+            statusCode,
+            duration: durationMs,
+            ip: this.cls.get('ip'),
+            userAgent: this.cls.get('userAgent'),
+        };
 
         if (isServerError) {
-            this.logger.error(
-                logMessage,
-                exception instanceof Error
-                    ? exception.stack
-                    : JSON.stringify(exception),
-            );
-        } else if (isClientError && statusCode !== 404) {
-            this.logger.warn(logMessage);
+            return this.logger.error('Unhandled exception: ' + logMessage, {
+                ...logMeta,
+                error:
+                    exception instanceof Error
+                        ? exception.stack
+                        : JSON.stringify(exception),
+            });
+        }
+
+        if (isClientError && <number>HttpStatus.NOT_FOUND !== statusCode) {
+            if (
+                <number>HttpStatus.UNAUTHORIZED == statusCode ||
+                <number>HttpStatus.FORBIDDEN === statusCode
+            ) {
+                return this.logger.warn('Auth failure: ' + logMessage, logMeta);
+            }
+            if (<number>HttpStatus.TOO_MANY_REQUESTS === statusCode) {
+                return this.logger.warn(
+                    'Rate limit hit: ' + logMessage,
+                    logMeta,
+                );
+            }
+            return this.logger.debug('Client error: ' + logMessage, logMeta);
         }
     }
 
     private parseException(
         exception: unknown,
         url: string,
-        traceId: string,
     ): {
         statusCode: number;
         response: RFC9457Response;
     } {
+        const traceId = this.cls.get('traceId');
+
         if (exception instanceof HttpException) {
             return this.handleHttpException(exception, url, traceId);
         }
-
         if (exception instanceof Error) {
             return this.handleError(exception, url, traceId);
         }
@@ -82,7 +121,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         return {
             statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
             response: {
-                title: 'Internal Server Error',
+                title: STATUS_CODES[HttpStatus.INTERNAL_SERVER_ERROR]!,
                 status: HttpStatus.INTERNAL_SERVER_ERROR,
                 detail: 'An unexpected error occurred',
                 instance: url,
@@ -106,7 +145,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         >;
 
         if (
-            statusCode === (HttpStatus.BAD_REQUEST as number) &&
+            statusCode === <number>HttpStatus.BAD_REQUEST &&
             Array.isArray(exceptionResponse.message)
         ) {
             return {
@@ -114,7 +153,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
                 response: {
                     title: 'Validation Failed',
                     status: statusCode,
-                    detail: 'Request validation failed. See errors for details.',
+                    detail: 'Request validation failed. See errors for details',
                     instance: url,
                     traceId,
                     errors: this.formatValidationErrors(
@@ -152,11 +191,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         return {
             statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
             response: {
-                title: 'Internal Server Error',
+                title: STATUS_CODES[HttpStatus.INTERNAL_SERVER_ERROR]!,
                 status: HttpStatus.INTERNAL_SERVER_ERROR,
-                detail: this.IS_PRODUCTION
-                    ? 'An unexpected error occurred'
-                    : error.message,
+                detail:
+                    this.config.get<Environment>('NODE_ENV') ===
+                    Environment.Production
+                        ? 'An unexpected error occurred'
+                        : error.message,
                 instance: url,
                 traceId,
             },

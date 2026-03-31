@@ -43,7 +43,11 @@ export async function configureGlobalProviders(
     );
 
     app.useGlobalFilters(
-        new GlobalExceptionFilter(),
+        new GlobalExceptionFilter(
+            await app.resolve(AppLoggerService),
+            app.get(ClsService),
+            config,
+        ),
         new PostgresExceptionFilter(
             await app.resolve(AppLoggerService),
             app.get(ClsService),
