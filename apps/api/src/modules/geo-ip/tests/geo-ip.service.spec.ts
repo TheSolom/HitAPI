@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals';
 import { Test, type TestingModule } from '@nestjs/testing';
+import { AppLoggerService } from '../../logger/logger.service.js';
 import type { IGeoIPService } from '../interfaces/geo-ip-service.interface.js';
 
 const mockOpen = jest.fn<() => Promise<{ get: jest.Mock }>>();
@@ -25,7 +26,16 @@ describe('GeoIPService', () => {
         mockOpen.mockResolvedValue(mockLookup);
 
         const module: TestingModule = await Test.createTestingModule({
-            providers: [GeoIPService],
+            providers: [
+                GeoIPService,
+                {
+                    provide: AppLoggerService,
+                    useValue: {
+                        error: jest.fn(),
+                        setContext: jest.fn(),
+                    },
+                },
+            ],
         }).compile();
 
         await module.init();
