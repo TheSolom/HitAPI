@@ -1,6 +1,9 @@
-import { Processor, WorkerHost } from '@nestjs/bullmq';
+import { Processor } from '@nestjs/bullmq';
+import { Injectable, Inject } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { Injectable, Inject, Logger } from '@nestjs/common';
+import { ClsService } from 'nestjs-cls';
+import { BaseProcessor } from '../../../common/queues/base.processor.js';
+import { AppLoggerService } from '../../logger/logger.service.js';
 import { QUEUES, JOBS } from '../../../common/constants/queue.constant.js';
 import { Services } from '../../../common/constants/services.constant.js';
 import type { IApplicationLogsService } from '../../request-logs/interfaces/application-logs-service.interface.js';
@@ -9,19 +12,22 @@ import type { LogRecordDto } from '../dto/request-log-item.dto.js';
 
 @Processor(QUEUES.APPLICATION_LOGS)
 @Injectable()
-export class ApplicationLogsIngestionProcessor extends WorkerHost {
-    private readonly logger = new Logger(
-        ApplicationLogsIngestionProcessor.name,
-    );
-
+export class ApplicationLogsIngestionProcessor extends BaseProcessor<
+    IngestApplicationLogsJobData,
+    void,
+    JOBS.INGEST_APPLICATION_LOGS
+> {
     constructor(
         @Inject(Services.APPLICATION_LOGS)
         private readonly applicationLogsService: IApplicationLogsService,
+        protected readonly logger: AppLoggerService,
+        protected readonly cls: ClsService,
     ) {
         super();
+        this.logger.setContext(ApplicationLogsIngestionProcessor.name);
     }
 
-    async process(
+    protected async processJob(
         job: Job<
             IngestApplicationLogsJobData,
             void,
@@ -38,26 +44,14 @@ export class ApplicationLogsIngestionProcessor extends WorkerHost {
                     timestamp: new Date(log.timestamp),
                 })) ?? [],
         );
-        if (logs.length === 0) return;
 
-        try {
-            await this.applicationLogsService.createApplicationLogs(logs);
-
-            this.logger.log(
-                `Successfully processed ${logs.length} application logs`,
-            );
-        } catch (error) {
-            if (error instanceof Error) {
-                this.logger.error(
-                    `Failed to process application logs: ${error.message}`,
-                    error.stack,
-                );
-            } else {
-                this.logger.error(
-                    `Failed to process application logs: ${error}`,
-                );
-            }
-            throw error;
+        if (logs.length === 0) {
+            this.logger.debug('Empty log batch, skipping insert');
+            return;
         }
+
+        this.logger.debug('Inserting application logs', { count: logs.length });
+
+        await this.applicationLogsService.createApplicationLogs(logs);
     }
 }
