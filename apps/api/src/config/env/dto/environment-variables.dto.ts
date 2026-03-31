@@ -11,7 +11,7 @@ import {
     IsUrl,
     IsEmail,
 } from 'class-validator';
-import { Environment } from '../enums/environments.enum.js';
+import { Environment } from '../../../common/enums/environment.enum.js';
 
 export class EnvironmentVariablesDto {
     // App Configuration
@@ -77,6 +77,19 @@ export class EnvironmentVariablesDto {
     @Min(1024)
     @IsInt()
     REDIS_PORT: number;
+
+    @IsString()
+    @IsNotEmpty()
+    REDIS_USER: string;
+
+    @IsString()
+    @IsNotEmpty()
+    REDIS_PASSWORD: string;
+
+    @Type(() => Number)
+    @Min(0)
+    @IsInt()
+    REDIS_DATABASE: number;
 
     // JWT Configuration
     @IsString()
