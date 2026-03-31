@@ -30,6 +30,7 @@ import { ErrorsModule } from './modules/errors/errors.module.js';
 import { TrafficModule } from './modules/traffic/traffic.module.js';
 import { ResourcesModule } from './modules/resources/resources.module.js';
 import { IngestionModule } from './modules/ingestion/ingestion.module.js';
+import { ClsSeedingMiddleware } from './common/middlewares/cls-seeding.middleware.js';
 import { NdjsonBodyMiddleware } from './common/middlewares/ndjson-body.middleware.js';
 import { Routes } from './common/constants/routes.constant.js';
 
@@ -73,6 +74,7 @@ import { Routes } from './common/constants/routes.constant.js';
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
+        consumer.apply(ClsSeedingMiddleware).forRoutes('{*splat}');
         consumer.apply(NdjsonBodyMiddleware).forRoutes({
             path: `${Routes.INGESTION}/logs`,
             method: RequestMethod.POST,
