@@ -13,6 +13,7 @@ async function bootstrap(): Promise<void> {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         bodyParser: false,
         rawBody: true,
+        bufferLogs: true,
     });
 
     app.useBodyParser('json', { type: ['application/json'] });
@@ -25,7 +26,7 @@ async function bootstrap(): Promise<void> {
         app.get<ConfigService<EnvironmentVariablesDto, true>>(ConfigService);
     const logger = new Logger('Bootstrap');
 
-    configureApp(app, configService, logger);
+    await configureApp(app, configService, logger);
     configureSwagger(app, configService, logger);
     configureGracefulShutdown(app, logger);
 
