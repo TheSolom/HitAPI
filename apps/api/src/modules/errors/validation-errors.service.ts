@@ -35,15 +35,13 @@ export class ValidationErrorsService {
             queryRunner?.manager.getRepository(ValidationError) ??
             this.validationErrorsRepository;
 
+        const { endpointId, consumerId, loc, ...rest } = getValidationErrorDto;
+
         return repository.findOneBy({
-            ...getValidationErrorDto,
-            loc: JSON.stringify(getValidationErrorDto.loc),
-            endpoint: getValidationErrorDto.endpointId
-                ? { id: getValidationErrorDto.endpointId }
-                : undefined,
-            consumer: getValidationErrorDto.consumerId
-                ? { id: getValidationErrorDto.consumerId }
-                : undefined,
+            ...rest,
+            loc: loc ? JSON.stringify(loc) : undefined,
+            endpoint: endpointId ? { id: endpointId } : undefined,
+            consumer: consumerId ? { id: consumerId } : undefined,
         });
     }
 
@@ -55,12 +53,12 @@ export class ValidationErrorsService {
             queryRunner?.manager.getRepository(ValidationError) ??
             this.validationErrorsRepository;
 
+        const { endpointId, consumerId, ...rest } = addValidationErrorDto;
+
         await repository.insert({
-            ...addValidationErrorDto,
-            endpoint: { id: addValidationErrorDto.endpointId },
-            consumer: addValidationErrorDto.consumerId
-                ? { id: addValidationErrorDto.consumerId }
-                : undefined,
+            ...rest,
+            endpoint: { id: endpointId },
+            consumer: consumerId ? { id: consumerId } : undefined,
         });
     }
 

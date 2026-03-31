@@ -33,14 +33,12 @@ export class ServerErrorsService {
             queryRunner?.manager.getRepository(ServerError) ??
             this.serverErrorsRepository;
 
+        const { endpointId, consumerId, ...rest } = getServerErrorDto;
+
         return repository.findOneBy({
-            ...getServerErrorDto,
-            endpoint: getServerErrorDto.endpointId
-                ? { id: getServerErrorDto.endpointId }
-                : undefined,
-            consumer: getServerErrorDto.consumerId
-                ? { id: getServerErrorDto.consumerId }
-                : undefined,
+            ...rest,
+            endpoint: endpointId ? { id: endpointId } : undefined,
+            consumer: consumerId ? { id: consumerId } : undefined,
         });
     }
 
@@ -52,12 +50,12 @@ export class ServerErrorsService {
             queryRunner?.manager.getRepository(ServerError) ??
             this.serverErrorsRepository;
 
+        const { endpointId, consumerId, ...rest } = addServerErrorDto;
+
         await repository.insert({
-            ...addServerErrorDto,
-            endpoint: { id: addServerErrorDto.endpointId },
-            consumer: addServerErrorDto.consumerId
-                ? { id: addServerErrorDto.consumerId }
-                : undefined,
+            ...rest,
+            endpoint: { id: endpointId },
+            consumer: consumerId ? { id: consumerId } : undefined,
         });
     }
 
