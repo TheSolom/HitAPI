@@ -3,6 +3,7 @@ import type { ConfigService } from '@nestjs/config';
 import type { EnvironmentVariablesDto } from '../config/env/dto/environment-variables.dto.js';
 import type { AppLoggerService } from '../modules/logger/logger.service.js';
 import { Routes } from '../common/constants/routes.constant.js';
+import { Environment } from '../common/enums/environment.enum.js';
 
 export async function startApp(
     app: NestExpressApplication,
@@ -17,17 +18,27 @@ export async function startApp(
 
     const appUrl = await app.getUrl();
     const apiUrl = `${appUrl}/${apiPrefix}`;
-    const docsUrl = `${appUrl}/${apiPrefix}/${Routes.DOCS}`;
-    const queuesUrl = `${appUrl}/${apiPrefix}/${Routes.QUEUES}`;
+
+    let docsUrl: string | null = null;
+    const enableSwagger =
+        config.get<Environment>('NODE_ENV') !== Environment.Production ||
+        config.get<boolean>('ENABLE_SWAGGER', false);
+    if (enableSwagger) {
+        docsUrl = `${appUrl}/${apiPrefix}/${Routes.DOCS}`;
+    }
+
+    let queuesUrl: string | null = null;
+    const enableBullBoard = config.get<boolean>('ENABLE_BULLBOARD', true);
+    if (enableBullBoard) {
+        queuesUrl = `${appUrl}/${apiPrefix}/${Routes.QUEUES}`;
+    }
 
     logger.log('='.repeat(50));
     logger.log(`🚀 Application started successfully`);
-    logger.log(
-        `📝 Environment: ${config.get<string>('NODE_ENV') || 'Development'}`,
-    );
+    logger.log(`📝 Environment: ${config.get<Environment>('NODE_ENV')}`);
     logger.log(`🌐 Application URL: ${apiUrl}`);
-    logger.log(`📚 Swagger Documentation: ${docsUrl}`);
-    logger.log(`📊 Queues: ${queuesUrl}`);
+    if (enableSwagger) logger.log(`📚 Swagger Documentation: ${docsUrl}`);
+    if (enableBullBoard) logger.log(`📊 Queues: ${queuesUrl}`);
     logger.log(`💾 Process ID: ${process.pid}`);
     logger.log('='.repeat(50));
 }
