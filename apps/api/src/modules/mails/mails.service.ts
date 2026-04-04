@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { Injectable, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -6,6 +7,9 @@ import type { IMailerService } from '../mailer/interfaces/mailer-service.interfa
 import type { IMailsService } from './interfaces/mails-service.interface.js';
 import type { EnvironmentVariablesDto } from '../../config/env/dto/environment-variables.dto.js';
 import type { MailData } from './types/mails.type.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 @Injectable()
 export class MailsService implements IMailsService {
@@ -25,10 +29,7 @@ export class MailsService implements IMailsService {
             subject: 'Email Confirmation',
             text: `${this.configService.getOrThrow<string>('FRONTEND_URL')}/confirm-email/${mailData.data.token}`,
             templatePath: path.join(
-                process.cwd(),
-                'src',
-                'modules',
-                'mails',
+                __dirname,
                 'templates',
                 'confirm-email.hbs',
             ),
@@ -48,10 +49,7 @@ export class MailsService implements IMailsService {
             subject: 'Password Reset',
             text: `${this.configService.getOrThrow<string>('FRONTEND_URL')}/password-change/${mailData.data.token}`,
             templatePath: path.join(
-                process.cwd(),
-                'src',
-                'modules',
-                'mails',
+                __dirname,
                 'templates',
                 'reset-password.hbs',
             ),
@@ -68,14 +66,7 @@ export class MailsService implements IMailsService {
             to: mailData.to,
             subject: 'Team Invite',
             text: `${this.configService.getOrThrow<string>('FRONTEND_URL')}/team-invite/${mailData.data.token}`,
-            templatePath: path.join(
-                process.cwd(),
-                'src',
-                'modules',
-                'mails',
-                'templates',
-                'team-invite.hbs',
-            ),
+            templatePath: path.join(__dirname, 'templates', 'team-invite.hbs'),
             context: {
                 inviteLink: `${this.configService.getOrThrow<string>('FRONTEND_URL')}/team-invite/${mailData.data.token}`,
                 AppName: this.configService.getOrThrow<string>('APP_NAME'),
