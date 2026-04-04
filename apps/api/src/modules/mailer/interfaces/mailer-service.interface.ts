@@ -9,12 +9,10 @@ export interface IMailerService {
      * @param options.mailOptions - Other Nodemailer `SendMailOptions` such as to, from, subject, etc.
      * @returns {Promise<void>} A Promise that resolves when the email has been sent.
      */
-    sendMail({
-        templatePath,
-        context,
-        ...mailOptions
-    }: SendMailOptions & {
-        templatePath: string;
-        context: Record<string, unknown>;
-    }): Promise<void>;
+    sendMail(
+        options: SendMailOptions & {
+            templatePath: string;
+            context: Record<string, unknown>;
+        },
+    ): Promise<void>;
 }
