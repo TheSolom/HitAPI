@@ -38,7 +38,7 @@ export async function startApp(
     logger.log(`📝 Environment: ${config.get<Environment>('NODE_ENV')}`);
     logger.log(`🌐 Application URL: ${apiUrl}`);
     if (enableSwagger) logger.log(`📚 Swagger Documentation: ${docsUrl}`);
-    if (enableBullBoard) logger.log(`📊 Queues: ${queuesUrl}`);
+    if (enableBullBoard) logger.log(`📊 Queues Dashboard: ${queuesUrl}`);
     logger.log(`💾 Process ID: ${process.pid}`);
     logger.log('='.repeat(50));
 }
