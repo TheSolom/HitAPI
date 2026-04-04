@@ -8,11 +8,9 @@ export const redisConfiguration: DynamicModule = CacheModule.registerAsync({
     useFactory: (
         configService: ConfigService<EnvironmentVariablesDto, true>,
     ) => {
-        const redisUrl = `redis://${configService.getOrThrow<string>('REDIS_USER')}:${configService.getOrThrow<string>('REDIS_PASSWORD')}@${configService.getOrThrow<string>('REDIS_HOST')}:${configService.getOrThrow<number>('REDIS_PORT')}/${configService.getOrThrow<number>('REDIS_DATABASE')}`;
-
         return {
             stores: [
-                new KeyvRedis(redisUrl, {
+                new KeyvRedis(configService.getOrThrow<string>('REDIS_URL'), {
                     namespace: configService.getOrThrow<string>('APP_NAME'),
                 }),
             ],

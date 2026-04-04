@@ -74,27 +74,13 @@ export class EnvironmentVariablesDto {
     // Redis Configuration
     @IsString()
     @IsNotEmpty()
-    REDIS_HOST: string;
+    REDIS_URL: string;
 
     @Type(() => Number)
     @Max(65535)
     @Min(1024)
     @IsInt()
     REDIS_PORT: number;
-
-    @IsString()
-    @IsNotEmpty()
-    REDIS_USER: string;
-
-    @IsString()
-    @IsNotEmpty()
-    REDIS_PASSWORD: string;
-
-    @Type(() => Number)
-    @Min(0)
-    @IsInt()
-    @IsOptional()
-    REDIS_DATABASE?: number;
 
     // BullBoard Configuration
     @IsString()
