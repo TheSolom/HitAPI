@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { open, type Reader, type CountryResponse } from 'maxmind';
 import type { IGeoIPService } from './interfaces/geo-ip-service.interface.js';
@@ -14,7 +15,12 @@ export class GeoIPService implements OnModuleInit, IGeoIPService {
     }
 
     async onModuleInit() {
-        const PATH = 'assets/GeoLite2-Country_20260102/GeoLite2-Country.mmdb';
+        const PATH = path.join(
+            process.cwd(),
+            'assets',
+            'GeoLite2-Country_20260102',
+            'GeoLite2-Country.mmdb',
+        );
 
         if (GeoIPService.lookup) return;
 
