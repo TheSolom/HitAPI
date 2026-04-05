@@ -27,7 +27,10 @@
         "test:cov": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register ../../node_modules/.bin/jest --runInBand",
         "test:e2e": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --config ./test/jest-e2e.json",
-        "type-check": "tsc --noEmit"
+        "type-check": "tsc --noEmit",
+        "migration:generate": "typeorm migration:generate -d src/config/db/postgres/data-source.ts",
+        "migration:run": "typeorm migration:run -d dist/config/db/postgres/data-source.js",
+        "migration:revert": "typeorm migration:revert -d dist/config/db/postgres/data-source.js"
     },
     "dependencies": {
         "@bull-board/api": "6.20.6",
