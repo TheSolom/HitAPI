@@ -3,19 +3,14 @@ name: Publish Packages
 on:
     push:
         tags:
-            # Trigger for  @hitapi/shared  →  shared-v*.*.*
             - 'shared-v*'
-            # Trigger for  @hitapi/types   →  types-v*.*.*
             - 'types-v*'
 
 permissions:
     contents: read
-    id-token: write  # Required for OIDC Trusted Publisher
+    id-token: write
 
 jobs:
-    # ──────────────────────────────────────────────────────────────
-    # Resolve which tag was pushed and derive target package info
-    # ──────────────────────────────────────────────────────────────
     resolve:
         name: Resolve Tag
         runs-on: ubuntu-latest
@@ -38,9 +33,6 @@ jobs:
                     exit 1
                   fi
 
-    # ──────────────────────────────────────────────────────────────
-    # Publish @hitapi/shared
-    # ──────────────────────────────────────────────────────────────
     publish-shared:
         name: Publish @hitapi/shared
         runs-on: ubuntu-latest
@@ -51,32 +43,27 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - name: Setup Node.js with npm registry
+            - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: 22
+                  node-version: 24
                   cache: npm
                   registry-url: https://registry.npmjs.org
 
             - name: Install dependencies
               run: npm ci
 
-            - name: Bump package version
+            - name: Bump version
               working-directory: packages/shared
               run: npm version ${{ needs.resolve.outputs.version }} --no-git-tag-version
 
             - name: Build @hitapi/shared
               run: npm run build:shared
 
-            - name: Publish @hitapi/shared to npm
+            - name: Publish
               working-directory: packages/shared
               run: npm publish --access public --provenance
 
-    # ──────────────────────────────────────────────────────────────
-    # Publish @hitapi/types
-    # @hitapi/types depends on @hitapi/shared, so shared must
-    # already be published on npm before this job can succeed.
-    # ──────────────────────────────────────────────────────────────
     publish-types:
         name: Publish @hitapi/types
         runs-on: ubuntu-latest
@@ -87,27 +74,28 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - name: Setup Node.js with npm registry
+            - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: 22
+                  node-version: 24
                   cache: npm
                   registry-url: https://registry.npmjs.org
 
             - name: Install dependencies
               run: npm ci
 
-            - name: Bump package version
+            - name: Bump version
               working-directory: packages/types
               run: npm version ${{ needs.resolve.outputs.version }} --no-git-tag-version
 
-            # Build shared first (workspace peer) then types
+            # shared must already be published on npm since types depends on it
+            # publish shared-v* tag first before types-v* tag
             - name: Build @hitapi/shared
               run: npm run build:shared
 
             - name: Build @hitapi/types
               run: npm run build:types
 
-            - name: Publish @hitapi/types to npm
+            - name: Publish
               working-directory: packages/types
               run: npm publish --access public --provenance
