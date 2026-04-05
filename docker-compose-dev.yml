@@ -1,0 +1,50 @@
+name: HitAPI
+services:
+    api-dev:
+        build:
+            context: .
+            dockerfile: apps/api/Dockerfile.dev
+        container_name: api-dev
+        restart: unless-stopped
+        env_file:
+            - ./apps/api/.env.development
+        environment:
+            - POSTGRES_HOST=postgresDB
+            - REDIS_HOST=redisCache
+        ports:
+            - '${PORT:-3001}:${PORT:-3001}'
+        depends_on:
+            - postgresDB
+            - redisCache
+        develop:
+            watch:
+                - action: rebuild
+                  path: ./package.json
+                - action: rebuild
+                  path: ./apps/api/package.json
+                - action: sync
+                  path: ./apps/api/src
+                  target: /app/apps/api/src
+    postgresDB:
+        image: postgres:18.3
+        container_name: postgres-db
+        restart: unless-stopped
+        env_file:
+            - ./apps/api/.env.development
+        ports:
+            - '${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}'
+        volumes:
+            - db-dev-data:/var/lib/postgresql/18/data
+    redisCache:
+        image: redis/redis-stack:7.4.0-v8
+        container_name: redis-cache
+        restart: unless-stopped
+        env_file:
+            - ./apps/api/.env.development
+        ports:
+            - '${REDIS_PORT:-6379}:${REDIS_PORT:-6379}'
+        volumes:
+            - cache-dev-data:/data
+volumes:
+    db-dev-data:
+    cache-dev-data:
