@@ -15,8 +15,8 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-    lint:
-        name: Lint
+    install:
+        name: Install Dependencies
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
@@ -25,11 +25,31 @@ jobs:
             - name: Setup Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: 22
+                  node-version: 24
                   cache: npm
 
             - name: Install dependencies
               run: npm ci
+
+            - name: Cache node_modules
+              uses: actions/cache/save@v4
+              with:
+                  path: node_modules
+                  key: node-modules-${{ github.sha }}
+
+    lint:
+        name: Lint
+        runs-on: ubuntu-latest
+        needs: install
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Restore node_modules
+              uses: actions/cache/restore@v4
+              with:
+                  path: node_modules
+                  key: node-modules-${{ github.sha }}
 
             - name: Run ESLint
               run: npm run lint
@@ -37,34 +57,31 @@ jobs:
     build-packages:
         name: Build Packages
         runs-on: ubuntu-latest
+        needs: install
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
+            - name: Restore node_modules
+              uses: actions/cache/restore@v4
               with:
-                  node-version: 22
-                  cache: npm
+                  path: node_modules
+                  key: node-modules-${{ github.sha }}
 
-            - name: Install dependencies
-              run: npm ci
-
-            # Build order matters: types depends on shared
             - name: Build @hitapi/shared
               run: npm run build:shared
 
             - name: Build @hitapi/types
               run: npm run build:types
 
-            - name: Upload shared dist artifact
+            - name: Upload shared dist
               uses: actions/upload-artifact@v4
               with:
                   name: shared-dist
                   path: packages/shared/dist
                   retention-days: 1
 
-            - name: Upload types dist artifact
+            - name: Upload types dist
               uses: actions/upload-artifact@v4
               with:
                   name: types-dist
@@ -79,14 +96,11 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
+            - name: Restore node_modules
+              uses: actions/cache/restore@v4
               with:
-                  node-version: 22
-                  cache: npm
-
-            - name: Install dependencies
-              run: npm ci
+                  path: node_modules
+                  key: node-modules-${{ github.sha }}
 
             - name: Download shared dist
               uses: actions/download-artifact@v4
@@ -102,3 +116,30 @@ jobs:
 
             - name: Run tests
               run: npm test
+
+    docker:
+        name: Docker Build & Push
+        runs-on: ubuntu-latest
+        needs: [lint, test]
+        if: github.ref == 'refs/heads/master'
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Log in to GHCR
+              uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Build and push
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  file: apps/api/Dockerfile
+                  push: true
+                  tags: ghcr.io/${{ github.repository_owner }}/hitapi:latest
