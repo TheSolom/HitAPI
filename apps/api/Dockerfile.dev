@@ -1,0 +1,24 @@
+FROM node:24.14-bookworm-slim
+
+WORKDIR /app
+
+COPY package*.json ./
+COPY tsconfig*.json ./
+COPY packages/shared/package*.json ./packages/shared/
+COPY packages/types/package*.json ./packages/types/
+COPY apps/api/package*.json ./apps/api/
+
+RUN npm pkg delete scripts.prepare && npm ci
+
+COPY packages/shared ./packages/shared
+COPY packages/types ./packages/types
+COPY apps/api ./apps/api
+COPY apps/api/assets ./assets
+
+RUN mkdir -p apps/api/dist && chown -R node:node /app
+
+USER node
+
+EXPOSE ${PORT}
+
+CMD ["npm", "run", "start:dev:api"]
