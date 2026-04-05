@@ -1,39 +1,56 @@
 name: HitAPI
 services:
-    app:
-        build: .
-        container_name: backend
+    api:
+        build:
+            context: .
+            dockerfile: apps/api/Dockerfile
+        container_name: api
         restart: unless-stopped
         env_file:
-            - .env
+            - ./apps/api/.env
         ports:
-            - '${PORT}:${PORT}'
+            - '${PORT:-3000}:${PORT:-3000}'
         volumes:
-            - .:/app
-        command: npm start
+            - ./logs:/app/apps/api/logs
         depends_on:
-            - postgresDB
-            - redisCache
+            postgresDB:
+                condition: service_healthy
+            redisCache:
+                condition: service_healthy
     postgresDB:
-        image: postgres:latest
+        image: postgres:18.3
         container_name: postgres-db
         restart: unless-stopped
-        environment:
-            - POSTGRES_USER=${POSTGRES_USER}
-            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            - POSTGRES_DB=${POSTGRES_DATABASE}
+        env_file:
+            - ./apps/api/.env
         ports:
-            - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+            - '${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}'
         volumes:
-            - db-data:/var/lib/postgresql
+            - db-data:/var/lib/postgresql/18/data
+        healthcheck:
+            test:
+                [
+                    'CMD-SHELL',
+                    'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB',
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
     redisCache:
-        image: redis/redis-stack:latest
+        image: redis/redis-stack:7.4.0-v8
         container_name: redis-cache
         restart: unless-stopped
+        env_file:
+            - ./apps/api/.env
         ports:
-            - '${REDIS_PORT}:${REDIS_PORT}'
+            - '${REDIS_PORT:-6379}:${REDIS_PORT:-6379}'
         volumes:
             - cache-data:/data
+        healthcheck:
+            test: ['CMD-SHELL', 'redis-cli ping']
+            interval: 10s
+            timeout: 5s
+            retries: 5
 volumes:
     db-data:
     cache-data:
