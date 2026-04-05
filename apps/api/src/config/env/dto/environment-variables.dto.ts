@@ -69,7 +69,7 @@ export class EnvironmentVariablesDto {
 
     @IsString()
     @IsNotEmpty()
-    POSTGRES_DATABASE: string;
+    POSTGRES_DB: string;
 
     // Redis Configuration
     @IsString()
