@@ -12,6 +12,8 @@ const sharedProjectConfig = (
     rootDir,
     testMatch,
     moduleFileExtensions: ['js', 'json', 'ts'],
+    modulePathIgnorePatterns: ['<rootDir>/dist'],
+    testPathIgnorePatterns: ['/node_modules/', '/dist/'],
     transform: {
         '^.+\\.(t|j)s$': [require.resolve('ts-jest'), { useESM: true }],
     },
