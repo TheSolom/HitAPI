@@ -156,10 +156,15 @@ jobs:
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
+            - name: Lowercase owner
+              id: lowercase_owner
+              run: |
+                  echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
+
             - name: Build and push
               uses: docker/build-push-action@v6
               with:
                   context: .
                   file: apps/api/Dockerfile
                   push: true
-                  tags: ghcr.io/${{ github.repository_owner }}/hitapi:latest
+                  tags: ghcr.io/${{ steps.lowercase_owner.outputs.owner }}/hitapi:latest
