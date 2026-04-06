@@ -1,7 +1,4 @@
-import { createRequire } from 'node:module';
 import type { Config } from 'jest';
-
-const require = createRequire(import.meta.url);
 
 const sharedProjectConfig = (
     displayName: string,
@@ -15,7 +12,7 @@ const sharedProjectConfig = (
     modulePathIgnorePatterns: ['<rootDir>/dist'],
     testPathIgnorePatterns: ['/node_modules/', '/dist/'],
     transform: {
-        '^.+\\.(t|j)s$': [require.resolve('ts-jest'), { useESM: true }],
+        '^.+\\.(t|j)s$': ['ts-jest', { useESM: true }],
     },
     moduleNameMapper: {
         '^(\\.{1,2}/.*)\\.js$': '$1',

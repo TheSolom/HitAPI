@@ -28,7 +28,7 @@ export class VerificationTokenService implements IVerificationTokensService {
         return token;
     }
 
-    async getTokenData(token: string): Promise<MaybeType<TokenCacheData>> {
+    getTokenData(token: string): Promise<MaybeType<TokenCacheData>> {
         const tokenKey = this.getTokenKey(token);
         return this.cacheService.get<TokenCacheData>(tokenKey);
     }
