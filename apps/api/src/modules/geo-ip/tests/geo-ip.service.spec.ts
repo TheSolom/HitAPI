@@ -112,7 +112,7 @@ describe('GeoIPService', () => {
         it('should initialize the maxmind lookup', () => {
             const expectedPath = path.join(
                 process.cwd(),
-                'assets',
+                'apps/api/assets',
                 'GeoLite2-Country',
                 'GeoLite2-Country.mmdb',
             );

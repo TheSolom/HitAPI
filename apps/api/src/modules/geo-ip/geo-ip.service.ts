@@ -17,7 +17,7 @@ export class GeoIPService implements OnModuleInit, IGeoIPService {
     async onModuleInit() {
         const PATH = path.join(
             process.cwd(),
-            'assets',
+            'apps/api/assets',
             'GeoLite2-Country',
             'GeoLite2-Country.mmdb',
         );
