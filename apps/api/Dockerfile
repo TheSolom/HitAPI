@@ -34,10 +34,10 @@ COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
 COPY --from=builder /app/packages/types/dist ./packages/types/dist
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 
-ARG MAXMIND_LICENSE_KEY
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
+RUN --mount=type=secret,id=maxmind_key \
+    apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
     && mkdir -p apps/api/assets/GeoLite2-Country \
-    && curl -sSL "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=${MAXMIND_LICENSE_KEY}&suffix=tar.gz" \
+    && curl -sSL "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=$(cat /run/secrets/maxmind_key)&suffix=tar.gz" \
     | tar -xz --strip-components=1 -C apps/api/assets/GeoLite2-Country \
     && apt-get purge -y curl && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
