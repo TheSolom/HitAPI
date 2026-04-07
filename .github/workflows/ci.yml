@@ -168,3 +168,5 @@ jobs:
                   file: apps/api/Dockerfile
                   push: true
                   tags: ghcr.io/${{ steps.lowercase_owner.outputs.owner }}/hitapi:latest
+                  build-args: |
+                      MAXMIND_LICENSE_KEY=${{ secrets.MAXMIND_LICENSE_KEY }}
