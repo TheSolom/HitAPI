@@ -30,6 +30,9 @@ export const postgresConfiguration: DynamicModule = TypeOrmModule.forRootAsync({
                 ? [path.join(__dirname, 'migrations', '*.js')]
                 : [],
             migrationsRun: isProduction,
+            ssl: {
+                rejectUnauthorized: false,
+            },
         };
     },
     inject: [ConfigService],
