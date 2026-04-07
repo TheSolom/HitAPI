@@ -113,7 +113,7 @@ describe('GeoIPService', () => {
             const expectedPath = path.join(
                 process.cwd(),
                 'assets',
-                'GeoLite2-Country_20260102',
+                'GeoLite2-Country',
                 'GeoLite2-Country.mmdb',
             );
             expect(mockOpen).toHaveBeenCalledWith(expectedPath);
