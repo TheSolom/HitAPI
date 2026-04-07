@@ -33,12 +33,18 @@ RUN npm pkg delete scripts.prepare && npm ci --omit=dev
 COPY --from=builder /app/packages/shared/dist ./packages/shared/dist
 COPY --from=builder /app/packages/types/dist ./packages/types/dist
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
-COPY apps/api/assets ./assets
+
+ARG MAXMIND_LICENSE_KEY
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
+    && mkdir -p apps/api/assets/GeoLite2-Country \
+    && curl -sSL "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=${MAXMIND_LICENSE_KEY}&suffix=tar.gz" \
+    | tar -xz --strip-components=1 -C apps/api/assets/GeoLite2-Country \
+    && apt-get purge -y curl && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p apps/api/logs && chown -R node:node /app
 
 USER node
 
-EXPOSE ${PORT}
+EXPOSE 3000
 
 CMD ["node", "apps/api/dist/main.js"]
