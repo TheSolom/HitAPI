@@ -19,6 +19,6 @@ RUN mkdir -p apps/api/dist && chown -R node:node /app
 
 USER node
 
-EXPOSE ${PORT}
+EXPOSE 3001
 
 CMD ["npm", "run", "start:dev:api"]
