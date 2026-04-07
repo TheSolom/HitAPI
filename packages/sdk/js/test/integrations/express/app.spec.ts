@@ -335,6 +335,7 @@ describe('Middleware for Express with nested routers', () => {
 
     afterEach(async () => {
         jest.restoreAllMocks();
+        jest.clearAllTimers();
         if (client) {
             await HitAPIClient.shutdown();
         }
