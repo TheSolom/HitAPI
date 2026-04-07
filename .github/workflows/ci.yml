@@ -170,3 +170,9 @@ jobs:
                   tags: ghcr.io/${{ steps.lowercase_owner.outputs.owner }}/hitapi:latest
                   secrets: |
                       maxmind_key=${{ secrets.MAXMIND_LICENSE_KEY }}
+            - name: Trigger Koyeb redeploy
+              run: |
+                  curl -X POST \
+                    -H "Authorization: Bearer ${{ secrets.KOYEB_API_KEY }}" \
+                    -H "Content-Type: application/json" \
+                    "https://app.koyeb.com/v1/services/${{ secrets.KOYEB_SERVICE_ID }}/redeploy"
