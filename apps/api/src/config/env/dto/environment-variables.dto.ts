@@ -20,6 +20,11 @@ export class EnvironmentVariablesDto {
 
     @Type(() => Boolean)
     @IsBoolean()
+    @IsOptional()
+    IGNORE_ENV_FILE?: boolean;
+
+    @Type(() => Boolean)
+    @IsBoolean()
     ENABLE_SWAGGER: boolean;
 
     @Type(() => Boolean)
