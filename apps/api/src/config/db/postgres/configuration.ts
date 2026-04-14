@@ -24,15 +24,15 @@ export const postgresConfiguration: DynamicModule = TypeOrmModule.forRootAsync({
             username: configService.getOrThrow<string>('POSTGRES_USER'),
             password: configService.getOrThrow<string>('POSTGRES_PASSWORD'),
             database: configService.getOrThrow<string>('POSTGRES_DB'),
+            ssl: configService.get<boolean>('POSTGRES_SSL')
+                ? { rejectUnauthorized: false }
+                : false,
             autoLoadEntities: true,
             synchronize: !isProduction,
             migrations: isProduction
                 ? [path.join(__dirname, 'migrations', '*.js')]
                 : [],
             migrationsRun: isProduction,
-            ssl: {
-                rejectUnauthorized: false,
-            },
         };
     },
     inject: [ConfigService],

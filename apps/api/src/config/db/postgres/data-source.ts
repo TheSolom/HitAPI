@@ -19,6 +19,9 @@ export default new DataSource({
     username: configService.getOrThrow<string>('POSTGRES_USER'),
     password: configService.getOrThrow<string>('POSTGRES_PASSWORD'),
     database: configService.getOrThrow<string>('POSTGRES_DB'),
+    ssl: configService.get<boolean>('POSTGRES_SSL')
+        ? { rejectUnauthorized: false }
+        : false,
     entities: [
         path.join(__dirname, '..', '..', '..', '..', '**', '*.entity.js'),
     ],

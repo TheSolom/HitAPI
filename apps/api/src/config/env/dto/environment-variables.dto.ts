@@ -71,6 +71,11 @@ export class EnvironmentVariablesDto {
     @IsNotEmpty()
     POSTGRES_DB: string;
 
+    @Type(() => Boolean)
+    @IsBoolean()
+    @IsOptional()
+    POSTGRES_SSL?: boolean;
+
     // Redis Configuration
     @IsString()
     @IsNotEmpty()
