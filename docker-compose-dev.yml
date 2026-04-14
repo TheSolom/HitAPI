@@ -14,8 +14,10 @@ services:
         ports:
             - '${PORT:-3001}:${PORT:-3001}'
         depends_on:
-            - postgresDB
-            - redisCache
+            postgresDB:
+                condition: service_healthy
+            redisCache:
+                condition: service_healthy
         develop:
             watch:
                 - action: rebuild
@@ -35,6 +37,15 @@ services:
             - '${POSTGRES_PORT:-5432}:${POSTGRES_PORT:-5432}'
         volumes:
             - db-dev-data:/var/lib/postgresql/18/data
+        healthcheck:
+            test:
+                [
+                    'CMD-SHELL',
+                    'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB',
+                ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
     redisCache:
         image: redis/redis-stack:7.4.0-v8
         container_name: redis-cache
@@ -45,6 +56,11 @@ services:
             - '${REDIS_PORT:-6379}:${REDIS_PORT:-6379}'
         volumes:
             - cache-dev-data:/data
+        healthcheck:
+            test: ['CMD-SHELL', 'redis-cli ping']
+            interval: 10s
+            timeout: 5s
+            retries: 5
 volumes:
     db-dev-data:
     cache-dev-data:
