@@ -19,7 +19,7 @@
         "start": "nest start",
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
-        "start:prod": "node --env-file=.env dist/main",
+        "start:prod": "node --env-file=.env.production.local dist/main",
         "lint": "eslint \"{src,test}/**/*.ts\"",
         "lint:fix": "eslint \"{src,test}/**/*.ts\" --fix",
         "test": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",

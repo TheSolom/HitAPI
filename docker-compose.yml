@@ -7,7 +7,7 @@ services:
         container_name: api
         restart: unless-stopped
         env_file:
-            - ./apps/api/.env
+            - ./apps/api/.env.production.local
         ports:
             - '${PORT:-3000}:${PORT:-3000}'
         volumes:
