@@ -34,10 +34,18 @@ import { ClsSeedingMiddleware } from './common/middlewares/cls-seeding.middlewar
 import { NdjsonBodyMiddleware } from './common/middlewares/ndjson-body.middleware.js';
 import { Routes } from './common/constants/routes.constant.js';
 
+const isIgnoreEnvFile = process.env.IGNORE_ENV_FILE === 'true';
+const nodeEnv = process.env.NODE_ENV || 'development';
+
+const envFilePath = isIgnoreEnvFile
+    ? undefined
+    : [`.env.${nodeEnv}.local`, `.env.${nodeEnv}`, '.env.local', '.env'];
+
 @Module({
     imports: [
         ConfigModule.forRoot({
-            envFilePath: `.env${process.env.NODE_ENV === 'production' ? '' : '.local'}`,
+            envFilePath,
+            ignoreEnvFile: isIgnoreEnvFile,
             isGlobal: true,
             cache: true,
             validate,
