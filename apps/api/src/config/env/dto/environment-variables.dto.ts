@@ -42,6 +42,10 @@ export class EnvironmentVariablesDto {
     @IsOptional()
     HOST?: string;
 
+    @IsUrl({ require_tld: false })
+    @IsOptional()
+    APP_URL?: string;
+
     @IsString()
     @IsNotEmpty()
     APP_NAME: string;
