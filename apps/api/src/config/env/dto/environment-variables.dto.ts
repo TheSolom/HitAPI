@@ -10,6 +10,7 @@ import {
     IsNotEmpty,
     IsUrl,
     IsEmail,
+    ValidateIf,
 } from 'class-validator';
 import { Environment } from '../../../common/enums/environment.enum.js';
 
@@ -43,7 +44,11 @@ export class EnvironmentVariablesDto {
     HOST?: string;
 
     @IsUrl({ require_tld: false })
-    @IsOptional()
+    @ValidateIf(
+        (env: EnvironmentVariablesDto) =>
+            env.NODE_ENV === Environment.Production ||
+            env.APP_URL !== undefined,
+    )
     APP_URL?: string;
 
     @IsString()
