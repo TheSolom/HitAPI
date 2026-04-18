@@ -10,9 +10,10 @@ export function configureSwagger(
     config: ConfigService<EnvironmentVariablesDto, true>,
     logger: AppLoggerService,
 ): void {
+    const isProduction =
+        config.get<Environment>('NODE_ENV') === Environment.Production;
     const enableSwagger =
-        config.get<Environment>('NODE_ENV') !== Environment.Production ||
-        config.get<boolean>('ENABLE_SWAGGER', false);
+        !isProduction || config.get<boolean>('ENABLE_SWAGGER', false);
 
     if (!enableSwagger) {
         logger.warn('Swagger documentation is disabled');
@@ -54,10 +55,17 @@ export function configureSwagger(
                 },
             },
             'GoogleOAuth2',
-        )
-        .build();
+        );
 
-    const document = SwaggerModule.createDocument(app, builder);
+    if (isProduction) {
+        builder.addServer(config.get<string>('APP_URL'), 'Production');
+    } else {
+        logger.warn(
+            'APP_URL is not defined, skipping Production server in Swagger',
+        );
+    }
+
+    const document = SwaggerModule.createDocument(app, builder.build());
 
     SwaggerModule.setup('docs', app, document, {
         useGlobalPrefix: true,
