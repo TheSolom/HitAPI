@@ -26,11 +26,13 @@ export class EnvironmentVariablesDto {
 
     @Type(() => Boolean)
     @IsBoolean()
-    ENABLE_SWAGGER: boolean;
+    @IsOptional()
+    ENABLE_SWAGGER?: boolean;
 
     @Type(() => Boolean)
     @IsBoolean()
-    ENABLE_BULLBOARD: boolean;
+    @IsOptional()
+    ENABLE_BULLBOARD?: boolean;
 
     @Type(() => Number)
     @Min(3000)
