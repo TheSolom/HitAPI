@@ -30,8 +30,8 @@ export default class DataSender {
     }
 
     #getApiUrlPrefix(): string {
-        const baseURL = 'http://localhost:3000/api';
-        const version = '1';
+        const baseURL = process.env.API_URL || 'http://localhost:3000/api';
+        const version = process.env.API_VERSION || '1';
         return `${baseURL}/v${version}/ingest/`;
     }
 
