@@ -64,9 +64,14 @@ function scheduleStartupData(
     basePath?: string,
     attempt = 1,
 ): void {
-    setTimeout(() => {
+    if (!client.enabled) return;
+
+    const timer = setTimeout(() => {
+        if (!client.enabled) return;
+
         void (async () => {
             const appInfo = await getAppInfo(app, basePath);
+
             if (appInfo.paths.length > 0 || attempt >= 10) {
                 client.setStartupData(appInfo);
                 await client.startSync();
@@ -75,6 +80,7 @@ function scheduleStartupData(
             }
         })();
     }, 500);
+    if (timer.unref) timer.unref();
 }
 
 async function getAppInfo(

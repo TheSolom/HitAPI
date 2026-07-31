@@ -163,8 +163,9 @@ export class HitAPIClient {
             () => void this.#sync(),
             INITIAL_SYNC_INTERVAL,
         );
+        if (this.#syncIntervalId.unref) this.#syncIntervalId.unref();
 
-        setTimeout(() => {
+        const durationTimer = setTimeout(() => {
             if (this.#syncIntervalId) {
                 clearInterval(this.#syncIntervalId);
 
@@ -172,8 +173,10 @@ export class HitAPIClient {
                     () => void this.#sync(),
                     SYNC_INTERVAL,
                 );
+                if (this.#syncIntervalId.unref) this.#syncIntervalId.unref();
             }
         }, INITIAL_SYNC_INTERVAL_DURATION);
+        if (durationTimer.unref) durationTimer.unref();
     }
 
     public handleHubError(error: unknown): boolean {
