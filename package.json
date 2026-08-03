@@ -19,6 +19,10 @@
         "apps/*"
     ],
     "scripts": {
+        "clean": "npm run clean --workspaces --if-present",
+        "clean:api": "npm run clean --workspace=apps/api",
+        "clean:web": "npm run clean --workspace=apps/web",
+        "clean:packages": "npm run clean --workspace=packages/types && npm run clean --workspace=packages/shared && npm run clean --workspace=packages/sdk/js",
         "build:packages": "npm run build:types && npm run build:shared && npm run build:sdk",
         "build:types": "npm run build --workspace=packages/types",
         "build:shared": "npm run build --workspace=packages/shared",
@@ -26,19 +30,15 @@
         "build:api": "npm run build --workspace=apps/api",
         "build:web": "npm run build --workspace=apps/web",
         "build": "npm run build:packages && npm run build:api && npm run build:web",
-
         "start:api": "npm run start --workspace=apps/api",
         "start:dev:api": "npm run start:dev --workspace=apps/api",
         "start:prod:api": "npm run start:prod --workspace=apps/api",
         "start:dev:web": "npm run start:dev --workspace=apps/web",
-
         "lint": "npm run lint --workspaces",
         "lint:fix": "npm run lint:fix --workspaces",
         "type-check": "npm run type-check --workspace=apps/api",
-
         "format": "prettier --write \"**/*.{ts,js,json,md}\"",
         "format:check": "prettier --check \"**/*.{ts,js,json,md}\"",
-
         "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
         "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
         "test:cov": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
@@ -47,11 +47,9 @@
         "test:e2e:api": "npm run test:e2e --workspace=apps/api",
         "test:sdk": "npm run test --workspace=packages/sdk/js",
         "test:cov:sdk": "npm run test:cov --workspace=packages/sdk/js",
-
         "migration:generate": "npm run migration:generate --workspace=apps/api",
         "migration:run": "npm run migration:run --workspace=apps/api",
         "migration:revert": "npm run migration:revert --workspace=apps/api",
-
         "prepare": "husky"
     },
     "devDependencies": {
@@ -70,6 +68,7 @@
         "globals": "^17.9.0",
         "husky": "^9.1.7",
         "jest": "^30.4.2",
+        "jiti": "^2.7.0",
         "lint-staged": "^17.3.0",
         "prettier": "3.9.6",
         "source-map-support": "^0.5.21",

@@ -21,6 +21,7 @@
     },
     "scripts": {
         "build": "tsc",
+        "clean": "rm -rf dist",
         "start": "node --env-file=.env dist/index.js",
         "start:dev": "tsc -w",
         "lint": "eslint \"{src,test}/**/*.ts\"",
