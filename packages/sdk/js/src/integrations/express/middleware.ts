@@ -1,6 +1,7 @@
 import { setTimeout } from 'node:timers';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { randomUUID } from 'node:crypto';
+import type { Logger } from 'pino';
 import { getClientIp } from 'request-ip';
 import type { ILayer } from 'express-serve-static-core';
 import type {
@@ -80,7 +81,7 @@ function scheduleStartupData(
             }
         })();
     }, 500);
-    if (timer.unref) timer.unref();
+    timer.unref();
 }
 
 async function getAppInfo(
@@ -136,7 +137,7 @@ function getMiddleware(
         }
 
         if (client.requestLogger.config.captureLogs && 'log' in req) {
-            void patchPino(req.log, logsContext);
+            void patchPino(req.log as Logger, logsContext);
         }
 
         logsContext.run([], () => {
@@ -275,7 +276,7 @@ function recordRequest(
             path,
             type: serverError.name,
             msg: serverError.message,
-            traceback: serverError?.stack ?? '',
+            traceback: serverError.stack ?? '',
         });
     }
 }
@@ -293,9 +294,9 @@ function recordValidationErrors(
     const { consumer, path } = ctx;
     if (!path) return;
 
-    let body: JSONValue = null;
+    let body: JSONValue;
     try {
-        body = JSON.parse(res.locals.body as string) as unknown as JSONValue;
+        body = JSON.parse(res.locals.body as string) as JSONValue;
     } catch {
         return;
     }
@@ -373,13 +374,13 @@ function getRouterPath(
             (layer) =>
                 layer.name === 'router' &&
                 layer.path &&
-                (baseUrl.startsWith(layer.path) || layer.regexp?.test(baseUrl)),
+                (baseUrl.startsWith(layer.path) || layer.regexp.test(baseUrl)),
         );
 
         if (!routerLayer) break;
 
         routerPaths.push(resolveLayerPath(routerLayer));
-        stack = (routerLayer.handle as { stack?: ILayer[] })?.stack;
+        stack = (routerLayer.handle as { stack?: ILayer[] }).stack;
         baseUrl = baseUrl.slice((routerLayer.path as string).length);
     }
 
@@ -387,7 +388,7 @@ function getRouterPath(
 }
 
 function resolveLayerPath(layer: ILayer): string {
-    if (layer.regexp && layer.keys?.length) {
+    if (layer.keys.length) {
         return '/' + parseExpressPathRegExp(layer.regexp, layer.keys);
     }
     if (layer.params && Object.keys(layer.params).length > 0) {

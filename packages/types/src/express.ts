@@ -1,6 +1,6 @@
-import type { ConsumerInfo } from './consumer.ts';
-import type { AuthenticatedUser } from './auth-user.ts';
-import type { UserApp } from './user-app.ts';
+import type { ConsumerInfo } from './consumer.js';
+import type { AuthenticatedUser } from './auth-user.js';
+import type { UserApp } from './user-app.js';
 
 declare module 'express-serve-static-core' {
     interface Request {
