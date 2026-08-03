@@ -23,10 +23,13 @@
     },
     "scripts": {
         "build": "tsc",
-        "format": "prettier --write \"src/**/*.ts\"",
-        "format:check": "prettier --check \"src/**/*.ts\"",
+
         "lint": "eslint \"src/**/*.ts\"",
-        "lint:fix": "eslint \"src/**/*.ts\" --fix"
+        "lint:fix": "eslint \"src/**/*.ts\" --fix",
+        "type-check": "tsc --noEmit",
+
+        "format": "prettier --write \"src/**/*.ts\"",
+        "format:check": "prettier --check \"src/**/*.ts\""
     },
     "dependencies": {
         "@hitapi/shared": "^1.0.0"
