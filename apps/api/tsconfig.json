@@ -1,12 +1,9 @@
 {
     "extends": "../../tsconfig.json",
     "compilerOptions": {
-        "baseUrl": ".",
         "outDir": "dist",
-        "paths": {
-            "@hitapi/types": ["../../packages/types/dist/index.d.ts"],
-            "@hitapi/shared": ["../../packages/shared/dist/index.d.ts"]
-        }
+        "types": ["node"],
+        "strictPropertyInitialization": false
     },
     "include": ["src/**/*", "test/**/*"],
     "exclude": ["node_modules", "dist"],

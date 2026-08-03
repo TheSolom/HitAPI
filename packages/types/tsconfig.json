@@ -1,13 +1,12 @@
 {
-    "extends": "../../tsconfig.json",
+    "extends": "../../tsconfig.build.json",
     "compilerOptions": {
-        "allowImportingTsExtensions": true,
-        "noEmit": false,
         "emitDeclarationOnly": true,
         "composite": true,
         "outDir": "dist",
         "rootDir": "src",
-        "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
+        "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+        "types": ["node", "express"]
     },
     "include": ["src"],
     "exclude": ["dist"]
