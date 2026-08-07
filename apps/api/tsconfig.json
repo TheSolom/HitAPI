@@ -1,15 +1,30 @@
 {
-    "extends": "../../tsconfig.json",
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "extends": "../../tsconfig.node.json",
     "compilerOptions": {
+        "composite": true,
         "rootDir": "./src",
         "outDir": "dist",
+        "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
         "types": ["node"],
-        "strictPropertyInitialization": false
+        "strictPropertyInitialization": false,
+        "paths": {
+            "@hitapi/shared": ["../../packages/shared/dist/index.d.ts"],
+            "@hitapi/shared/enums": [
+                "../../packages/shared/dist/enums/index.d.ts"
+            ],
+            "@hitapi/shared/utils": [
+                "../../packages/shared/dist/utils/index.d.ts"
+            ],
+            "@hitapi/shared/*": ["../../packages/shared/dist/*"],
+            "@hitapi/types": ["../../packages/types/dist/index.d.ts"],
+            "@hitapi/types/*": ["../../packages/types/dist/*"]
+        }
     },
-    "include": ["src/**/*", "test/**/*"],
-    "exclude": ["node_modules", "dist"],
+    "include": ["src"],
+    "exclude": ["node_modules", "dist", "**/*.spec.ts"],
     "references": [
-        { "path": "../../packages/types" },
-        { "path": "../../packages/shared" }
+        { "path": "../../packages/shared" },
+        { "path": "../../packages/types" }
     ]
 }

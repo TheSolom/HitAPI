@@ -23,7 +23,7 @@
         "clean:api": "npm run clean --workspace=apps/api",
         "clean:web": "npm run clean --workspace=apps/web",
         "clean:packages": "npm run clean --workspace=packages/types && npm run clean --workspace=packages/shared && npm run clean --workspace=packages/sdk/js",
-        "build:packages": "npm run build:types && npm run build:shared && npm run build:sdk",
+        "build:packages": "npm run build:shared && npm run build:types && npm run build:sdk",
         "build:types": "npm run build --workspace=packages/types",
         "build:shared": "npm run build --workspace=packages/shared",
         "build:sdk": "npm run build --workspace=packages/sdk/js",
