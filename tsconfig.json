@@ -1,29 +1,11 @@
 {
-    "compilerOptions": {
-        // Language & module
-        "target": "ES2023",
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
-        "resolvePackageJsonExports": true,
-
-        // Interop
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
-        "isolatedModules": true,
-
-        // Decorators (NestJS)
-        "experimentalDecorators": true,
-        "emitDecoratorMetadata": true,
-
-        // Strictness
-        "strict": true,
-        "strictNullChecks": true,
-        "strictBindCallApply": true,
-        "noImplicitAny": true,
-        "noFallthroughCasesInSwitch": true,
-        "forceConsistentCasingInFileNames": true,
-
-        // Lib checking
-        "skipLibCheck": true
-    }
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "files": [],
+    "references": [
+        { "path": "./packages/shared" },
+        { "path": "./packages/types" },
+        { "path": "./packages/sdk/js" },
+        { "path": "./apps/api" },
+        { "path": "./apps/web" }
+    ]
 }

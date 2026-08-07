@@ -1,0 +1,25 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "compilerOptions": {
+        "target": "ES2023",
+        "paths": {
+            "@hitapi/types": ["./packages/types/src/index.ts"],
+            "@hitapi/types/*": ["./packages/types/src/*"],
+            "@hitapi/shared": ["./packages/shared/src/index.ts"],
+            "@hitapi/shared/enums": ["./packages/shared/src/enums/index.ts"],
+            "@hitapi/shared/utils": ["./packages/shared/src/utils/index.ts"],
+            "@hitapi/shared/*": ["./packages/shared/src/*"],
+            "@hitapi/js": ["./packages/sdk/js/src/index.ts"],
+            "@hitapi/js/*": ["./packages/sdk/js/src/*"]
+        },
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "strictBindCallApply": true,
+        "noFallthroughCasesInSwitch": true,
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true,
+        "moduleDetection": "force",
+        "skipLibCheck": true
+    }
+}
