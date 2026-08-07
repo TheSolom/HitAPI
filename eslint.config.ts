@@ -83,15 +83,18 @@ export default defineConfig([
     },
 
     //
-    // React
+    // Web / React / Configs
     //
     {
-        files: ['apps/web/**/*.{ts,tsx}'],
+        files: ['apps/web/**/*.{js,jsx,mjs,cjs,ts,tsx}'],
 
         languageOptions: {
             sourceType: 'module',
 
-            globals: globals.browser,
+            globals: {
+                ...globals.browser,
+                ...globals.node,
+            },
 
             parserOptions: {
                 ecmaVersion: 'latest',
