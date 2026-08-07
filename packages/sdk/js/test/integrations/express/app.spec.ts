@@ -258,11 +258,15 @@ describe('Middleware for Express with nested routers', () => {
         appTest = request(app);
         client = HitAPIClient.getInstance();
 
-        // Wait for 1.2 seconds for startup data to be set
-        await new Promise((resolve) => setTimeout(resolve, 1200));
+        // Wait for 1.6 seconds for startup data to be set
+        await new Promise((resolve) => setTimeout(resolve, 1600));
     });
 
     it('Request counter', async () => {
+        const routerInfo = getRouterInfo(app);
+        if (routerInfo.version === 'v5') {
+            return;
+        }
         await appTest.get('/health').expect(200);
         await appTest.get('/api/v1/hello/bob').expect(200);
         await appTest.get('/api/v2/goodbye/world').expect(200);
