@@ -29,10 +29,10 @@
         "type-check": "tsc --noEmit",
         "format": "prettier --write \"src/**/*.ts\"",
         "format:check": "prettier --check \"src/**/*.ts\"",
-        "test": "node --experimental-vm-modules ../../../node_modules/jest/bin/jest.js",
-        "test:watch": "node --experimental-vm-modules ../../../node_modules/jest/bin/jest.js --watch",
-        "test:cov": "node --experimental-vm-modules ../../../node_modules/jest/bin/jest.js --coverage",
-        "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register ../../../node_modules/.bin/jest --runInBand"
+        "test": "node --experimental-vm-modules ../../../node_modules/jest/bin/jest.js --config ../../../jest.config.ts --selectProjects sdk",
+        "test:watch": "node --experimental-vm-modules ../../../node_modules/jest/bin/jest.js --watch --config ../../../jest.config.ts --selectProjects sdk",
+        "test:cov": "node --experimental-vm-modules ../../../node_modules/jest/bin/jest.js --coverage --config ../../../jest.config.ts --selectProjects sdk",
+        "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register ../../../node_modules/.bin/jest --runInBand  --config ../../../jest.config.ts --selectProjects sdk"
     },
     "keywords": [
         "hitapi",
