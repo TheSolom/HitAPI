@@ -10,8 +10,8 @@ describe('Temporary gzip file', () => {
         await file.writeLine(Buffer.from('test1'));
         await file.writeLine(Buffer.from('test2'));
 
-        // Wait for the next event loop cycle to ensure gzip stream has flushed to file
-        await setImmediate();
+        // Wait for gzip stream to flush to file write stream
+        await new Promise((resolve) => setTimeout(resolve, 50));
         expect(file.size).toBeGreaterThan(0);
 
         await file.close();
