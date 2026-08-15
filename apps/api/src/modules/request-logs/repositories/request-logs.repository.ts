@@ -13,7 +13,7 @@ import {
     parsePeriod,
 } from '../../../common/utils/period.util.js';
 import type { FindOptions } from '../../../common/types/find-options.type.js';
-import type { NullableType } from '../../../common/types/nullable.type.js';
+import type { NullableType } from '@hitapi/types';
 import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
 
 @Injectable()

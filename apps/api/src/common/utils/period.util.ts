@@ -6,7 +6,7 @@ import type {
     Period,
     ParsedPeriod,
     TruncUnit,
-} from '../types/period.type.js';
+} from '@hitapi/types';
 
 /**
  * Determine the SQL DATE_TRUNC granularity based on duration

@@ -1,7 +1,8 @@
 import { Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import type { UserProfile } from '@hitapi/types';
 
-export class UserProfileDto {
+export class UserProfileDto implements UserProfile {
     @Expose()
     @ApiProperty({ format: 'uuid' })
     id: string;

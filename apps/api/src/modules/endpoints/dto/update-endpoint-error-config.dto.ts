@@ -9,8 +9,11 @@ import {
     Min,
 } from 'class-validator';
 import { RestfulMethod } from '@hitapi/shared/enums';
+import type { UpdateEndpointErrorConfigPayload } from '@hitapi/types';
 
-export class UpdateEndpointErrorConfigDto {
+export class UpdateEndpointErrorConfigDto
+    implements UpdateEndpointErrorConfigPayload
+{
     @ApiProperty({ enum: RestfulMethod })
     @IsEnum(RestfulMethod)
     @IsNotEmpty()

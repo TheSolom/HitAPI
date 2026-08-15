@@ -1,8 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { RestfulMethod } from '@hitapi/shared/enums';
+import type { EndpointResponseDto as IEndpointResponseDto } from '@hitapi/types';
 
-export class EndpointResponseDto {
+export class EndpointResponseDto implements IEndpointResponseDto {
     @Expose()
     @ApiProperty({ format: 'uuid' })
     id: string;

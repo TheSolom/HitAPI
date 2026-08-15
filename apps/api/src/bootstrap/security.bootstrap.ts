@@ -3,7 +3,7 @@ import type { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 import type { EnvironmentVariablesDto } from '../config/env/dto/environment-variables.dto.js';
 import type { AppLoggerService } from '../modules/logger/logger.service.js';
-import { Environment } from '../common/enums/environment.enum.js';
+import { Environment } from '@hitapi/types';
 
 export function configureSecurity(
     app: NestExpressApplication,

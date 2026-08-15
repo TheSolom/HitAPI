@@ -12,7 +12,7 @@ import {
     IsEmail,
     ValidateIf,
 } from 'class-validator';
-import { Environment } from '../../../common/enums/environment.enum.js';
+import { Environment } from '@hitapi/types';
 
 export class EnvironmentVariablesDto {
     // App Configuration

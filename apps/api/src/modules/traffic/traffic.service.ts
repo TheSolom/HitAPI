@@ -11,7 +11,7 @@ import type { ITrafficRepository } from './interfaces/traffic-repository.interfa
 import type { GetTrafficOptionsDto } from './dto/get-traffic-options.dto.js';
 import type { TrafficMetricsResponseDto } from './dto/traffic-metrics-response.dto.js';
 import { parsePeriod } from '../../common/utils/period.util.js';
-import type { ParsedPeriod } from '../../common/types/period.type.js';
+import type { ParsedPeriod } from '@hitapi/types';
 import type { CreateTrafficMetricsDto } from './dto/create-traffic-metrics.dto.js';
 import type { RequestsChartResponseDto } from './dto/requests-chart-response.dto.js';
 import type { ResponseStatus } from './enums/response-status.enum.js';

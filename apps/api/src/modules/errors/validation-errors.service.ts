@@ -8,7 +8,7 @@ import type { GetValidationAndServerErrorOptionsDto } from './dto/get-validation
 import type { ValidationErrorsTableResponseDto } from './dto/validation-errors-table-response.dto.js';
 import type { GetValidationErrorDto } from './dto/get-validation-error.dto.js';
 import type { AddValidationErrorDto } from './dto/add-validation-error.dto.js';
-import type { NullableType } from './../../common/types/nullable.type.js';
+import type { NullableType } from '@hitapi/types';
 
 @Injectable()
 export class ValidationErrorsService {

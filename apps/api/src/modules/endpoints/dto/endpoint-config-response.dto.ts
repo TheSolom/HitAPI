@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import type { EndpointConfigResponseDto as IEndpointConfigResponseDto } from '@hitapi/types';
 
-export class EndpointConfigResponseDto {
+export class EndpointConfigResponseDto implements IEndpointConfigResponseDto {
     @Expose()
     @ApiProperty({ type: 'boolean' })
     excluded: boolean;

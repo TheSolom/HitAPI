@@ -4,7 +4,7 @@ import type { GetValidationAndServerErrorOptionsDto } from '../dto/get-validatio
 import type { AddValidationErrorDto } from '../dto/add-validation-error.dto.js';
 import type { GetValidationErrorDto } from '../dto/get-validation-error.dto.js';
 import type { ValidationError } from '../entities/validation-error.entity.js';
-import type { NullableType } from '../../../common/types/nullable.type.js';
+import type { NullableType } from '@hitapi/types';
 
 export interface IValidationErrorsService {
     /**

@@ -12,15 +12,15 @@ import { STATUS_CODES } from 'node:http';
 import type { Request, Response } from 'express';
 import { AppLoggerService } from '../../modules/logger/logger.service.js';
 import type { EnvironmentVariablesDto } from '../../config/env/dto/environment-variables.dto.js';
-import { Environment } from '../enums/environment.enum.js';
+import {
+    Environment,
+    type RFC9457Response,
+    type ValidationErrorDetail,
+} from '@hitapi/types';
 import type {
     AppClsStore,
     LogMeta,
 } from '../../modules/logger/interfaces/logger.interface.js';
-import type {
-    RFC9457Response,
-    ValidationErrorDetail,
-} from '../../common/interfaces/RFC9457-response.interface.js';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {

@@ -1,7 +1,7 @@
 import { IsOptional, IsUUID, IsNotEmpty } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsPeriod } from '../../../common/validators/is-period.validator.js';
-import type { Period } from '../../../common/types/period.type.js';
+import type { Period } from '@hitapi/types';
 
 export class GetCpuMemoryChartOptionsDto {
     @ApiProperty({ format: 'uuid' })

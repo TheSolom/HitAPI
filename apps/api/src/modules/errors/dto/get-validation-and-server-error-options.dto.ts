@@ -13,7 +13,7 @@ import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RestfulMethod } from '@hitapi/shared/enums';
 import { IsPeriod } from '../../../common/validators/is-period.validator.js';
-import type { Period } from '../../../common/types/period.type.js';
+import type { Period } from '@hitapi/types';
 
 export class GetValidationAndServerErrorOptionsDto {
     @ApiProperty({ format: 'uuid' })

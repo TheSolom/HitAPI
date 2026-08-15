@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type { AuthTokens } from '@hitapi/types';
 
-export class LoginTokensDto {
+export class LoginTokensDto implements AuthTokens {
     @ApiProperty({ type: 'string' })
     access_token: string;
 

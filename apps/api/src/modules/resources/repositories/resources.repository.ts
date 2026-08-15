@@ -14,7 +14,7 @@ import { Resource } from '../entities/resource.entity.js';
 import type { GetCpuMemoryChartOptionsDto } from '../dto/get-cpu-memory-chart-options.dto.js';
 import type { ResourcesDto } from '../dto/resources.dto.js';
 import { parsePeriod } from '../../../common/utils/period.util.js';
-import type { ParsedPeriod } from '../../../common/types/period.type.js';
+import type { ParsedPeriod } from '@hitapi/types';
 
 @Injectable()
 export class ResourcesRepository implements IResourcesRepository {

@@ -11,7 +11,7 @@ import type { EnvironmentVariablesDto } from '../config/env/dto/environment-vari
 import { AppLoggerService } from '../modules/logger/logger.service.js';
 import { HttpLoggerInterceptor } from '../common/interceptors/http-logger.interceptor.js';
 import { ResponseInterceptor } from '../common/interceptors/response.interceptor.js';
-import { Environment } from '../common/enums/environment.enum.js';
+import { Environment } from '@hitapi/types';
 import { GlobalExceptionFilter } from '../common/filters/global-exception.filter.js';
 import { PostgresExceptionFilter } from '../common/filters/database-exception.filter.js';
 

@@ -10,7 +10,7 @@ import winston from 'winston';
 import 'winston-daily-rotate-file';
 import { ClsService } from 'nestjs-cls';
 import type { EnvironmentVariablesDto } from '../../config/env/dto/environment-variables.dto.js';
-import { Environment } from '../../common/enums/environment.enum.js';
+import { Environment } from '@hitapi/types';
 import { AppLoggerService } from './logger.service.js';
 import type { AppClsStore } from './interfaces/logger.interface.js';
 

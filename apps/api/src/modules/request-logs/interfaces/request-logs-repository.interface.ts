@@ -1,8 +1,7 @@
 import type { QueryRunner } from 'typeorm';
 import type { RestfulMethod } from '@hitapi/shared/enums';
-import type { Period } from '../../../common/types/period.type.js';
+import type { NullableType, Period } from '@hitapi/types';
 import type { FindOptions } from '../../../common/types/find-options.type.js';
-import type { NullableType } from '../../../common/types/nullable.type.js';
 import type { RequestLog } from '../entities/request-log.entity.js';
 import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
 

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, type QueryRunner } from 'typeorm';
+import type { NullableType } from '@hitapi/types';
 import type { IEndpointsService } from './interfaces/endpoints-service.interface.js';
-import type { NullableType } from '../../common/types/nullable.type.js';
 import { Endpoint } from './entities/endpoint.entity.js';
 import type { CreateEndpointDto } from './dto/create-endpoint.dto.js';
 

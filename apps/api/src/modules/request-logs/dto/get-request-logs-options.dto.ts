@@ -17,8 +17,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RestfulMethod } from '@hitapi/shared/enums';
 import { OffsetPaginationOptionsDto } from '../../../common/dto/offset-pagination-options.dto.js';
 import { IsPeriod } from '../../../common/validators/is-period.validator.js';
-import type { Period } from '../../../common/types/period.type.js';
-import { OrderDirection } from '../../../common/enums/order-direction.enum.js';
+import { OrderDirection, type Period } from '@hitapi/types';
 
 export class GetRequestLogsOptionsDto extends OffsetPaginationOptionsDto {
     @ApiProperty({ format: 'uuid' })

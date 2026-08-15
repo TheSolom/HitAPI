@@ -12,10 +12,9 @@ import type { Response, Request } from 'express';
 import { hrtime } from 'node:process';
 import { STATUS_CODES } from 'node:http';
 import type { EnvironmentVariablesDto } from '../../config/env/dto/environment-variables.dto.js';
-import { Environment } from '../enums/environment.enum.js';
+import { Environment, type RFC9457Response } from '@hitapi/types';
 import { AppLoggerService } from '../../modules/logger/logger.service.js';
 import type { AppClsStore } from '../../modules/logger/interfaces/logger.interface.js';
-import type { RFC9457Response } from '../interfaces/RFC9457-response.interface.js';
 
 interface PostgresError extends DatabaseError {
     code: string;

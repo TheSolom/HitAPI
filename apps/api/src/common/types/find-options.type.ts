@@ -1,5 +1,5 @@
 import { FindOptionsWhere } from 'typeorm';
-import type { OrderDirection } from '../enums/order-direction.enum.js';
+import type { OrderDirection } from '@hitapi/types';
 
 export type FindOptions<T = unknown> = {
     where?: FindOptionsWhere<T>[] | FindOptionsWhere<T>;

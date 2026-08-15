@@ -1,5 +1,5 @@
 import type { RestfulMethod } from '@hitapi/shared/enums';
-import type { MaybeType } from '../../../common/types/maybe.type.js';
+import type { MaybeType } from '@hitapi/types';
 import type { GetErrorOptionsDto } from '../dto/get-error-options.dto.js';
 import type { ServerErrorsTableResponseDto } from '../dto/server-errors-table-response.dto.js';
 import type { ValidationErrorsTableResponseDto } from '../dto/validation-errors-table-response.dto.js';

@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DynamicModule } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { EnvironmentVariablesDto } from '../../../config/env/dto/environment-variables.dto.js';
-import { Environment } from '../../../common/enums/environment.enum.js';
+import { Environment } from '@hitapi/types';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

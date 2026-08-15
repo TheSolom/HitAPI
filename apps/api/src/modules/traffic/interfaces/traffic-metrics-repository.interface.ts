@@ -1,5 +1,5 @@
 import type { QueryRunner } from 'typeorm';
-import type { MaybeType } from '../../../common/types/maybe.type.js';
+import type { MaybeType } from '@hitapi/types';
 import type { GetTrafficOptionsDto } from '../dto/get-traffic-options.dto.js';
 import type { CreateTrafficMetricsDto } from '../dto/create-traffic-metrics.dto.js';
 

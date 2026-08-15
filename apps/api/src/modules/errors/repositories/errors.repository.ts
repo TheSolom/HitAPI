@@ -24,7 +24,7 @@ import {
     parsePeriod,
     applyPeriodFilter,
 } from '../../../common/utils/period.util.js';
-import type { MaybeType } from '../../../common/types/maybe.type.js';
+import type { MaybeType } from '@hitapi/types';
 import type { GetErrorOptionsDto } from '../dto/get-error-options.dto.js';
 import type { GetValidationAndServerErrorOptionsDto } from '../dto/get-validation-and-server-error-options.dto.js';
 import type { ValidationErrorsTableResponseDto } from '../dto/validation-errors-table-response.dto.js';

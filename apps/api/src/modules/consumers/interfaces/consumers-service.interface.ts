@@ -1,5 +1,5 @@
 import type { QueryRunner } from 'typeorm';
-import type { NullableType } from '../../../common/types/nullable.type.js';
+import type { NullableType } from '@hitapi/types';
 import type { Consumer } from '../entities/consumer.entity.js';
 import type { CreateConsumerDto } from '../dto/create-consumer.dto.js';
 import type { UpdateConsumerDto } from '../dto/update-consumer.dto.js';

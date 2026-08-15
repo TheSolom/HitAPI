@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type { MetadataResponse } from '@hitapi/types';
 
-export class MetadataResponseDto {
+export class MetadataResponseDto implements MetadataResponse {
     @ApiProperty({ type: 'integer' })
     totalItems: number;
 

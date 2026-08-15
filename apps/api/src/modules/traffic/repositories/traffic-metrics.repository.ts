@@ -20,7 +20,7 @@ import {
     applyPeriodFilter,
     parsePeriod,
 } from '../../../common/utils/period.util.js';
-import type { MaybeType } from '../../../common/types/maybe.type.js';
+import type { MaybeType } from '@hitapi/types';
 import type { CreateTrafficMetricsDto } from '../dto/create-traffic-metrics.dto.js';
 
 @Injectable()

@@ -1,4 +1,4 @@
-import type { NullableType } from '../../../common/types/nullable.type.js';
+import type { NullableType } from '@hitapi/types';
 import type { Endpoint } from '../entities/endpoint.entity.js';
 import type { CreateEndpointDto } from '../dto/create-endpoint.dto.js';
 import type { QueryRunner } from 'typeorm';

@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import type { AppResponseDto as IAppResponseDto } from '@hitapi/types';
 import { Framework } from '../entities/framework.entity.js';
 
-export class AppResponseDto {
+export class AppResponseDto implements IAppResponseDto {
     @Expose()
     @ApiProperty({ format: 'uuid' })
     id: string;
