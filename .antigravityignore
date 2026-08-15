@@ -1,0 +1,13 @@
+# Ignore local environment files
+.env
+.env.*
+.env.local
+.env.*.local
+**/.env
+**/.env.*
+**/.env.local
+**/.env.*.local
+
+# Keep example env templates tracked
+!.env.example
+!**/.env.example
