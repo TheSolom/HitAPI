@@ -21,7 +21,7 @@
     },
     "scripts": {
         "build": "tsc",
-        "clean": "rm -rf dist",
+        "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\"",
         "start": "node --env-file=.env dist/index.js",
         "start:dev": "tsc -w",
         "lint": "eslint \"{src,test}/**/*.ts\"",

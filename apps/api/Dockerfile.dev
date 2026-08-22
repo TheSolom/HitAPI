@@ -15,7 +15,7 @@ COPY packages/types ./packages/types
 COPY apps/api ./apps/api
 COPY apps/api/assets ./assets
 
-RUN mkdir -p apps/api/dist && chown -R node:node /app
+RUN npm run build:shared && npm run build:types && mkdir -p apps/api/dist && chown -R node:node /app
 
 USER node
 

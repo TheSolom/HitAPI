@@ -15,7 +15,7 @@
     "type": "module",
     "scripts": {
         "build": "nest build",
-        "clean": "rm -rf dist",
+        "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\"",
         "start": "nest start",
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",

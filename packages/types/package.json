@@ -13,17 +13,20 @@
         "url": "https://github.com/TheSolom/HitAPI/issues"
     },
     "type": "module",
-    "types": "dist",
+    "types": "./dist/index.d.ts",
     "files": [
         "dist"
     ],
     "exports": {
-        "import": "./dist/index.d.ts",
-        "require": "./dist/index.d.ts"
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.js"
+        }
     },
     "scripts": {
         "build": "tsc",
-        "clean": "rm -rf dist",
+        "clean": "node -e \"fs.rmSync('dist', { recursive: true, force: true })\"",
 
         "lint": "eslint \"src/**/*.ts\"",
         "lint:fix": "eslint \"src/**/*.ts\" --fix",
