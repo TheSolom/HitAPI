@@ -12,10 +12,9 @@ export interface LoginPayload {
 }
 
 export interface RegistrationPayload {
+    displayName: string;
     email: string;
     password: string;
-    firstName: string;
-    lastName: string;
 }
 
 export interface VerifyEmailPayload {
@@ -33,15 +32,18 @@ export interface ForgotPasswordPayload {
 export interface ResetPasswordPayload {
     token: string;
     newPassword: string;
+    confirmPassword: string;
 }
 
 export interface ChangePasswordPayload {
     currentPassword: string;
     newPassword: string;
+    confirmPassword: string;
 }
 
 export interface SetPasswordPayload {
     newPassword: string;
+    confirmPassword: string;
 }
 
 export interface RefreshTokenPayload {
@@ -61,3 +63,35 @@ export interface UserProfile {
     createdAt?: string | Date;
     updatedAt?: string | Date;
 }
+
+export interface UserSession {
+    id: string;
+    deviceInfo?: string;
+    ipAddress?: string;
+    lastUsedAt?: string | Date;
+    createdAt: string | Date;
+}
+
+export interface SocialAccount {
+    provider: string;
+    socialId: string;
+    email: string;
+    displayName: string;
+    createdAt: string | Date;
+}
+
+export interface SocialLoginPayload {
+    socialId: string;
+    displayName: string;
+    email: string;
+    isVerified: boolean;
+}
+
+export interface TokenExchangePayload {
+    grant_type: string;
+    code: string;
+    client_id?: string;
+    client_secret: string;
+    redirect_uri: string;
+}
+
