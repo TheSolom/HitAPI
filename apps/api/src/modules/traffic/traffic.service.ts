@@ -98,18 +98,14 @@ export class TrafficService implements ITrafficService {
             2,
         );
 
-        let requestsPerMinute = 0;
         const period: ParsedPeriod = parsePeriod(getTrafficOptionsDto.period);
-        if (period.type === 'range') {
-            const periodMinutes =
-                (period.endDate.getTime() - period.startDate.getTime()) / 60000;
-            requestsPerMinute =
-                periodMinutes > 0 ? totalRequestCount / periodMinutes : 0;
-        } else {
-            const periodMinutes = period.durationMs / 60000;
-            requestsPerMinute =
-                periodMinutes > 0 ? totalRequestCount / periodMinutes : 0;
-        }
+        const periodMinutes =
+            period.type === 'range'
+                ? (period.endDate.getTime() - period.startDate.getTime()) /
+                  60000
+                : period.durationMs / 60000;
+        const requestsPerMinute =
+            periodMinutes > 0 ? totalRequestCount / periodMinutes : 0;
 
         return {
             totalRequestCount,
@@ -119,11 +115,11 @@ export class TrafficService implements ITrafficService {
             errorRate,
             requestSizeSum: stringToInt(trafficMetrics?.requestSizeSum),
             requestSizeAvg: trafficMetrics?.requestSizeAvg
-                ? Math.round(stringToFloat(trafficMetrics?.requestSizeAvg))
+                ? Math.round(stringToFloat(trafficMetrics.requestSizeAvg))
                 : undefined,
             responseSizeSum: stringToInt(trafficMetrics?.responseSizeSum),
             responseSizeAvg: trafficMetrics?.responseSizeAvg
-                ? Math.round(stringToFloat(trafficMetrics?.responseSizeAvg))
+                ? Math.round(stringToFloat(trafficMetrics.responseSizeAvg))
                 : undefined,
             totalDataTransferred: stringToInt(
                 trafficMetrics?.totalDataTransferred,
@@ -165,7 +161,9 @@ export class TrafficService implements ITrafficService {
                 });
             }
 
-            const dataset = datasets.get(status)!;
+            const dataset = datasets.get(status);
+            if (!dataset) continue;
+
             const timeWindow = row.timeWindow.toISOString();
 
             const existingIndex = dataset.timeWindows.indexOf(timeWindow);
@@ -272,7 +270,9 @@ export class TrafficService implements ITrafficService {
                 });
             }
 
-            const dataset = datasets.get(status)!;
+            const dataset = datasets.get(status);
+            if (!dataset) continue;
+
             const existingIndex = dataset.consumerIds.indexOf(
                 Number.parseInt(row.consumerId),
             );

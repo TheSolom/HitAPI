@@ -24,10 +24,14 @@ export class MailsService implements IMailsService {
     async emailConfirmation(
         mailData: MailData<{ token: string; displayName: string }>,
     ): Promise<void> {
+        const frontendUrl =
+            this.configService.getOrThrow<string>('FRONTEND_URL');
+        const verificationLink = `${frontendUrl}/verify-email?token=${mailData.data.token}`;
+
         await this.mailerService.sendMail({
             to: mailData.to,
             subject: 'Email Confirmation',
-            text: `${this.configService.getOrThrow<string>('FRONTEND_URL')}/confirm-email/${mailData.data.token}`,
+            text: verificationLink,
             templatePath: path.join(
                 __dirname,
                 'templates',
@@ -35,7 +39,7 @@ export class MailsService implements IMailsService {
             ),
             context: {
                 displayName: mailData.data.displayName,
-                confirmationLink: `${this.configService.getOrThrow<string>('FRONTEND_URL')}/confirm-email/${mailData.data.token}`,
+                confirmationLink: verificationLink,
                 AppName: this.configService.getOrThrow<string>('APP_NAME'),
             },
         });
@@ -44,10 +48,14 @@ export class MailsService implements IMailsService {
     async passwordReset(
         mailData: MailData<{ token: string; displayName: string }>,
     ): Promise<void> {
+        const frontendUrl =
+            this.configService.getOrThrow<string>('FRONTEND_URL');
+        const resetLink = `${frontendUrl}/reset-password?token=${mailData.data.token}`;
+
         await this.mailerService.sendMail({
             to: mailData.to,
             subject: 'Password Reset',
-            text: `${this.configService.getOrThrow<string>('FRONTEND_URL')}/password-change/${mailData.data.token}`,
+            text: resetLink,
             templatePath: path.join(
                 __dirname,
                 'templates',
@@ -55,7 +63,7 @@ export class MailsService implements IMailsService {
             ),
             context: {
                 displayName: mailData.data.displayName,
-                resetLink: `${this.configService.getOrThrow<string>('FRONTEND_URL')}/password-change/${mailData.data.token}`,
+                resetLink,
                 AppName: this.configService.getOrThrow<string>('APP_NAME'),
             },
         });

@@ -117,7 +117,7 @@ export class MailerService implements IMailerService, OnModuleInit {
             ...options,
             from:
                 options.from ??
-                `${this.configService.get('MAILER_DEFAULT_NAME', '')} <${this.configService.getOrThrow('MAILER_DEFAULT_EMAIL')}>`,
+                `${this.configService.get<string>('MAILER_DEFAULT_NAME', '')} <${this.configService.getOrThrow<string>('MAILER_DEFAULT_EMAIL')}>`,
             html,
         });
     }

@@ -1,10 +1,14 @@
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { open, type Reader, type CountryResponse } from 'maxmind';
 import type { IGeoIPService } from './interfaces/geo-ip-service.interface.js';
 import { AppLoggerService } from '../logger/logger.service.js';
 import type { NullableType } from '@hitapi/types';
 import type { CountryResponseDto } from './dto/country-response.dto.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 @Injectable()
 export class GeoIPService implements OnModuleInit, IGeoIPService {
@@ -15,11 +19,9 @@ export class GeoIPService implements OnModuleInit, IGeoIPService {
     }
 
     async onModuleInit() {
-        const PATH = path.join(
-            process.cwd(),
-            'apps/api/assets',
-            'GeoLite2-Country',
-            'GeoLite2-Country.mmdb',
+        const PATH = path.resolve(
+            __dirname,
+            '../../../assets/GeoLite2-Country/GeoLite2-Country.mmdb',
         );
 
         if (GeoIPService.lookup) return;

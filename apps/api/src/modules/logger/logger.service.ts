@@ -16,6 +16,7 @@ export class AppLoggerService implements LoggerService {
         private readonly logger: Logger,
         private readonly cls: ClsService<AppClsStore>,
     ) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         this.context = this.parentClass?.constructor?.name;
     }
 
@@ -30,9 +31,9 @@ export class AppLoggerService implements LoggerService {
                 : { ...metaOrContext };
 
         return {
-            context: meta?.context ?? this.context,
+            context: meta.context ?? this.context,
             traceId:
-                meta?.traceId ?? this.cls.getId() ?? this.cls.get('traceId'),
+                meta.traceId ?? (this.cls.getId() || this.cls.get('traceId')),
             ...meta,
         };
     }
@@ -57,10 +58,7 @@ export class AppLoggerService implements LoggerService {
         this.logger.warn(message, this.processMeta(metaOrContext));
     }
 
-    error(
-        message: string,
-        metaOrContext?: LogMeta | string | Error['stack'],
-    ): void {
+    error(message: string, metaOrContext?: LogMeta | string | Error): void {
         if (metaOrContext instanceof Error) {
             this.logger.error(
                 message,
