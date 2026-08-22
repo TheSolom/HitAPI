@@ -11,17 +11,14 @@ export function configureCors(
 ): void {
     const isProduction =
         config.get<Environment>('NODE_ENV') === Environment.Production;
+    const frontendUrl = config.get<string>('FRONTEND_URL');
 
-    if (!isProduction) {
-        app.enableCors();
-        logger.warn('CORS enabled for all origins (development mode)');
-        return;
-    }
-
-    const allowedOrigin = config.getOrThrow<string>('FRONTEND_URL');
+    const allowedOrigins = isProduction
+        ? frontendUrl
+        : [frontendUrl, 'http://localhost:4000'];
 
     app.enableCors({
-        origin: allowedOrigin,
+        origin: allowedOrigins,
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
         allowedHeaders: [
             'Authorization',
@@ -35,5 +32,5 @@ export function configureCors(
         maxAge: 3600,
     });
 
-    logger.log(`CORS enabled for origin: ${allowedOrigin}`);
+    logger.log(`CORS enabled with credentials for: ${frontendUrl}`);
 }

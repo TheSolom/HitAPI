@@ -11,7 +11,10 @@ import {
     Delete,
     Param,
     Header,
+    Res,
+    Req,
 } from '@nestjs/common';
+import type { Response, Request } from 'express';
 import {
     ApiTags,
     ApiBearerAuth,
@@ -23,12 +26,14 @@ import {
     ApiBody,
     ApiHeaders,
 } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { IAuthService } from './interfaces/auth-service.interface.js';
 import type { ITokensService } from './tokens/interfaces/tokens-service.interface.js';
 import type { ISessionsService } from './sessions/interfaces/sessions-service.interface.js';
 import type { ISocialAuthService } from './social/interfaces/social-auth-service.interface.js';
+import type { EnvironmentVariablesDto } from '../../config/env/dto/environment-variables.dto.js';
 import { AuthenticatedUser } from '../users/dto/auth-user.dto.js';
 import { EmailLoginDto } from './dto/email-login.dto.js';
 import { LoginTokensDto } from './tokens/dto/login-tokens.dto.js';
@@ -40,6 +45,11 @@ import { RefreshTokenGuard } from './tokens/guards/refresh-token.guard.js';
 import { RefreshTokenDto } from './tokens/dto/refresh-token.dto.js';
 import { LogoutDto } from './dto/logout.dto.js';
 import { AuthProvidersEnum } from './enums/auth-providers.enum.js';
+import {
+    setRefreshTokenCookie,
+    clearRefreshTokenCookie,
+    REFRESH_TOKEN_COOKIE,
+} from './utils/auth-cookie.util.js';
 
 @ApiTags('Auth')
 @Controller(Routes.AUTH)
@@ -53,7 +63,28 @@ export class AuthController {
         private readonly sessionsService: ISessionsService,
         @Inject(Services.SOCIAL_AUTH)
         private readonly socialAuthService: ISocialAuthService,
+        private readonly configService: ConfigService<
+            EnvironmentVariablesDto,
+            true
+        >,
     ) {}
+
+    private async issueTokens(
+        authUser: AuthenticatedUser,
+        res: Response,
+        userAgent?: string,
+        ip?: string,
+    ): Promise<LoginTokensDto> {
+        const tokens = await this.tokensService.generateTokenPair(
+            authUser,
+            userAgent,
+            ip,
+        );
+
+        setRefreshTokenCookie(res, tokens.refresh_token, this.configService);
+
+        return tokens;
+    }
 
     @Post('login')
     @HttpCode(HttpStatus.OK)
@@ -69,41 +100,52 @@ export class AuthController {
     ])
     async login(
         @AuthUser() authUser: AuthenticatedUser,
-        @Headers('user-agent') userAgent: string,
-        @Ip() ip: string,
+        @Res({ passthrough: true }) res: Response,
+        @Headers('user-agent') userAgent?: string,
+        @Ip() ip?: string,
     ): Promise<LoginTokensDto> {
-        return this.tokensService.generateTokenPair(authUser, userAgent, ip);
+        return this.issueTokens(authUser, res, userAgent, ip);
     }
 
     @Post('refresh')
     @HttpCode(HttpStatus.OK)
-    @UseGuards(JwtAuthGuard, RefreshTokenGuard)
+    @UseGuards(RefreshTokenGuard)
     @SkipResponseInterceptor()
     @Header('Cache-Control', 'no-store')
-    @ApiBearerAuth('JWT')
     @ApiCreatedResponse({ type: LoginTokensDto })
     @ApiUnauthorizedResponse({ description: 'Invalid token' })
-    @ApiBody({ type: RefreshTokenDto })
+    @ApiBody({ type: RefreshTokenDto, required: false })
     @ApiHeaders([
         { name: 'user-agent', required: false },
         { name: 'ip', required: false },
     ])
-    refreshToken(
+    async refreshToken(
         @AuthUser() authUser: AuthenticatedUser,
-        @Headers('user-agent') userAgent: string,
-        @Ip() ip: string,
+        @Res({ passthrough: true }) res: Response,
+        @Headers('user-agent') userAgent?: string,
+        @Ip() ip?: string,
     ): Promise<LoginTokensDto> {
-        return this.tokensService.generateTokenPair(authUser, userAgent, ip);
+        return this.issueTokens(authUser, res, userAgent, ip);
     }
 
     @Post('logout')
     @HttpCode(HttpStatus.NO_CONTENT)
-    @UseGuards(JwtAuthGuard, RefreshTokenGuard)
-    @ApiBearerAuth('JWT')
+    @SkipResponseInterceptor()
     @ApiNoContentResponse()
-    @ApiUnauthorizedResponse({ description: 'Invalid token' })
-    async logout(@Body() { refreshToken }: LogoutDto) {
-        await this.tokensService.revokeRefreshToken(refreshToken);
+    async logout(
+        @Req() req: Request,
+        @Res({ passthrough: true }) res: Response,
+        @Body() body?: LogoutDto,
+    ): Promise<void> {
+        const cookies = req.cookies as Record<string, string> | undefined;
+        const refreshToken =
+            cookies?.[REFRESH_TOKEN_COOKIE] || body?.refreshToken;
+
+        if (refreshToken) {
+            await this.tokensService.revokeRefreshToken(refreshToken);
+        }
+
+        clearRefreshTokenCookie(res);
     }
 
     @Post('logout-all')

@@ -106,15 +106,13 @@ export class TokensService implements ITokensService {
 
     async verifyRefreshToken(
         token: string,
-        userId: string,
+        userId?: string,
     ): Promise<NullableType<RefreshToken>> {
         const tokenHash = this.hashingService.hash(token);
 
         const storedToken = await this.refreshTokenRepository.findOne({
-            where: {
-                tokenHash,
-                user: { id: userId },
-            },
+            where: userId ? { tokenHash, user: { id: userId } } : { tokenHash },
+            relations: ['user'],
         });
 
         if (!storedToken) return null;

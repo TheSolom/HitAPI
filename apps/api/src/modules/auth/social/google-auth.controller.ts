@@ -11,11 +11,14 @@ import {
     HttpCode,
     HttpStatus,
     BadRequestException,
+    Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import {
     ApiTags,
     ApiHeaders,
     ApiOkResponse,
+    ApiFoundResponse,
     ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
@@ -33,6 +36,7 @@ import { AuthUser } from '../../users/decorators/auth-user.decorator.js';
 import { SocialLoginDto } from './dto/social-login.dto.js';
 import { AuthProvidersEnum } from '../enums/auth-providers.enum.js';
 import { SkipResponseInterceptor } from '../../../common/decorators/skip-response-interceptor.decorator.js';
+import { setRefreshTokenCookie } from '../utils/auth-cookie.util.js';
 
 @ApiTags('Auth Google')
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
@@ -66,17 +70,30 @@ export class GoogleAuthController {
     @UseGuards(GoogleOAuth2Guard)
     @SkipResponseInterceptor()
     @Header('Cache-Control', 'no-store')
-    @ApiOkResponse({ type: LoginTokensDto })
+    @ApiFoundResponse({ description: 'Redirects to frontend callback' })
     @ApiHeaders([
         { name: 'user-agent', required: false },
         { name: 'ip', required: false },
     ])
     async googleLoginRedirect(
         @AuthUser() authUser: AuthenticatedUser,
+        @Res() res: Response,
         @Headers('user-agent') userAgent?: string,
         @Ip() ip?: string,
-    ): Promise<LoginTokensDto> {
-        return this.tokensService.generateTokenPair(authUser, userAgent, ip);
+    ): Promise<void> {
+        const tokens = await this.tokensService.generateTokenPair(
+            authUser,
+            userAgent,
+            ip,
+        );
+
+        const frontendUrl =
+            this.configService.get<string>('FRONTEND_URL') ||
+            'http://localhost:4000';
+
+        setRefreshTokenCookie(res, tokens.refresh_token, this.configService);
+
+        res.redirect(`${frontendUrl}/auth/callback`);
     }
 
     @Post('token')
@@ -134,7 +151,7 @@ export class GoogleAuthController {
                 socialData,
             );
 
-            return this.tokensService.generateTokenPair(
+            return await this.tokensService.generateTokenPair(
                 authUser,
                 userAgent,
                 ip,

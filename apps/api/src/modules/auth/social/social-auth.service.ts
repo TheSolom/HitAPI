@@ -29,7 +29,7 @@ export class SocialAuthService implements ISocialAuthService {
                 socialData.socialId,
             );
 
-        let user: NullableType<User> = null;
+        let user: NullableType<User>;
 
         if (existingSocialAccount) {
             // Social account exists, use the linked user

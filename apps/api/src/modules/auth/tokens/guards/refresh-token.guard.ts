@@ -4,15 +4,11 @@ import {
     CanActivate,
     ExecutionContext,
     UnauthorizedException,
-    BadRequestException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { plainToInstance } from 'class-transformer';
-import { validate, ValidationError } from 'class-validator';
 import { Services } from '../../../../common/constants/services.constant.js';
 import type { ITokensService } from '../interfaces/tokens-service.interface.js';
-import { UserProfileDto } from '../../../users/dto/user-profile.dto.js';
-import { LogoutDto } from '../../dto/logout.dto.js';
+import { REFRESH_TOKEN_COOKIE } from '../../utils/auth-cookie.util.js';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
@@ -22,31 +18,32 @@ export class RefreshTokenGuard implements CanActivate {
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest<Request>();
-        const { id: userId } = request.user as { id: UserProfileDto['id'] };
 
-        const logoutDto = plainToInstance(LogoutDto, request.body);
-        const errors = await validate(logoutDto);
+        const cookies = request.cookies as Record<string, string> | undefined;
+        const body = request.body as { refreshToken?: string } | undefined;
+        const headerToken = request.headers['x-refresh-token'];
 
-        if (errors.length > 0) {
-            const messages = this.formatValidationErrors(errors);
-            throw new BadRequestException(messages);
+        const refreshToken =
+            cookies?.[REFRESH_TOKEN_COOKIE] ||
+            body?.refreshToken ||
+            (typeof headerToken === 'string' ? headerToken : undefined);
+
+        if (!refreshToken) {
+            throw new UnauthorizedException('Refresh token is missing');
         }
 
-        const token = await this.tokensService.verifyRefreshToken(
-            logoutDto.refreshToken,
-            userId,
-        );
+        const storedToken =
+            await this.tokensService.verifyRefreshToken(refreshToken);
 
-        if (!token) {
-            throw new UnauthorizedException('Invalid refresh token');
+        if (!storedToken?.user) {
+            throw new UnauthorizedException('Invalid or expired refresh token');
         }
+
+        // Revoke the used refresh token (rotation)
+        await this.tokensService.revokeRefreshToken(refreshToken);
+
+        request.user = storedToken.user;
 
         return true;
-    }
-
-    private formatValidationErrors(errors: ValidationError[]): string[] {
-        return errors.flatMap((err) =>
-            err.constraints ? Object.values(err.constraints) : [],
-        );
     }
 }

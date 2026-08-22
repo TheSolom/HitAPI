@@ -35,11 +35,16 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         _refreshToken: string,
         profile: Profile,
     ) {
+        const emailObj = profile.emails?.[0];
+        const email = emailObj?.value ?? '';
+        const isVerified = Boolean(emailObj?.verified);
+
         const socialData: SocialLoginDto = {
             socialId: profile.id,
-            displayName: profile.displayName,
-            email: profile.emails![0].value,
-            isVerified: profile.emails![0].verified,
+            displayName:
+                profile.displayName || profile.name?.givenName || 'Google User',
+            email,
+            isVerified,
         };
 
         return this.socialAuthService.validateSocialLogin(

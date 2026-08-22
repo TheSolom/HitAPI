@@ -20,7 +20,7 @@ export interface ITokensService {
      */
     verifyRefreshToken(
         token: string,
-        userId: string,
+        userId?: string,
     ): Promise<NullableType<RefreshToken>>;
     /**
      * Generates a new access token and refresh token pair.
