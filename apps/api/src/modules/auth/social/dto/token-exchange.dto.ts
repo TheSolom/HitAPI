@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
+import type { TokenExchangePayload } from '@hitapi/types';
 
-export class TokenExchangeDto {
+export class TokenExchangeDto implements TokenExchangePayload {
     @ApiProperty({ type: 'string', example: 'authorization_code' })
     @IsString()
     @IsNotEmpty()

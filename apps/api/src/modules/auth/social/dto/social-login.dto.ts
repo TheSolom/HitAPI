@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
+import type { SocialLoginPayload } from '@hitapi/types';
 import { lowerCaseTransformer } from '../../../../common/transformers/lower-case.transformer.js';
 
-export class SocialLoginDto {
+export class SocialLoginDto implements SocialLoginPayload {
     @ApiProperty({ type: 'string' })
     @IsString()
     @IsNotEmpty()

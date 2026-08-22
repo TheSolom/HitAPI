@@ -1,8 +1,9 @@
 import { Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import type { SocialAccount } from '@hitapi/types';
 import { AuthProvidersEnum } from '../../enums/auth-providers.enum.js';
 
-export class SocialAccountDto {
+export class SocialAccountDto implements SocialAccount {
     @Expose()
     @ApiProperty({ enum: AuthProvidersEnum })
     provider: AuthProvidersEnum;

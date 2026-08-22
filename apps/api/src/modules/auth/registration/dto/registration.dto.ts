@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
+import type { RegistrationPayload } from '@hitapi/types';
 import { lowerCaseTransformer } from '../../../../common/transformers/lower-case.transformer.js';
 
-export class RegistrationDto {
+export class RegistrationDto implements RegistrationPayload {
     @ApiProperty({ type: 'string' })
     @IsString()
     @IsNotEmpty()
@@ -16,7 +17,7 @@ export class RegistrationDto {
 
     @ApiProperty({ type: 'string' })
     @MinLength(6)
-    @Transform(({ value }: { value: string }) => value?.trim())
+    @Transform(({ value }: { value: string }) => value.trim())
     @IsString()
     @IsNotEmpty()
     password: string;

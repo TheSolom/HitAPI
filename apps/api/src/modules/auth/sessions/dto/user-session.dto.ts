@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import type { UserSession } from '@hitapi/types';
 
-export class UserSessionDto {
+export class UserSessionDto implements UserSession {
     @Expose()
     @ApiProperty({ type: 'string' })
     id: string;

@@ -1,7 +1,8 @@
 import { Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import type { AuthenticatedUser as IAuthenticatedUser } from '@hitapi/types';
 
-export class AuthenticatedUser {
+export class AuthenticatedUser implements IAuthenticatedUser {
     @Expose()
     @ApiProperty({ format: 'uuid' })
     id: string;

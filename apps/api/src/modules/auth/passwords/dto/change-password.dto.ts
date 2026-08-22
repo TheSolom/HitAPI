@@ -1,14 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
+import type { ChangePasswordPayload } from '@hitapi/types';
 import {
     Match,
     DoesNotMatch,
 } from '../../../../common/decorators/match.decorator.js';
 
-export class ChangePasswordDto {
+export class ChangePasswordDto implements ChangePasswordPayload {
     @ApiProperty({ type: 'string' })
-    @Transform(({ value }: { value: string }) => value?.trim())
+    @Transform(({ value }: { value: string }) => value.trim())
     @IsString()
     @IsNotEmpty()
     currentPassword: string;
@@ -18,7 +19,7 @@ export class ChangePasswordDto {
     @DoesNotMatch('currentPassword', {
         message: 'New password must be different from current password',
     })
-    @Transform(({ value }: { value: string }) => value?.trim())
+    @Transform(({ value }: { value: string }) => value.trim())
     @IsString()
     @IsNotEmpty()
     newPassword: string;
@@ -27,7 +28,7 @@ export class ChangePasswordDto {
     @Match('newPassword', {
         message: 'Confirm password must match new password',
     })
-    @Transform(({ value }: { value: string }) => value?.trim())
+    @Transform(({ value }: { value: string }) => value.trim())
     @IsString()
     @IsNotEmpty()
     confirmPassword: string;

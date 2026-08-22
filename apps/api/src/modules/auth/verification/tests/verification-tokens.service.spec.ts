@@ -25,7 +25,7 @@ describe('VerificationTokenService', () => {
 
         const hashingServiceMock: jest.Mocked<IHashingService> = {
             hash: jest
-                .fn()
+                .fn<IHashingService['hash']>()
                 .mockImplementation((val: string) => `hashed-${val}`),
         } as unknown as jest.Mocked<IHashingService>;
 
