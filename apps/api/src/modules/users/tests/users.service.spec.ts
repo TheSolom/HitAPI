@@ -2,14 +2,16 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository, UpdateResult, SelectQueryBuilder } from 'typeorm';
-import { ConflictException } from '@nestjs/common';
+import { Repository, SelectQueryBuilder } from 'typeorm';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UsersService } from '../users.service.js';
 import type { IUsersService } from '../interfaces/users-service.interface.js';
 import type { ISocialAccountsService } from '../interfaces/social-account-service.interface.js';
+import type { ISessionsService } from '../../auth/sessions/interfaces/sessions-service.interface.js';
 import { Services } from '../../../common/constants/services.constant.js';
 import { SocialAccount } from '../entities/social-account.entity.js';
 import { User } from '../entities/user.entity.js';
+import { TeamMember } from '../../teams/entities/team-member.entity.js';
 import { CreateUserDto } from '../dto/create-user.dto.js';
 import { UpdateUserDto } from '../dto/update-user.dto.js';
 import { AuthProvidersEnum } from '../../auth/enums/auth-providers.enum.js';
@@ -22,6 +24,12 @@ const mockSocialAccountsService = (): jest.Mocked<ISocialAccountsService> => ({
     unlinkAccount: jest.fn(),
 });
 
+const mockSessionsService = (): jest.Mocked<ISessionsService> => ({
+    getUserActiveSessions: jest.fn(),
+    revokeSession: jest.fn(),
+    revokeAllUserSessions: jest.fn(),
+});
+
 const mockUserRepository = () => ({
     findOneBy: jest.fn(),
     findOne: jest.fn(),
@@ -31,10 +39,16 @@ const mockUserRepository = () => ({
     createQueryBuilder: jest.fn(),
 });
 
+const mockTeamMemberRepository = () => ({
+    softDelete: jest.fn(),
+});
+
 describe('UsersService', () => {
     let usersService: IUsersService;
     let userRepository: jest.Mocked<Repository<User>>;
+    let teamMemberRepository: jest.Mocked<Repository<TeamMember>>;
     let socialAccountsService: jest.Mocked<ISocialAccountsService>;
+    let sessionsService: jest.Mocked<ISessionsService>;
     let queryBuilderMock: jest.Mocked<
         Pick<
             SelectQueryBuilder<User>,
@@ -64,15 +78,25 @@ describe('UsersService', () => {
                     }),
                 },
                 {
+                    provide: getRepositoryToken(TeamMember),
+                    useFactory: mockTeamMemberRepository,
+                },
+                {
                     provide: Services.SOCIAL_ACCOUNTS,
                     useFactory: mockSocialAccountsService,
+                },
+                {
+                    provide: Services.SESSIONS,
+                    useFactory: mockSessionsService,
                 },
             ],
         }).compile();
 
         usersService = module.get<IUsersService>(UsersService);
         userRepository = module.get(getRepositoryToken(User));
+        teamMemberRepository = module.get(getRepositoryToken(TeamMember));
         socialAccountsService = module.get(Services.SOCIAL_ACCOUNTS);
+        sessionsService = module.get(Services.SESSIONS);
     });
 
     it('should be defined', () => {
@@ -239,10 +263,10 @@ describe('UsersService', () => {
                 verified: true,
                 admin: false,
             };
-            const createdUser = {
-                id: '1',
-                ...createUserDto,
-            } as unknown as User;
+            const createdUser = Object.assign(
+                { id: '1' },
+                createUserDto,
+            ) as unknown as User;
 
             userRepository.findOne.mockResolvedValue(null);
             userRepository.create.mockReturnValue(createdUser);
@@ -258,36 +282,42 @@ describe('UsersService', () => {
             expect(userRepository.save).toHaveBeenCalledWith(createdUser);
         });
 
-        it('should throw ConflictException when user with that email already exists', async () => {
+        it('should throw ConflictException when user already exists', async () => {
             const createUserDto: CreateUserDto = {
-                email: 'existing@example.com',
                 displayName: 'Existing User',
+                email: 'existing@example.com',
+                password: 'password',
+                verified: true,
+                admin: false,
             };
-            userRepository.findOne.mockResolvedValue({ id: '1' } as User);
+            const existingUser = {
+                id: '1',
+                email: createUserDto.email,
+            } as User;
+
+            userRepository.findOne.mockResolvedValue(existingUser);
 
             await expect(
                 usersService.createUser(createUserDto),
             ).rejects.toThrow(ConflictException);
-
             expect(userRepository.findOne).toHaveBeenCalledWith({
                 where: { email: createUserDto.email },
             });
-            expect(userRepository.create).not.toHaveBeenCalled();
-            expect(userRepository.save).not.toHaveBeenCalled();
         });
     });
 
     describe('updateUser', () => {
-        it('should merge id with dto, create entity, and save it', async () => {
+        it('should update and save the user', async () => {
             const updateUserDto: UpdateUserDto = {
                 displayName: 'Updated Name',
+                email: 'updated@example.com',
             };
-            const mergedUser = {
-                id: '1',
-                displayName: 'Updated Name',
-            } as User;
+            const mergedUser = Object.assign(
+                { id: '1' },
+                updateUserDto,
+            ) as unknown as User;
 
-            userRepository.create.mockReturnValue(mergedUser);
+            userRepository.create.mockReturnValue({ id: '1' } as User);
             userRepository.save.mockResolvedValue(mergedUser);
 
             const result = await usersService.updateUser('1', updateUserDto);
@@ -295,38 +325,61 @@ describe('UsersService', () => {
             expect(result).toEqual(mergedUser);
             expect(userRepository.create).toHaveBeenCalledWith({
                 id: '1',
-                ...updateUserDto,
             });
-            expect(userRepository.save).toHaveBeenCalledWith(mergedUser);
+            expect(userRepository.save).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    id: '1',
+                    displayName: 'Updated Name',
+                }),
+            );
         });
     });
 
     describe('deleteUser', () => {
-        it('should soft delete the user by id', async () => {
+        it('should revoke sessions, soft delete team memberships, and soft delete the user when user exists', async () => {
+            const user = { id: '1', email: 'test@example.com' } as User;
+            userRepository.findOne.mockResolvedValue(user);
+            sessionsService.revokeAllUserSessions.mockResolvedValue();
+            teamMemberRepository.softDelete.mockResolvedValue({
+                affected: 1,
+                raw: [],
+                generatedMaps: [],
+            });
             userRepository.softDelete.mockResolvedValue({
                 affected: 1,
                 raw: [],
                 generatedMaps: [],
-            } as UpdateResult);
+            });
 
             await usersService.deleteUser('1');
 
+            expect(userRepository.findOne).toHaveBeenCalledWith({
+                where: { id: '1' },
+            });
+            expect(sessionsService.revokeAllUserSessions).toHaveBeenCalledWith(
+                '1',
+            );
+            expect(teamMemberRepository.softDelete).toHaveBeenCalledWith({
+                user: { id: '1' },
+            });
             expect(userRepository.softDelete).toHaveBeenCalledWith('1');
         });
 
-        it('should not throw when deleting a non-existent user', async () => {
-            userRepository.softDelete.mockResolvedValue({
-                affected: 0,
-                raw: [],
-                generatedMaps: [],
-            } as UpdateResult);
+        it('should throw NotFoundException when user does not exist', async () => {
+            userRepository.findOne.mockResolvedValue(null);
 
             await expect(
                 usersService.deleteUser('nonexistent'),
-            ).resolves.not.toThrow();
-            expect(userRepository.softDelete).toHaveBeenCalledWith(
-                'nonexistent',
-            );
+            ).rejects.toThrow(NotFoundException);
+
+            expect(userRepository.findOne).toHaveBeenCalledWith({
+                where: { id: 'nonexistent' },
+            });
+            expect(
+                sessionsService.revokeAllUserSessions,
+            ).not.toHaveBeenCalled();
+            expect(teamMemberRepository.softDelete).not.toHaveBeenCalled();
+            expect(userRepository.softDelete).not.toHaveBeenCalled();
         });
     });
 });

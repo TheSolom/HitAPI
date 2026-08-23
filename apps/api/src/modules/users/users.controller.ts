@@ -1,7 +1,16 @@
-import { Inject, Controller, UseGuards, Get, Delete } from '@nestjs/common';
+import {
+    Inject,
+    Controller,
+    UseGuards,
+    Get,
+    Delete,
+    HttpCode,
+    HttpStatus,
+} from '@nestjs/common';
 import {
     ApiBearerAuth,
     ApiNoContentResponse,
+    ApiNotFoundResponse,
     ApiOAuth2,
     ApiOkResponse,
     ApiTags,
@@ -54,7 +63,11 @@ export class UsersController {
     }
 
     @Delete('me')
-    @ApiNoContentResponse()
+    @HttpCode(HttpStatus.NO_CONTENT)
+    @ApiNoContentResponse({
+        description: 'User account successfully deactivated and soft-deleted',
+    })
+    @ApiNotFoundResponse({ description: 'User not found' })
     async deleteUserProfile(
         @AuthUser() { id }: AuthenticatedUser,
     ): Promise<void> {

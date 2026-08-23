@@ -27,8 +27,16 @@ const sharedTsRules: Linter.RulesRecord = {
         },
     ],
 
+    '@typescript-eslint/no-extraneous-class': [
+        'error',
+        {
+            allowWithDecorator: true,
+        },
+    ],
+
     '@typescript-eslint/require-await': 'warn',
 };
+
 
 // eslint-plugin-react-hooks (7.0.x / 7.1.x) ships a `configs.flat` shape that
 // doesn't satisfy ESLint's `Plugin` type, so TS rejects it under `plugins`.

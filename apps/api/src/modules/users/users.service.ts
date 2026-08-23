@@ -1,9 +1,16 @@
-import { Injectable, ConflictException, Inject } from '@nestjs/common';
+import {
+    Injectable,
+    ConflictException,
+    NotFoundException,
+    Inject,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity.js';
+import { TeamMember } from '../teams/entities/team-member.entity.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { ISocialAccountsService } from './interfaces/social-account-service.interface.js';
+import type { ISessionsService } from '../auth/sessions/interfaces/sessions-service.interface.js';
 import type { IUsersService } from './interfaces/users-service.interface.js';
 import type { NullableType } from '@hitapi/types';
 import { CreateUserDto } from './dto/create-user.dto.js';
@@ -16,8 +23,12 @@ export class UsersService implements IUsersService {
     constructor(
         @InjectRepository(User)
         private readonly usersRepository: Repository<User>,
+        @InjectRepository(TeamMember)
+        private readonly teamMembersRepository: Repository<TeamMember>,
         @Inject(Services.SOCIAL_ACCOUNTS)
         private readonly socialAccountsService: ISocialAccountsService,
+        @Inject(Services.SESSIONS)
+        private readonly sessionsService: ISessionsService,
     ) {}
 
     async findById(
@@ -106,15 +117,21 @@ export class UsersService implements IUsersService {
         id: User['id'],
         updateUserDto: UpdateUserDto,
     ): Promise<User> {
-        return this.saveUser(
-            this.usersRepository.create({
-                id,
-                ...updateUserDto,
-            }),
-        );
+        const user = this.usersRepository.create({ id });
+        Object.assign(user, updateUserDto);
+        return this.saveUser(user);
     }
 
     async deleteUser(id: User['id']): Promise<void> {
+        const user = await this.usersRepository.findOne({
+            where: { id },
+        });
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        await this.sessionsService.revokeAllUserSessions(id);
+        await this.teamMembersRepository.softDelete({ user: { id } });
         await this.usersRepository.softDelete(id);
     }
 

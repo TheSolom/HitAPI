@@ -50,7 +50,9 @@ export class SocialAccountsService implements ISocialAccountsService {
     async hasMultipleLoginMethods(userId: string): Promise<boolean> {
         const socialAccounts = await this.findAllByUserId(userId);
 
-        const hasPassword = !!socialAccounts[0].user?.password;
+        const hasPassword =
+            socialAccounts.length > 0 &&
+            Boolean(socialAccounts[0].user.password);
         const hasSocialAccounts = socialAccounts.length > 0;
         const hasMultipleSocialAccounts = socialAccounts.length > 1;
 

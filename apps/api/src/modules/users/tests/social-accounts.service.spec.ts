@@ -1,7 +1,6 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import type { UpdateResult } from 'typeorm';
 import { SocialAccountsService } from '../social-accounts.service.js';
 import type { ISocialAccountsService } from '../interfaces/social-account-service.interface.js';
 import { SocialAccount } from '../entities/social-account.entity.js';
@@ -201,7 +200,7 @@ describe('SocialAccountsService', () => {
         it('should return true if delete was successful and affected > 0', async () => {
             (
                 mockSocialAccountRepository.delete as jest.Mock<any>
-            ).mockResolvedValue({ affected: 1 } as UpdateResult);
+            ).mockResolvedValue({ affected: 1 });
 
             const result = await service.unlinkAccount(
                 'user-id',
@@ -217,7 +216,7 @@ describe('SocialAccountsService', () => {
         it('should return false if delete was successful but affected is 0', async () => {
             (
                 mockSocialAccountRepository.delete as jest.Mock<any>
-            ).mockResolvedValue({ affected: 0 } as UpdateResult);
+            ).mockResolvedValue({ affected: 0 });
 
             const result = await service.unlinkAccount(
                 'user-id',
@@ -229,7 +228,7 @@ describe('SocialAccountsService', () => {
         it('should return false if delete returns null or undefined affected', async () => {
             (
                 mockSocialAccountRepository.delete as jest.Mock<any>
-            ).mockResolvedValue({} as UpdateResult);
+            ).mockResolvedValue({});
 
             const result = await service.unlinkAccount(
                 'user-id',
