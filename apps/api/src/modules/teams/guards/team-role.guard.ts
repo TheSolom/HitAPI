@@ -33,8 +33,9 @@ export class TeamRoleGuard implements CanActivate {
 
         const request = context.switchToHttp().getRequest<Request>();
 
-        const { teamId } = request.params as { teamId: string };
-        if (!isUUID(teamId)) {
+        const params = request.params as { teamId?: string; id?: string };
+        const teamId = params.teamId ?? params.id;
+        if (!teamId || !isUUID(teamId)) {
             throw new BadRequestException('Invalid team ID format');
         }
 
