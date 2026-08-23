@@ -54,6 +54,14 @@ export interface RequestLogFilterCriteria {
     logLevel?: string;
 }
 
+export interface AppMetricsRawResult {
+    requestCount: string;
+    errorCount: string;
+    satisfiedCount: string;
+    toleratingCount: string;
+    consumerCount: string;
+}
+
 export interface IRequestLogsRepository {
     /**
      * Create multiple request logs
@@ -95,4 +103,16 @@ export interface IRequestLogsRepository {
         appId: string,
         timestamp?: string,
     ): Promise<NullableType<RequestLog>>;
+    /**
+     * Get aggregated metrics for an app within a time period
+     * @param appId
+     * @param period
+     * @param targetResponseTimeMs
+     * @returns {Promise<AppMetricsRawResult>}
+     */
+    getAppMetrics(
+        appId: string,
+        period: Period,
+        targetResponseTimeMs: number,
+    ): Promise<AppMetricsRawResult>;
 }

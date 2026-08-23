@@ -237,6 +237,7 @@ export class SyncDataIngestionProcessor extends BaseProcessor<
 
         const existing = await this.endpointsService.findAllByApp(
             appId,
+            undefined,
             queryRunner,
         );
         return new Map(

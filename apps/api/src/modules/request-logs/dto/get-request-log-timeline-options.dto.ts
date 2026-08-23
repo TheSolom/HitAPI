@@ -24,7 +24,11 @@ export class GetRequestLogTimelineOptionsDto {
     @IsNotEmpty()
     appId: string;
 
-    @ApiPropertyOptional({ type: 'string', default: '24h' })
+    @ApiPropertyOptional({
+        type: 'string',
+        default: '24h',
+        example: '24h, 7d, or start|end',
+    })
     @IsPeriod()
     @IsOptional()
     period: Period = '24h';

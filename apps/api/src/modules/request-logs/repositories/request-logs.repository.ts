@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, type SelectQueryBuilder, type QueryRunner } from 'typeorm';
+import type { NullableType, Period } from '@hitapi/types';
 import type {
     IRequestLogsRepository,
     PartialRequestLog,
     TimelineRawResult,
     RequestLogFilterCriteria,
+    AppMetricsRawResult,
 } from '../interfaces/request-logs-repository.interface.js';
 import { RequestLog } from '../entities/request-log.entity.js';
 import {
@@ -13,7 +15,6 @@ import {
     parsePeriod,
 } from '../../../common/utils/period.util.js';
 import type { FindOptions } from '../../../common/types/find-options.type.js';
-import type { NullableType } from '@hitapi/types';
 import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
 
 @Injectable()
@@ -88,7 +89,7 @@ export class RequestLogsRepository
         for (const filter of simpleFilters) {
             const value = criteria[filter.key];
 
-            if (value !== undefined && value !== null) {
+            if (value !== undefined) {
                 const paramValue = filter.wrapLike
                     ? `%${String(value)}%`
                     : value;
@@ -119,13 +120,13 @@ export class RequestLogsRepository
             ? queryRunner.manager.getRepository(RequestLog)
             : this.requestLogRepository;
 
-        const entities = createRequestLogsDto.map((dto) =>
-            repository.create({
-                ...dto,
+        const entities = createRequestLogsDto.map((dto) => {
+            const entity = repository.create({
                 app: { id: dto.appId },
                 consumer: { id: dto.consumerId },
-            }),
-        );
+            });
+            return Object.assign(entity, dto);
+        });
 
         await repository.insert(entities);
     }
@@ -203,5 +204,45 @@ export class RequestLogsRepository
         }
 
         return qb.getOne();
+    }
+
+    async getAppMetrics(
+        appId: string,
+        period: Period,
+        targetResponseTimeMs: number,
+    ): Promise<AppMetricsRawResult> {
+        const toleratingMs = targetResponseTimeMs * 4;
+
+        const qb = this.requestLogRepository
+            .createQueryBuilder('rl')
+            .select([
+                'COUNT(*) AS "requestCount"',
+                'SUM(CASE WHEN rl.statusCode >= 400 THEN 1 ELSE 0 END) AS "errorCount"',
+                'SUM(CASE WHEN rl.statusCode < 400 AND rl.responseTime <= :targetResponseTimeMs THEN 1 ELSE 0 END) AS "satisfiedCount"',
+                'SUM(CASE WHEN rl.statusCode < 400 AND rl.responseTime > :targetResponseTimeMs AND rl.responseTime <= :toleratingMs THEN 1 ELSE 0 END) AS "toleratingCount"',
+                'COUNT(DISTINCT rl.consumerId) AS "consumerCount"',
+            ])
+            .where('rl.appId = :appId', {
+                appId,
+                targetResponseTimeMs,
+                toleratingMs,
+            });
+
+        applyPeriodFilter<RequestLog>(
+            qb,
+            parsePeriod(period),
+            'rl',
+            'timestamp',
+        );
+
+        const result = await qb.getRawOne<AppMetricsRawResult>();
+
+        return {
+            requestCount: result?.requestCount ?? '0',
+            errorCount: result?.errorCount ?? '0',
+            satisfiedCount: result?.satisfiedCount ?? '0',
+            toleratingCount: result?.toleratingCount ?? '0',
+            consumerCount: result?.consumerCount ?? '0',
+        };
     }
 }
