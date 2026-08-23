@@ -84,18 +84,20 @@ export class TeamsService implements ITeamsService {
         const existingTeam = await this.teamsRepository.findOneBy({ slug });
         if (existingTeam) throw new ConflictException('Team already exists');
 
-        const team = this.teamsRepository.create({
-            slug,
-            teamMembers: [
-                {
-                    user: { id: userId },
-                    role: TeamMemberRoles.OWNER,
-                },
-            ],
-        });
-        Object.assign(team, createTeamDto);
-
-        return this.saveTeam(team);
+        return this.saveTeam(
+            this.teamsRepository.create({
+                name: createTeamDto.name,
+                demo: createTeamDto.demo,
+                stealth: createTeamDto.stealth,
+                slug,
+                teamMembers: [
+                    {
+                        user: { id: userId },
+                        role: TeamMemberRoles.OWNER,
+                    },
+                ],
+            }),
+        );
     }
 
     async updateTeam(id: string, updateTeamDto: UpdateTeamDto): Promise<Team> {

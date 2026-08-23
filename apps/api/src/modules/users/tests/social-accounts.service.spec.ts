@@ -185,14 +185,13 @@ describe('SocialAccountsService', () => {
             expect(result).toBe(false);
         });
 
-        it('should throw TypeError if no accounts are found', async () => {
+        it('should return false if no accounts are found', async () => {
             (
                 mockSocialAccountRepository.findBy as jest.Mock<any>
             ).mockResolvedValue([]);
 
-            await expect(
-                service.hasMultipleLoginMethods('user-id'),
-            ).rejects.toThrow(TypeError);
+            const result = await service.hasMultipleLoginMethods('user-id');
+            expect(result).toBe(false);
         });
     });
 

@@ -296,8 +296,8 @@ describe('TeamsService', () => {
 
             const result = await teamsService.updateTeam('1', updateTeamDto);
 
-            expect(result.name).toBe('New Team');
-            expect(result.slug).toBe('new-team');
+            expect(result.name).toBe('Updated Team');
+            expect(result.slug).toBe('updated-team');
             expect(result.demo).toBe(true);
             expect(saveSpy).toHaveBeenCalledWith(existingTeam);
         });
@@ -342,29 +342,29 @@ describe('TeamsService', () => {
             ).rejects.toThrow('Team not found');
         });
 
-        it('should handle partial updates correctly', async () => {
+        it('should update stealth option', async () => {
             const existingTeam = {
                 id: '1',
                 name: 'Team',
                 slug: 'team',
+                demo: false,
                 stealth: false,
             } as Team;
             const updateTeamDto: UpdateTeamDto = {
                 stealth: true,
             };
-            const updatedTeam = { id: '1', stealth: true } as Team;
 
             jest.spyOn(teamRepository, 'findOneBy').mockResolvedValue(
                 existingTeam,
             );
-            const mergeSpy = jest
-                .spyOn(teamRepository, 'merge')
-                .mockReturnValue(updatedTeam);
-            jest.spyOn(teamRepository, 'save').mockResolvedValue(updatedTeam);
+            const saveSpy = jest
+                .spyOn(teamRepository, 'save')
+                .mockImplementation((team) => Promise.resolve(team as Team));
 
-            await teamsService.updateTeam('1', updateTeamDto);
+            const result = await teamsService.updateTeam('1', updateTeamDto);
 
-            expect(mergeSpy).toHaveBeenCalledWith(existingTeam, updateTeamDto);
+            expect(result.stealth).toBe(true);
+            expect(saveSpy).toHaveBeenCalledWith(existingTeam);
         });
     });
 
