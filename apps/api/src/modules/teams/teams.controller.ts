@@ -21,13 +21,18 @@ import {
     ApiOkResponse,
     ApiNoContentResponse,
     ApiNotFoundResponse,
+    ApiForbiddenResponse,
+    ApiBadRequestResponse,
     ApiConflictResponse,
     ApiTooManyRequestsResponse,
     ApiParam,
     ApiBody,
 } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
+import { TeamMemberRoles } from '@hitapi/types';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { TeamRoleGuard } from './guards/team-role.guard.js';
+import { TeamRoles } from './decorators/team-roles.decorator.js';
 import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { ITeamsService } from './interfaces/teams-service.interfaces.js';
@@ -43,7 +48,7 @@ import type { AuthenticatedUser } from '../users/dto/auth-user.dto.js';
 @ApiOAuth2(['email', 'profile'], 'GoogleOAuth2')
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, TeamRoleGuard)
 @Controller(Routes.TEAMS)
 export class TeamsController {
     constructor(
@@ -102,9 +107,16 @@ export class TeamsController {
 
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
-    @ApiNoContentResponse()
+    @TeamRoles(TeamMemberRoles.OWNER)
+    @ApiNoContentResponse({ description: 'Team deleted successfully' })
+    @ApiNotFoundResponse({ description: 'Team not found' })
+    @ApiForbiddenResponse({ description: 'Only team owners can delete a team' })
+    @ApiBadRequestResponse({ description: 'Cannot delete your only team' })
     @ApiParam({ name: 'id', format: 'uuid' })
-    async deleteTeam(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-        await this.teamsService.deleteTeam(id);
+    async deleteTeam(
+        @AuthUser() { id: userId }: AuthenticatedUser,
+        @Param('id', ParseUUIDPipe) id: string,
+    ): Promise<void> {
+        await this.teamsService.deleteTeam(userId, id);
     }
 }

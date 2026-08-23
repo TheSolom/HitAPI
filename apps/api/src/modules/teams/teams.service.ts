@@ -1,13 +1,17 @@
 import {
     Injectable,
+    Inject,
     ConflictException,
     NotFoundException,
+    BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { randomUUID } from 'node:crypto';
 import { type NullableType, TeamMemberRoles } from '@hitapi/types';
+import { Services } from '../../common/constants/services.constant.js';
 import type { ITeamsService } from './interfaces/teams-service.interfaces.js';
+import type { ITeamMembersService } from './interfaces/team-members-service.interfaces.js';
 import { Team } from './entities/team.entity.js';
 import { CreateTeamDto } from './dto/create-team.dto.js';
 import { UpdateTeamDto } from './dto/update-team.dto.js';
@@ -18,6 +22,8 @@ export class TeamsService implements ITeamsService {
     constructor(
         @InjectRepository(Team)
         private readonly teamsRepository: Repository<Team>,
+        @Inject(Services.TEAM_MEMBERS)
+        private readonly teamMembersService: ITeamMembersService,
     ) {}
 
     private async saveTeam(team: Team): Promise<Team> {
@@ -118,7 +124,20 @@ export class TeamsService implements ITeamsService {
         return this.saveTeam(team);
     }
 
-    async deleteTeam(id: string): Promise<void> {
+    async deleteTeam(userId: string, id: string): Promise<void> {
+        const team = await this.findOne(id);
+        if (!team) {
+            throw new NotFoundException('Team not found');
+        }
+
+        const userTeams = await this.findAllByUser(userId);
+        if (userTeams.length <= 1) {
+            throw new BadRequestException(
+                'Cannot delete your only team. You must create or join another team before deleting this one, or delete your user account.',
+            );
+        }
+
+        await this.teamMembersService.removeAllByTeam(id);
         await this.teamsRepository.softDelete(id);
     }
 }

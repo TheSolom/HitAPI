@@ -4,9 +4,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ConflictException } from '@nestjs/common';
+import {
+    ConflictException,
+    NotFoundException,
+    BadRequestException,
+} from '@nestjs/common';
+import { Services } from '../../../common/constants/services.constant.js';
 import { TeamsService } from '../teams.service.js';
 import type { ITeamsService } from '../interfaces/teams-service.interfaces.js';
+import type { ITeamMembersService } from '../interfaces/team-members-service.interfaces.js';
 import { Team } from '../entities/team.entity.js';
 import { CreateTeamDto } from '../dto/create-team.dto.js';
 import { UpdateTeamDto } from '../dto/update-team.dto.js';
@@ -23,9 +29,22 @@ const mockTeamRepository = () => ({
     merge: jest.fn(),
 });
 
+const mockTeamMembersService = (): jest.Mocked<ITeamMembersService> => ({
+    findAllByTeam: jest.fn(),
+    findById: jest.fn(),
+    findByUserId: jest.fn(),
+    searchTeamMembers: jest.fn(),
+    addTeamMember: jest.fn(),
+    checkRolePriority: jest.fn(),
+    updateTeamMemberRole: jest.fn(),
+    removeTeamMember: jest.fn(),
+    removeAllByTeam: jest.fn(),
+});
+
 describe('TeamsService', () => {
     let teamsService: ITeamsService;
     let teamRepository: Repository<Team>;
+    let teamMembersService: jest.Mocked<ITeamMembersService>;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -35,11 +54,16 @@ describe('TeamsService', () => {
                     provide: getRepositoryToken(Team),
                     useFactory: mockTeamRepository,
                 },
+                {
+                    provide: Services.TEAM_MEMBERS,
+                    useFactory: mockTeamMembersService,
+                },
             ],
         }).compile();
 
         teamsService = module.get<ITeamsService>(TeamsService);
         teamRepository = module.get<Repository<Team>>(getRepositoryToken(Team));
+        teamMembersService = module.get(Services.TEAM_MEMBERS);
     });
 
     afterEach(() => {
@@ -369,30 +393,57 @@ describe('TeamsService', () => {
     });
 
     describe('deleteTeam', () => {
-        it('should call softDelete with correct id', async () => {
-            const softDeleteSpy = jest
-                .spyOn(teamRepository, 'softDelete')
-                .mockResolvedValue({
-                    affected: 1,
-                    raw: [],
-                    generatedMaps: [],
-                });
-
-            await teamsService.deleteTeam('1');
-
-            expect(softDeleteSpy).toHaveBeenCalledWith('1');
-        });
-
-        it('should handle deleting non-existent team', async () => {
-            jest.spyOn(teamRepository, 'softDelete').mockResolvedValue({
-                affected: 0,
-                raw: [],
-                generatedMaps: [],
-            });
+        it('should throw NotFoundException when team does not exist', async () => {
+            jest.spyOn(teamRepository, 'findOne').mockResolvedValue(null);
 
             await expect(
-                teamsService.deleteTeam('non-existent-id'),
-            ).resolves.not.toThrow();
+                teamsService.deleteTeam(mockUserId, 'non-existent-id'),
+            ).rejects.toThrow(NotFoundException);
+        });
+
+        it('should throw BadRequestException when user only has 1 team', async () => {
+            const mockTeam = {
+                id: 'team-1',
+                name: 'Team 1',
+            } as unknown as Team;
+
+            jest.spyOn(teamRepository, 'findOne').mockResolvedValue(mockTeam);
+            jest.spyOn(teamRepository, 'find').mockResolvedValue([mockTeam]);
+
+            await expect(
+                teamsService.deleteTeam(mockUserId, 'team-1'),
+            ).rejects.toThrow(BadRequestException);
+        });
+
+        it('should soft delete team and team members when user has other teams', async () => {
+            const teamToDelete = {
+                id: 'team-1',
+                name: 'Team 1',
+            } as unknown as Team;
+
+            const otherTeam = {
+                id: 'team-2',
+                name: 'Team 2',
+            } as unknown as Team;
+
+            jest.spyOn(teamRepository, 'findOne').mockResolvedValue(
+                teamToDelete,
+            );
+            jest.spyOn(teamRepository, 'find').mockResolvedValue([
+                teamToDelete,
+                otherTeam,
+            ]);
+            teamMembersService.removeAllByTeam.mockResolvedValue();
+            const teamSoftDeleteSpy = jest
+                .spyOn(teamRepository, 'softDelete')
+                .mockResolvedValue({ affected: 1, raw: [], generatedMaps: [] });
+
+            await teamsService.deleteTeam(mockUserId, 'team-1');
+
+            expect(teamMembersService.removeAllByTeam).toHaveBeenCalledWith(
+                'team-1',
+            );
+            expect(teamSoftDeleteSpy).toHaveBeenCalledWith('team-1');
         });
     });
 });

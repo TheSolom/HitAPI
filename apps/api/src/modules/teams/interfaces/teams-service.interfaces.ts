@@ -38,8 +38,9 @@ export interface ITeamsService {
     /**
      * Delete a team
      *
+     * @param userId
      * @param id
      * @returns {Promise<void>}
      */
-    deleteTeam(id: string): Promise<void>;
+    deleteTeam(userId: string, id: string): Promise<void>;
 }
