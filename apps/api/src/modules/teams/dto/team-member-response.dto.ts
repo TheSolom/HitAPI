@@ -1,9 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
+import { TeamMemberRoles, type TeamMemberDto } from '@hitapi/types';
 import { UserProfileDto } from '../../users/dto/user-profile.dto.js';
-import { TeamMemberRoles } from '../enums/team-member-roles.enum.js';
 
-export class TeamMemberResponseDto extends UserProfileDto {
+export class TeamMemberResponseDto
+    extends UserProfileDto
+    implements TeamMemberDto
+{
     @Expose()
     @ApiProperty({ format: 'uuid' })
     declare id: string;

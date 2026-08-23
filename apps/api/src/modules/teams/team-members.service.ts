@@ -1,11 +1,11 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, ILike } from 'typeorm';
+import type { NullableType } from '@hitapi/types';
 import type { ITeamMembersService } from './interfaces/team-members-service.interfaces.js';
 import { TeamMember } from './entities/team-member.entity.js';
 import { AddTeamMemberDto } from './dto/add-team-member.dto.js';
-import type { NullableType } from '@hitapi/types';
-import { TeamMemberRolePriority } from './enums/team-member-roles.enum.js';
+import { TeamMemberRolePriority } from './enums/team-member-role-priority.enum.js';
 
 @Injectable()
 export class TeamMembersService implements ITeamMembersService {

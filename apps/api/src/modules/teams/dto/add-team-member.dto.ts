@@ -1,10 +1,10 @@
 import { IsIn, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { TeamMemberRoles } from '../enums/team-member-roles.enum.js';
+import { TeamMemberRoles, type AddTeamMemberPayload } from '@hitapi/types';
 import { lowerCaseTransformer } from '../../../common/transformers/lower-case.transformer.js';
 
-export class AddTeamMemberDto {
+export class AddTeamMemberDto implements AddTeamMemberPayload {
     @ApiProperty({ format: 'uuid' })
     @IsUUID()
     userId: string;

@@ -3,11 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { ConflictException } from '@nestjs/common';
+import { TeamMemberRoles } from '@hitapi/types';
 import { TeamMembersService } from '../team-members.service.js';
 import type { ITeamMembersService } from '../interfaces/team-members-service.interfaces.js';
 import { TeamMember } from '../entities/team-member.entity.js';
 import { AddTeamMemberDto } from '../dto/add-team-member.dto.js';
-import { TeamMemberRoles } from '../enums/team-member-roles.enum.js';
 
 const mockTeamId = 'team-uuid-123';
 const mockUserId = 'user-uuid-123';
@@ -296,7 +296,7 @@ describe('TeamMembersService', () => {
                 role: TeamMemberRoles.MEMBER,
             } as TeamMember;
             const updatedMember = {
-                ...member,
+                id: mockMemberId,
                 role: TeamMemberRoles.ADMIN,
             } as TeamMember;
 

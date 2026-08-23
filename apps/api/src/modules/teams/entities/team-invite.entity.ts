@@ -8,7 +8,7 @@ import {
     Unique,
     type Relation,
 } from 'typeorm';
-import { InviteStatus } from '../enums/invite-status.enum.js';
+import { InviteStatus } from '@hitapi/types';
 import { Team } from './team.entity.js';
 import { TeamMember } from './team-member.entity.js';
 

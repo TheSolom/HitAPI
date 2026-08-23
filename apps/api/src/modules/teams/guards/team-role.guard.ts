@@ -9,14 +9,12 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { isUUID } from 'class-validator';
+import { TeamMemberRoles } from '@hitapi/types';
 import { Services } from '../../../common/constants/services.constant.js';
 import type { ITeamMembersService } from '../interfaces/team-members-service.interfaces.js';
 import { TEAM_ROLES_KEY } from '../../../common/constants/keys.constant.js';
 import { AuthenticatedUser } from '../../users/dto/auth-user.dto.js';
-import {
-    TeamMemberRoles,
-    TeamMemberRolePriority,
-} from '../enums/team-member-roles.enum.js';
+import { TeamMemberRolePriority } from '../enums/team-member-role-priority.enum.js';
 
 @Injectable()
 export class TeamRoleGuard implements CanActivate {
@@ -28,7 +26,7 @@ export class TeamRoleGuard implements CanActivate {
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const requiredRoles = this.reflector.getAllAndOverride<
-            TeamMemberRoles[]
+            TeamMemberRoles[] | undefined
         >(TEAM_ROLES_KEY, [context.getHandler(), context.getClass()]);
 
         if (!requiredRoles) return true;

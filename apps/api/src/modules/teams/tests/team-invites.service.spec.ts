@@ -8,10 +8,10 @@ import {
     NotFoundException,
     BadRequestException,
 } from '@nestjs/common';
+import { InviteStatus } from '@hitapi/types';
 import { TeamInvitesService } from '../team-invites.service.js';
 import type { ITeamInvitesService } from '../interfaces/team-invites-service.interfaces.js';
 import { TeamInvite } from '../entities/team-invite.entity.js';
-import { InviteStatus } from '../enums/invite-status.enum.js';
 import { Services } from '../../../common/constants/services.constant.js';
 import type { IHashingService } from '../../hashing/interfaces/hashing-service.interface.js';
 
@@ -337,7 +337,7 @@ describe('TeamInvitesService', () => {
                 status: InviteStatus.PENDING,
             } as TeamInvite;
             const updatedInvite = {
-                ...invite,
+                id: mockInviteId,
                 status: InviteStatus.ACCEPTED,
             } as TeamInvite;
 

@@ -96,7 +96,6 @@ export class TeamsController {
         @Param('id', ParseUUIDPipe) id: string,
     ): Promise<TeamResponseDto> {
         const team = await this.teamsService.updateTeam(id, updateTeamDto);
-        if (!team) throw new NotFoundException('Team not found');
 
         return plainToInstance(TeamResponseDto, team);
     }

@@ -29,6 +29,7 @@ import {
     ApiForbiddenResponse,
 } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
+import { TeamMemberRoles } from '@hitapi/types';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
@@ -40,7 +41,6 @@ import { AddTeamMemberDto } from './dto/add-team-member.dto.js';
 import { UpdateTeamMemberDto } from './dto/update-team-member.dto.js';
 import { AuthUser } from '../users/decorators/auth-user.decorator.js';
 import { AuthenticatedUser } from '../users/dto/auth-user.dto.js';
-import { TeamMemberRoles } from './enums/team-member-roles.enum.js';
 
 @ApiTags('Team Members')
 @ApiBearerAuth('JWT')

@@ -1,18 +1,19 @@
-import { IsBoolean, IsNotEmpty } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsNotEmpty, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import type { CreateTeamPayload } from '@hitapi/types';
 
-export class CreateTeamDto {
+export class CreateTeamDto implements CreateTeamPayload {
     @ApiProperty({ type: 'string' })
     @IsNotEmpty()
     name: string;
 
-    @ApiProperty({ type: 'boolean' })
+    @ApiPropertyOptional({ type: 'boolean', default: false })
     @IsBoolean()
-    @IsNotEmpty()
-    demo: boolean;
+    @IsOptional()
+    demo?: boolean;
 
-    @ApiProperty({ type: 'boolean' })
+    @ApiPropertyOptional({ type: 'boolean', default: false })
     @IsBoolean()
-    @IsNotEmpty()
-    stealth: boolean;
+    @IsOptional()
+    stealth?: boolean;
 }

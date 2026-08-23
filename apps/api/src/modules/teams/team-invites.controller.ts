@@ -31,6 +31,7 @@ import {
     ApiParam,
 } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
+import { TeamMemberRoles, InviteStatus } from '@hitapi/types';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
@@ -43,8 +44,6 @@ import { TeamRoles } from './decorators/team-roles.decorator.js';
 import { AuthUser } from '../users/decorators/auth-user.decorator.js';
 import { CreateTeamInviteDto } from './dto/create-team-invite.dto.js';
 import { AuthenticatedUser } from '../users/dto/auth-user.dto.js';
-import { TeamMemberRoles } from './enums/team-member-roles.enum.js';
-import { InviteStatus } from './enums/invite-status.enum.js';
 import { TeamMemberResponseDto } from './dto/team-member-response.dto.js';
 import {
     TeamInviteResponseDto,

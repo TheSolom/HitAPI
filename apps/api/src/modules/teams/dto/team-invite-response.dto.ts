@@ -1,9 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform, Type } from 'class-transformer';
-import { InviteStatus } from '../enums/invite-status.enum.js';
+import {
+    type TeamInviteDto,
+    type PublicTeamInviteDto,
+    type InviterDto as IInviterDto,
+    InviteStatus,
+} from '@hitapi/types';
 import { UserProfileDto } from '../../users/dto/user-profile.dto.js';
 
-class InviterDto extends UserProfileDto {
+class InviterDto extends UserProfileDto implements IInviterDto {
     @Transform(({ obj }: { obj: { user: { id: string } } }) => obj.user.id)
     @ApiProperty({ format: 'uuid' })
     declare userId: string;
@@ -27,7 +32,7 @@ class TeamDto {
     name: string;
 }
 
-export class TeamInviteResponseDto {
+export class TeamInviteResponseDto implements TeamInviteDto {
     @Expose()
     @ApiProperty({ format: 'uuid' })
     id: string;
@@ -50,7 +55,7 @@ export class TeamInviteResponseDto {
     expiresAt: Date;
 }
 
-export class PublicTeamInviteResponseDto {
+export class PublicTeamInviteResponseDto implements PublicTeamInviteDto {
     @Expose()
     @ApiProperty({ type: TeamDto })
     team: TeamDto;

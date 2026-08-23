@@ -1,8 +1,4 @@
-export enum TeamMemberRoles {
-    OWNER = 'owner',
-    ADMIN = 'admin',
-    MEMBER = 'member',
-}
+import { TeamMemberRoles } from '@hitapi/types';
 
 export const TeamMemberRolePriority: Record<TeamMemberRoles, number> = {
     [TeamMemberRoles.OWNER]: 1,

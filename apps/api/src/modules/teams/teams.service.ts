@@ -5,13 +5,13 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { randomUUID } from 'node:crypto';
+import { type NullableType, TeamMemberRoles } from '@hitapi/types';
 import type { ITeamsService } from './interfaces/teams-service.interfaces.js';
 import { Team } from './entities/team.entity.js';
 import { CreateTeamDto } from './dto/create-team.dto.js';
 import { UpdateTeamDto } from './dto/update-team.dto.js';
-import type { NullableType } from '@hitapi/types';
 import { createSlug } from '../../common/utils/slug.util.js';
-import { TeamMemberRoles } from './enums/team-member-roles.enum.js';
 
 @Injectable()
 export class TeamsService implements ITeamsService {
@@ -24,11 +24,43 @@ export class TeamsService implements ITeamsService {
         return this.teamsRepository.save(team);
     }
 
+    private async createDefaultTeamForUser(userId: string): Promise<Team> {
+        const baseName = 'Personal';
+        let slug = createSlug(baseName);
+
+        const existing = await this.teamsRepository.findOneBy({ slug });
+        if (existing) {
+            slug = `${slug}-${randomUUID().slice(0, 8)}`;
+        }
+
+        const team = this.teamsRepository.create({
+            name: baseName,
+            slug,
+            demo: false,
+            stealth: false,
+            teamMembers: [
+                {
+                    user: { id: userId },
+                    role: TeamMemberRoles.OWNER,
+                },
+            ],
+        });
+
+        return this.saveTeam(team);
+    }
+
     async findAllByUser(userId: string): Promise<Team[]> {
-        return this.teamsRepository.find({
+        const teams = await this.teamsRepository.find({
             where: { teamMembers: { user: { id: userId } } },
             order: { createdAt: 'DESC' },
         });
+
+        if (teams.length === 0) {
+            const defaultTeam = await this.createDefaultTeamForUser(userId);
+            return [defaultTeam];
+        }
+
+        return teams;
     }
 
     async findOne(id: string): Promise<NullableType<Team>> {
@@ -52,30 +84,36 @@ export class TeamsService implements ITeamsService {
         const existingTeam = await this.teamsRepository.findOneBy({ slug });
         if (existingTeam) throw new ConflictException('Team already exists');
 
-        return this.saveTeam(
-            this.teamsRepository.create({
-                ...createTeamDto,
-                slug,
-                teamMembers: [
-                    {
-                        user: { id: userId },
-                        role: TeamMemberRoles.OWNER,
-                    },
-                ],
-            }),
-        );
+        const team = this.teamsRepository.create({
+            slug,
+            teamMembers: [
+                {
+                    user: { id: userId },
+                    role: TeamMemberRoles.OWNER,
+                },
+            ],
+        });
+        Object.assign(team, createTeamDto);
+
+        return this.saveTeam(team);
     }
 
     async updateTeam(id: string, updateTeamDto: UpdateTeamDto): Promise<Team> {
         const team = await this.teamsRepository.findOneBy({ id });
         if (!team) throw new NotFoundException('Team not found');
 
-        const updatedTeam = this.teamsRepository.merge(team, {
-            ...updateTeamDto,
-            ...(updateTeamDto.name && { slug: createSlug(updateTeamDto.name) }),
-        });
+        if (updateTeamDto.name) {
+            team.name = updateTeamDto.name;
+            team.slug = createSlug(updateTeamDto.name);
+        }
+        if (updateTeamDto.demo !== undefined) {
+            team.demo = updateTeamDto.demo;
+        }
+        if (updateTeamDto.stealth !== undefined) {
+            team.stealth = updateTeamDto.stealth;
+        }
 
-        return this.saveTeam(updatedTeam);
+        return this.saveTeam(team);
     }
 
     async deleteTeam(id: string): Promise<void> {

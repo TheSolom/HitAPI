@@ -9,13 +9,12 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull } from 'typeorm';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util.js';
+import { InviteStatus, type NullableType } from '@hitapi/types';
 import type { ITeamInvitesService } from './interfaces/team-invites-service.interfaces.js';
 import { EnvironmentVariablesDto } from '../../config/env/dto/environment-variables.dto.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { IHashingService } from '../hashing/interfaces/hashing-service.interface.js';
-import type { NullableType } from '@hitapi/types';
 import { TeamInvite } from './entities/team-invite.entity.js';
-import { InviteStatus } from './enums/invite-status.enum.js';
 
 @Injectable()
 export class TeamInvitesService implements ITeamInvitesService {

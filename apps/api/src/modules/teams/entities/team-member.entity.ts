@@ -9,7 +9,7 @@ import {
     Unique,
     type Relation,
 } from 'typeorm';
-import { TeamMemberRoles } from '../enums/team-member-roles.enum.js';
+import { TeamMemberRoles } from '@hitapi/types';
 import { Team } from './team.entity.js';
 import { User } from '../../users/entities/user.entity.js';
 import { TeamInvite } from './team-invite.entity.js';
