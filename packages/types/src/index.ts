@@ -12,5 +12,7 @@ export * from './common.js';
 export * from './auth.js';
 export * from './app.js';
 export * from './endpoint.js';
+export * from './team.js';
+
 
 

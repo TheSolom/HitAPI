@@ -3,12 +3,12 @@ export interface FrameworkDto {
     name: string;
 }
 
-export interface AppEnvironmentDto {
-    id: string;
+export interface CreateFrameworkPayload {
     name: string;
-    slug: string;
-    lastSeenAt?: string | null;
-    sdkVersion?: string | null;
+}
+
+export interface UpdateFrameworkPayload {
+    name?: string;
 }
 
 export interface AppResponseDto {
@@ -19,17 +19,25 @@ export interface AppResponseDto {
     targetResponseTimeMs: number;
     active: boolean;
     framework: FrameworkDto;
-    environments?: AppEnvironmentDto[];
     createdAt: Date | string;
 }
 
 export interface CreateAppPayload {
     name: string;
-    teamId?: string;
+    frameworkId: number;
+    teamId: string;
+    targetResponseTimeMs?: number;
 }
 
 export interface UpdateAppPayload {
     name?: string;
+    frameworkId?: number;
     targetResponseTimeMs?: number;
-    active?: boolean;
+}
+
+export interface AppMetricsDto {
+    requestCount: number;
+    errorRate: number;
+    apdexScore: number;
+    consumerCount: number;
 }
