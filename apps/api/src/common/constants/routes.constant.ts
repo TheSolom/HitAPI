@@ -15,4 +15,5 @@ export enum Routes {
     TRAFFIC = 'traffic',
     RESOURCES = 'resources',
     INGESTION = 'ingest',
+    FRAMEWORKS = 'frameworks',
 }

@@ -1,8 +1,9 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import type { UpdateAppPayload } from '@hitapi/types';
 import { InStepRange } from '../../../common/validators/in-step-range.validator.js';
 
-export class UpdateAppDto {
+export class UpdateAppDto implements UpdateAppPayload {
     @ApiPropertyOptional({ type: 'string' })
     @IsString()
     @IsOptional()

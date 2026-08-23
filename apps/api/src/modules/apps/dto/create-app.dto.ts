@@ -8,9 +8,10 @@ import {
     Max,
     Min,
 } from 'class-validator';
+import type { CreateAppPayload } from '@hitapi/types';
 import { InStepRange } from '../../../common/validators/in-step-range.validator.js';
 
-export class CreateAppDto {
+export class CreateAppDto implements CreateAppPayload {
     @ApiProperty({ type: 'string' })
     @IsString()
     @IsNotEmpty()

@@ -1,7 +1,8 @@
-import type { NullableType } from '@hitapi/types';
+import type { NullableType, Period } from '@hitapi/types';
 import { App } from '../entities/app.entity.js';
 import { CreateAppDto } from '../dto/create-app.dto.js';
 import { UpdateAppDto } from '../dto/update-app.dto.js';
+import { AppMetricsResponseDto } from '../dto/app-metrics-response.dto.js';
 
 export interface IAppsService {
     /**
@@ -49,4 +50,16 @@ export interface IAppsService {
      * @returns {Promise<void>}
      */
     deleteApp(id: string): Promise<void>;
+    /**
+     * Get metrics for an app
+     *
+     * @param appId
+     * @param period
+     * @returns {Promise<AppMetricsResponseDto>}
+     * @throws {NotFoundException} App not found
+     */
+    getAppMetrics(
+        appId: string,
+        period?: Period,
+    ): Promise<AppMetricsResponseDto>;
 }

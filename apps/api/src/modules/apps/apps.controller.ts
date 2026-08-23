@@ -38,6 +38,8 @@ import { createCustomResponse } from '../../common/utils/create-custom-response.
 import { CreateAppDto } from './dto/create-app.dto.js';
 import { UpdateAppDto } from './dto/update-app.dto.js';
 import { AppResponseDto } from './dto/app-response.dto.js';
+import { AppMetricsResponseDto } from './dto/app-metrics-response.dto.js';
+import { GetAppMetricsOptionsDto } from './dto/get-app-metrics-options.dto.js';
 
 @ApiTags('Apps')
 @ApiBearerAuth('JWT')
@@ -107,5 +109,21 @@ export class AppsController {
     @ApiParam({ name: 'id', format: 'uuid' })
     async deleteApp(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
         await this.appsService.deleteApp(id);
+    }
+
+    @Get(':appId/metrics')
+    @ApiOkResponse({ type: createCustomResponse(AppMetricsResponseDto) })
+    @ApiNotFoundResponse({ description: 'App not found' })
+    @ApiParam({ name: 'appId', format: 'uuid' })
+    async getAppMetrics(
+        @Param('appId', ParseUUIDPipe) appId: string,
+        @Query() getAppMetricsOptionsDto: GetAppMetricsOptionsDto,
+    ): Promise<AppMetricsResponseDto> {
+        const metrics = await this.appsService.getAppMetrics(
+            appId,
+            getAppMetricsOptionsDto.period,
+        );
+
+        return plainToInstance(AppMetricsResponseDto, metrics);
     }
 }
