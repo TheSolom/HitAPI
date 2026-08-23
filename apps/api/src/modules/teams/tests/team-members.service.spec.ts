@@ -333,4 +333,22 @@ describe('TeamMembersService', () => {
             });
         });
     });
+
+    describe('removeAllByTeam', () => {
+        it('should soft delete all team members belonging to a team', async () => {
+            const softDeleteSpy = jest
+                .spyOn(teamMembersRepository, 'softDelete')
+                .mockResolvedValue({
+                    affected: 2,
+                    raw: [],
+                    generatedMaps: [],
+                });
+
+            await teamMembersService.removeAllByTeam(mockTeamId);
+
+            expect(softDeleteSpy).toHaveBeenCalledWith({
+                team: { id: mockTeamId },
+            });
+        });
+    });
 });

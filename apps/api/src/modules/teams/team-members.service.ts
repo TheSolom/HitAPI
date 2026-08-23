@@ -118,4 +118,10 @@ export class TeamMembersService implements ITeamMembersService {
             id: memberId,
         });
     }
+
+    async removeAllByTeam(teamId: TeamMember['team']['id']): Promise<void> {
+        await this.teamMembersRepository.softDelete({
+            team: { id: teamId },
+        });
+    }
 }

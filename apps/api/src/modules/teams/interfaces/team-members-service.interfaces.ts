@@ -87,4 +87,11 @@ export interface ITeamMembersService {
         teamId: TeamMember['team']['id'],
         memberId: TeamMember['id'],
     ): Promise<void>;
+    /**
+     * Remove all team members from a team
+     *
+     * @param teamId
+     * @returns {Promise<void>}
+     */
+    removeAllByTeam(teamId: TeamMember['team']['id']): Promise<void>;
 }
