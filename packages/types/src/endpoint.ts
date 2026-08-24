@@ -8,10 +8,6 @@ export interface EndpointResponseDto {
     description: string | null;
     targetResponseTimeMs: number | null;
     excluded: boolean;
-    requestCount?: number;
-    errorRate?: number;
-    p95ResponseTimeMs?: number | null;
-    lastSeenAt?: string | null;
 }
 
 export interface EndpointConfigResponseDto {
@@ -43,9 +39,10 @@ export interface UpdateEndpointErrorConfigPayload {
 }
 
 export interface GetEndpointsQuery {
-    appId: string;
-    env?: string;
     search?: string;
-    page?: number;
-    pageSize?: number;
+}
+
+export interface GetEndpointConfigQuery {
+    method: RestfulMethod;
+    path: string;
 }
