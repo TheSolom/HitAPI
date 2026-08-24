@@ -51,5 +51,5 @@ export class Team {
     updatedAt: Date;
 
     @DeleteDateColumn()
-    deletedAt: Date;
+    deletedAt: Date | null;
 }

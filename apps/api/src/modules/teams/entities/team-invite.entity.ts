@@ -45,5 +45,5 @@ export class TeamInvite {
     createdAt: Date;
 
     @DeleteDateColumn()
-    deletedAt: Date;
+    deletedAt: Date | null;
 }

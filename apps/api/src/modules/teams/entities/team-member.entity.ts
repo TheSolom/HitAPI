@@ -48,5 +48,5 @@ export class TeamMember {
     joinedAt: Date;
 
     @DeleteDateColumn()
-    deletedAt: Date;
+    deletedAt: Date | null;
 }
