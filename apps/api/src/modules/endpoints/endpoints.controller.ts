@@ -34,6 +34,7 @@ import type { IEndpointsService } from './interfaces/endpoints-service.interface
 import type { IEndpointConfigsService } from './interfaces/endpoint-configs-service.interface.js';
 import { createCustomResponse } from '../../common/utils/create-custom-response.util.js';
 import { EndpointResponseDto } from './dto/endpoint-response.dto.js';
+import { GetEndpointsOptionsDto } from './dto/get-endpoints-options.dto.js';
 import { EndpointConfigResponseDto } from './dto/endpoint-config-response.dto.js';
 import { UpdateEndpointConfigDto } from './dto/update-endpoint-config.dto.js';
 import { UpdateEndpointErrorConfigDto } from './dto/update-endpoint-error-config.dto.js';
@@ -58,8 +59,12 @@ export class EndpointsController {
     @ApiOkResponse({ type: createCustomResponse(EndpointResponseDto, true) })
     async listEndpoints(
         @Param('appId', ParseUUIDPipe) appId: string,
+        @Query() options: GetEndpointsOptionsDto,
     ): Promise<EndpointResponseDto[]> {
-        const endpoints = await this.endpointsService.findAllByApp(appId);
+        const endpoints = await this.endpointsService.findAllByApp(
+            appId,
+            options,
+        );
 
         return plainToInstance(EndpointResponseDto, endpoints);
     }

@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import { EndpointsService } from '../endpoints.service.js';
 import type { IEndpointsService } from '../interfaces/endpoints-service.interface.js';
 import { Endpoint } from '../entities/endpoint.entity.js';
@@ -39,7 +39,7 @@ describe('EndpointsService', () => {
     });
 
     describe('findAllByApp', () => {
-        it('should return an array of endpoints', async () => {
+        it('should return an array of endpoints matching search condition', async () => {
             const appId = 'app-1';
             const expectedEndpoints = [
                 { id: '1', method: 'GET', path: '/test' },
@@ -48,11 +48,17 @@ describe('EndpointsService', () => {
                 .spyOn(repository, 'find')
                 .mockResolvedValue(expectedEndpoints);
 
-            const result = await service.findAllByApp(appId);
+            const result = await service.findAllByApp(appId, {
+                search: 'test',
+            });
 
             expect(result).toEqual(expectedEndpoints);
             expect(findSpy).toHaveBeenCalledWith({
-                where: { app: { id: appId } },
+                where: [
+                    { app: { id: appId }, path: ILike('%test%') },
+                    { app: { id: appId }, summary: ILike('%test%') },
+                    { app: { id: appId }, description: ILike('%test%') },
+                ],
                 order: { path: 'ASC', method: 'ASC' },
             });
         });

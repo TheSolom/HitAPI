@@ -64,5 +64,5 @@ export class Endpoint {
     updatedAt: Date;
 
     @DeleteDateColumn()
-    deletedAt: Date;
+    deletedAt: Date | null;
 }

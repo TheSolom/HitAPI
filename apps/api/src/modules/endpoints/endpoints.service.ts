@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, type QueryRunner } from 'typeorm';
+import {
+    Repository,
+    ILike,
+    type QueryRunner,
+    type FindOptionsWhere,
+} from 'typeorm';
 import type { NullableType } from '@hitapi/types';
 import type { IEndpointsService } from './interfaces/endpoints-service.interface.js';
 import { Endpoint } from './entities/endpoint.entity.js';
 import type { CreateEndpointDto } from './dto/create-endpoint.dto.js';
+import type { GetEndpointsOptionsDto } from './dto/get-endpoints-options.dto.js';
 
 @Injectable()
 export class EndpointsService implements IEndpointsService {
@@ -19,14 +25,31 @@ export class EndpointsService implements IEndpointsService {
 
     async findAllByApp(
         appId: string,
+        options?: GetEndpointsOptionsDto,
         queryRunner?: QueryRunner,
     ): Promise<Endpoint[]> {
         const repository =
             queryRunner?.manager.getRepository(Endpoint) ??
             this.endpointsRepository;
 
+        let whereCondition:
+            FindOptionsWhere<Endpoint> | FindOptionsWhere<Endpoint>[];
+
+        if (options?.search) {
+            whereCondition = [
+                { app: { id: appId }, path: ILike(`%${options.search}%`) },
+                { app: { id: appId }, summary: ILike(`%${options.search}%`) },
+                {
+                    app: { id: appId },
+                    description: ILike(`%${options.search}%`),
+                },
+            ];
+        } else {
+            whereCondition = { app: { id: appId } };
+        }
+
         return repository.find({
-            where: { app: { id: appId } },
+            where: whereCondition,
             order: { path: 'ASC', method: 'ASC' },
         });
     }
@@ -44,10 +67,9 @@ export class EndpointsService implements IEndpointsService {
         appId: string,
         createEndpointDto: CreateEndpointDto,
     ): Promise<Endpoint> {
-        const endpoint = this.endpointsRepository.create({
-            app: { id: appId },
-            ...createEndpointDto,
-        });
+        const endpoint = this.endpointsRepository.create(
+            Object.assign({ app: { id: appId } }, createEndpointDto),
+        );
 
         return this.saveEndpoint(endpoint);
     }

@@ -2,16 +2,22 @@ import type { NullableType } from '@hitapi/types';
 import type { Endpoint } from '../entities/endpoint.entity.js';
 import type { CreateEndpointDto } from '../dto/create-endpoint.dto.js';
 import type { QueryRunner } from 'typeorm';
+import type { GetEndpointsOptionsDto } from '../dto/get-endpoints-options.dto.js';
 
 export interface IEndpointsService {
     /**
-     * Find all endpoints by app
+     * Find all endpoints by app with optional search options
      *
      * @param appId
+     * @param options
      * @param queryRunner
      * @returns {Promise<Endpoint[]>}
      */
-    findAllByApp(appId: string, queryRunner?: QueryRunner): Promise<Endpoint[]>;
+    findAllByApp(
+        appId: string,
+        options?: GetEndpointsOptionsDto,
+        queryRunner?: QueryRunner,
+    ): Promise<Endpoint[]>;
     /**
      * Find one endpoint by id
      *
