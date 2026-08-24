@@ -10,18 +10,28 @@ export function createCustomResponse<T>(
     const className = `CustomResponseOf${typeName}${isArray ? 'Array' : ''}`;
 
     if (dataType) {
-        class CustomResponseClass extends CustomResponse<T> {
-            @ApiPropertyOptional({ type: dataType, isArray })
-            declare data?: T;
+        if (isArray) {
+            class CustomResponseArrayClass extends CustomResponse<T[]> {
+                @ApiPropertyOptional({ type: dataType, isArray: true })
+                declare data?: T[];
+            }
+            Object.defineProperty(CustomResponseArrayClass, 'name', {
+                value: className,
+            });
+            return CustomResponseArrayClass;
         }
 
-        Object.defineProperty(CustomResponseClass, 'name', {
+        class CustomResponseSingleClass extends CustomResponse<T> {
+            @ApiPropertyOptional({ type: dataType, isArray: false })
+            declare data?: T;
+        }
+        Object.defineProperty(CustomResponseSingleClass, 'name', {
             value: className,
         });
-        return CustomResponseClass;
+        return CustomResponseSingleClass;
     }
 
-    class CustomResponseVoid extends CustomResponse<T> {}
+    class CustomResponseVoid extends CustomResponse<never> {}
 
     Object.defineProperty(CustomResponseVoid, 'name', { value: className });
     return CustomResponseVoid;

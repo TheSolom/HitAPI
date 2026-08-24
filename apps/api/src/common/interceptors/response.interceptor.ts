@@ -12,7 +12,7 @@ import type { CustomResponse } from '../dto/custom-response.dto.js';
 import { SKIP_RESPONSE_INTERCEPTOR } from '../decorators/skip-response-interceptor.decorator.js';
 
 @Injectable()
-export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
+export class ResponseInterceptor<T> implements NestInterceptor<T> {
     constructor(private readonly reflector: Reflector) {}
 
     intercept(
@@ -48,8 +48,8 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
 
         return {
             message: message || 'Success',
-            ...(metadata && { metadata }),
-            ...(data && { data }),
+            ...(metadata !== null && { metadata }),
+            ...(data !== null && data !== undefined && { data }),
         } as CustomResponse<T>;
     }
 
@@ -76,14 +76,14 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
             return false;
         }
 
-        const keys = Object.keys(res as Record<string, unknown>);
+        const keys = Object.keys(res);
         return (
             keys.length === 0 || (keys.length === 1 && keys[0] === 'message')
         );
     }
 
     private extractDataAndMetadata(res: T): {
-        data: Array<unknown> | null;
+        data: unknown;
         metadata: Record<string, unknown> | null;
     } {
         const metadata = this.extractMetadata(res);
@@ -103,7 +103,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
             : null;
     }
 
-    private extractData(res: T): Array<unknown> | null {
+    private extractData(res: T): unknown {
         if (Array.isArray(res)) {
             return res;
         }
@@ -115,15 +115,13 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
         const obj = res as Record<string, unknown>;
 
         if ('data' in obj) {
-            return Array.isArray(obj.data)
-                ? (obj.data as Array<unknown>)
-                : [obj.data];
+            return obj.data;
         }
 
         const data = { ...obj };
         delete data.message;
         delete data.metadata;
 
-        return Object.keys(data).length > 0 ? [data] : null;
+        return Object.keys(data).length > 0 ? data : null;
     }
 }
