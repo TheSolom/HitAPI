@@ -12,7 +12,6 @@ import {
     NotFoundException,
     HttpCode,
     HttpStatus,
-    ForbiddenException,
 } from '@nestjs/common';
 import {
     ApiTags,
@@ -24,12 +23,12 @@ import {
     ApiNotFoundResponse,
     ApiConflictResponse,
     ApiTooManyRequestsResponse,
+    ApiBadRequestResponse,
     ApiParam,
     ApiBody,
     ApiForbiddenResponse,
 } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
-import { TeamMemberRoles } from '@hitapi/types';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { Routes } from '../../common/constants/routes.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
@@ -95,29 +94,13 @@ export class TeamMembersController {
         @Body() addTeamMemberDto: AddTeamMemberDto,
         @Param('teamId', ParseUUIDPipe) teamId: string,
     ): Promise<TeamMemberResponseDto> {
-        if (userId === addTeamMemberDto.userId) {
-            throw new ForbiddenException('You are not allowed to add yourself');
-        }
-
-        const user = await this.teamMembersService.findByUserId(teamId, userId);
-        if (!user) {
-            throw new NotFoundException('You are not a member of this team');
-        }
-
-        const hasPermission = this.teamMembersService.checkRolePriority(
-            user.role,
-            TeamMemberRoles.ADMIN,
-        );
-
-        if (!hasPermission)
-            throw new ForbiddenException('You are not allowed to add members');
-
         const team = await this.teamsService.findOne(teamId);
         if (!team) throw new NotFoundException('Team not found');
 
         const member = await this.teamMembersService.addTeamMember(
             teamId,
             addTeamMemberDto,
+            userId,
         );
 
         return plainToInstance(TeamMemberResponseDto, member);
@@ -127,6 +110,7 @@ export class TeamMembersController {
     @ApiOkResponse({ type: createCustomResponse(TeamMemberResponseDto) })
     @ApiNotFoundResponse({ description: 'Member not found' })
     @ApiForbiddenResponse({ description: 'Forbidden' })
+    @ApiBadRequestResponse({ description: 'Cannot demote the sole owner' })
     @ApiBody({ type: UpdateTeamMemberDto })
     @ApiParam({ name: 'memberId', format: 'uuid' })
     async updateTeamMemberRole(
@@ -135,41 +119,13 @@ export class TeamMembersController {
         @Param('teamId', ParseUUIDPipe) teamId: string,
         @Param('memberId', ParseUUIDPipe) memberId: string,
     ): Promise<TeamMemberResponseDto> {
-        const [user, member] = await Promise.all([
-            this.teamMembersService.findByUserId(teamId, userId),
-            this.teamMembersService.findById(teamId, memberId),
-        ]);
-
-        if (!user) {
-            throw new ForbiddenException('You are not a member of this team');
-        }
-        if (!member) {
-            throw new NotFoundException('Member not found');
-        }
-        if (member.user.id === userId) {
-            throw new ForbiddenException(
-                'You are not allowed to update your role',
-            );
-        }
-
-        const hasPriority = this.teamMembersService.checkRolePriority(
-            user.role,
-            member.role,
-            true,
-        );
-        const hasPermission = this.teamMembersService.checkRolePriority(
-            user.role,
-            role,
-            true,
-        );
-
-        if (!hasPriority || !hasPermission)
-            throw new ForbiddenException(
-                'You are not allowed to update this member',
-            );
-
         const updatedMember =
-            await this.teamMembersService.updateTeamMemberRole(member, role);
+            await this.teamMembersService.updateTeamMemberRole(
+                userId,
+                teamId,
+                memberId,
+                role,
+            );
 
         return plainToInstance(TeamMemberResponseDto, updatedMember);
     }
@@ -179,43 +135,17 @@ export class TeamMembersController {
     @ApiNoContentResponse()
     @ApiNotFoundResponse({ description: 'Member not found' })
     @ApiForbiddenResponse({ description: 'Forbidden' })
+    @ApiBadRequestResponse({ description: 'Cannot remove the sole owner' })
     @ApiParam({ name: 'memberId', format: 'uuid' })
     async removeTeamMember(
         @AuthUser() { id: userId }: AuthenticatedUser,
         @Param('teamId', ParseUUIDPipe) teamId: string,
         @Param('memberId', ParseUUIDPipe) memberId: string,
     ): Promise<void> {
-        const [user, member] = await Promise.all([
-            this.teamMembersService.findByUserId(teamId, userId),
-            this.teamMembersService.findById(teamId, memberId),
-        ]);
-
-        if (!user) {
-            throw new ForbiddenException('You are not a member of this team');
-        }
-        if (!member) {
-            throw new NotFoundException('Member not found');
-        }
-        if (
-            member.user.id === userId &&
-            member.role === TeamMemberRoles.OWNER
-        ) {
-            throw new ForbiddenException(
-                'You are the owner of this team, you cannot remove yourself',
-            );
-        }
-
-        const hasPermission = this.teamMembersService.checkRolePriority(
-            user.role,
-            member.role,
-            false,
+        await this.teamMembersService.removeTeamMember(
+            userId,
+            teamId,
+            memberId,
         );
-
-        if (!hasPermission)
-            throw new ForbiddenException(
-                'You are not allowed to remove this member',
-            );
-
-        await this.teamMembersService.removeTeamMember(teamId, memberId);
     }
 }

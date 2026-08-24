@@ -45,12 +45,15 @@ export interface ITeamMembersService {
      *
      * @param teamId
      * @param addTeamMemberDto
+     * @param invokerUserId
      * @returns {Promise<TeamMember>}
      * @throws {ConflictException} Team member already exists
+     * @throws {ForbiddenException} Invoker lacks permission or attempts self-add
      */
     addTeamMember(
         teamId: TeamMember['team']['id'],
         addTeamMemberDto: AddTeamMemberDto,
+        invokerUserId?: string,
     ): Promise<TeamMember>;
     /**
      * check if the user has the permission to affect the team member
@@ -68,22 +71,28 @@ export interface ITeamMembersService {
     /**
      * Update a team member role
      *
-     * @param member
+     * @param invokerUserId
+     * @param teamId
+     * @param memberId
      * @param role
      * @returns {Promise<TeamMember>}
      */
     updateTeamMemberRole(
-        member: TeamMember,
+        invokerUserId: string,
+        teamId: TeamMember['team']['id'],
+        memberId: TeamMember['id'],
         role: TeamMember['role'],
     ): Promise<TeamMember>;
     /**
      * Remove a team member
      *
+     * @param invokerUserId
      * @param teamId
      * @param memberId
      * @returns {Promise<void>}
      */
     removeTeamMember(
+        invokerUserId: string,
         teamId: TeamMember['team']['id'],
         memberId: TeamMember['id'],
     ): Promise<void>;

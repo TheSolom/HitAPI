@@ -187,7 +187,7 @@ describe('TeamMembersService', () => {
     });
 
     describe('addTeamMember', () => {
-        it('should successfully add a team member', async () => {
+        it('should successfully add a team member without invokerUserId', async () => {
             const addTeamMemberDto: AddTeamMemberDto = {
                 userId: mockUserId,
                 role: TeamMemberRoles.ADMIN,
@@ -225,6 +225,65 @@ describe('TeamMembersService', () => {
             expect(saveSpy).toHaveBeenCalledWith(createdMember);
         });
 
+        it('should throw ForbiddenException if invoker attempts self-add', async () => {
+            const addTeamMemberDto: AddTeamMemberDto = {
+                userId: mockUserId,
+                role: TeamMemberRoles.ADMIN,
+            };
+
+            await expect(
+                teamMembersService.addTeamMember(
+                    mockTeamId,
+                    addTeamMemberDto,
+                    mockUserId,
+                ),
+            ).rejects.toThrow('You are not allowed to add yourself');
+        });
+
+        it('should throw NotFoundException if invoker is not a team member', async () => {
+            const addTeamMemberDto: AddTeamMemberDto = {
+                userId: 'other-user',
+                role: TeamMemberRoles.ADMIN,
+            };
+
+            jest.spyOn(teamMembersService, 'findByUserId').mockResolvedValue(
+                null,
+            );
+
+            await expect(
+                teamMembersService.addTeamMember(
+                    mockTeamId,
+                    addTeamMemberDto,
+                    mockUserId,
+                ),
+            ).rejects.toThrow('You are not a member of this team');
+        });
+
+        it('should throw ForbiddenException if invoker lacks permission to add members', async () => {
+            const addTeamMemberDto: AddTeamMemberDto = {
+                userId: 'other-user',
+                role: TeamMemberRoles.ADMIN,
+            };
+
+            const invoker = {
+                id: 'invoker-member',
+                user: { id: mockUserId },
+                role: TeamMemberRoles.MEMBER,
+            } as TeamMember;
+
+            jest.spyOn(teamMembersService, 'findByUserId').mockResolvedValue(
+                invoker,
+            );
+
+            await expect(
+                teamMembersService.addTeamMember(
+                    mockTeamId,
+                    addTeamMemberDto,
+                    mockUserId,
+                ),
+            ).rejects.toThrow('You are not allowed to add members');
+        });
+
         it('should throw ConflictException if user is already a member', async () => {
             const addTeamMemberDto: AddTeamMemberDto = {
                 userId: mockUserId,
@@ -248,7 +307,6 @@ describe('TeamMembersService', () => {
 
     describe('checkRolePriority', () => {
         it('should return true if updater role priority is higher (lower number) than the target role (equality=true)', () => {
-            // OWNER (1) vs ADMIN (2) => 1 <= 2 => true
             expect(
                 teamMembersService.checkRolePriority(
                     TeamMemberRoles.OWNER,
@@ -258,7 +316,6 @@ describe('TeamMembersService', () => {
         });
 
         it('should return true if updater role priority is equal to target role (equality=true)', () => {
-            // ADMIN (2) vs ADMIN (2) => 2 <= 2 => true
             expect(
                 teamMembersService.checkRolePriority(
                     TeamMemberRoles.ADMIN,
@@ -268,7 +325,6 @@ describe('TeamMembersService', () => {
         });
 
         it('should return false if updater role priority is equal to target role (equality=false)', () => {
-            // ADMIN (2) vs ADMIN (2) => 2 <= (2 - 1) => 2 <= 1 => false
             expect(
                 teamMembersService.checkRolePriority(
                     TeamMemberRoles.ADMIN,
@@ -279,7 +335,6 @@ describe('TeamMembersService', () => {
         });
 
         it('should return false if updater role priority is lower (higher number) than the target role', () => {
-            // MEMBER (3) vs OWNER (1) => 3 <= 1 => false
             expect(
                 teamMembersService.checkRolePriority(
                     TeamMemberRoles.MEMBER,
@@ -290,33 +345,183 @@ describe('TeamMembersService', () => {
     });
 
     describe('updateTeamMemberRole', () => {
-        it('should update the team member role and save', async () => {
-            const member = {
+        it('should throw ForbiddenException if invoker is not a member', async () => {
+            jest.spyOn(teamMembersService, 'findByUserId').mockResolvedValue(
+                null,
+            );
+            jest.spyOn(teamMembersService, 'findById').mockResolvedValue({
                 id: mockMemberId,
+                user: { id: 'other-user' },
+                role: TeamMemberRoles.MEMBER,
+            } as TeamMember);
+
+            await expect(
+                teamMembersService.updateTeamMemberRole(
+                    mockUserId,
+                    mockTeamId,
+                    mockMemberId,
+                    TeamMemberRoles.ADMIN,
+                ),
+            ).rejects.toThrow('You are not a member of this team');
+        });
+
+        it('should throw NotFoundException if target member is not found', async () => {
+            jest.spyOn(teamMembersService, 'findByUserId').mockResolvedValue({
+                id: 'invoker-member',
+                user: { id: mockUserId },
+                role: TeamMemberRoles.OWNER,
+            } as TeamMember);
+            jest.spyOn(teamMembersService, 'findById').mockResolvedValue(null);
+
+            await expect(
+                teamMembersService.updateTeamMemberRole(
+                    mockUserId,
+                    mockTeamId,
+                    mockMemberId,
+                    TeamMemberRoles.ADMIN,
+                ),
+            ).rejects.toThrow('Member not found');
+        });
+
+        it('should throw ForbiddenException on self-promotion', async () => {
+            const selfMember = {
+                id: mockMemberId,
+                user: { id: mockUserId },
+                role: TeamMemberRoles.MEMBER,
+            } as TeamMember;
+
+            jest.spyOn(teamMembersService, 'findByUserId').mockResolvedValue(
+                selfMember,
+            );
+            jest.spyOn(teamMembersService, 'findById').mockResolvedValue(
+                selfMember,
+            );
+
+            await expect(
+                teamMembersService.updateTeamMemberRole(
+                    mockUserId,
+                    mockTeamId,
+                    mockMemberId,
+                    TeamMemberRoles.ADMIN,
+                ),
+            ).rejects.toThrow('You are not allowed to promote yourself');
+        });
+
+        it('should throw BadRequestException on sole owner demotion', async () => {
+            const selfOwner = {
+                id: mockMemberId,
+                user: { id: mockUserId },
+                role: TeamMemberRoles.OWNER,
+            } as TeamMember;
+
+            jest.spyOn(teamMembersService, 'findByUserId').mockResolvedValue(
+                selfOwner,
+            );
+            jest.spyOn(teamMembersService, 'findById').mockResolvedValue(
+                selfOwner,
+            );
+            jest.spyOn(teamMembersService, 'findAllByTeam').mockResolvedValue([
+                selfOwner,
+            ]);
+
+            await expect(
+                teamMembersService.updateTeamMemberRole(
+                    mockUserId,
+                    mockTeamId,
+                    mockMemberId,
+                    TeamMemberRoles.ADMIN,
+                ),
+            ).rejects.toThrow(
+                'Cannot demote the sole owner of the team. Transfer ownership or promote another owner first.',
+            );
+        });
+
+        it('should update role when invoker has permission', async () => {
+            const invoker = {
+                id: 'invoker-member',
+                user: { id: mockUserId },
+                role: TeamMemberRoles.OWNER,
+            } as TeamMember;
+            const targetMember = {
+                id: mockMemberId,
+                user: { id: 'other-user' },
                 role: TeamMemberRoles.MEMBER,
             } as TeamMember;
             const updatedMember = {
                 id: mockMemberId,
+                user: { id: 'other-user' },
                 role: TeamMemberRoles.ADMIN,
             } as TeamMember;
 
+            jest.spyOn(teamMembersService, 'findByUserId').mockResolvedValue(
+                invoker,
+            );
+            jest.spyOn(teamMembersService, 'findById').mockResolvedValue(
+                targetMember,
+            );
             const saveSpy = jest
                 .spyOn(teamMembersRepository, 'save')
                 .mockResolvedValue(updatedMember);
 
             const result = await teamMembersService.updateTeamMemberRole(
-                member,
+                mockUserId,
+                mockTeamId,
+                mockMemberId,
                 TeamMemberRoles.ADMIN,
             );
 
-            expect(result).toEqual(updatedMember);
-            expect(member.role).toBe(TeamMemberRoles.ADMIN);
-            expect(saveSpy).toHaveBeenCalledWith(member);
+            expect(result.role).toBe(TeamMemberRoles.ADMIN);
+            expect(saveSpy).toHaveBeenCalledWith(targetMember);
         });
     });
 
     describe('removeTeamMember', () => {
-        it('should soft delete the team member', async () => {
+        it('should throw BadRequestException on removing sole owner', async () => {
+            const selfOwner = {
+                id: mockMemberId,
+                user: { id: mockUserId },
+                role: TeamMemberRoles.OWNER,
+            } as TeamMember;
+
+            jest.spyOn(teamMembersService, 'findByUserId').mockResolvedValue(
+                selfOwner,
+            );
+            jest.spyOn(teamMembersService, 'findById').mockResolvedValue(
+                selfOwner,
+            );
+            jest.spyOn(teamMembersService, 'findAllByTeam').mockResolvedValue([
+                selfOwner,
+            ]);
+
+            await expect(
+                teamMembersService.removeTeamMember(
+                    mockUserId,
+                    mockTeamId,
+                    mockMemberId,
+                ),
+            ).rejects.toThrow(
+                'Cannot remove the sole owner of the team. Transfer ownership or delete the team.',
+            );
+        });
+
+        it('should allow removing member when authorized', async () => {
+            const invoker = {
+                id: 'invoker-member',
+                user: { id: mockUserId },
+                role: TeamMemberRoles.OWNER,
+            } as TeamMember;
+            const targetMember = {
+                id: mockMemberId,
+                user: { id: 'other-user' },
+                role: TeamMemberRoles.MEMBER,
+            } as TeamMember;
+
+            jest.spyOn(teamMembersService, 'findByUserId').mockResolvedValue(
+                invoker,
+            );
+            jest.spyOn(teamMembersService, 'findById').mockResolvedValue(
+                targetMember,
+            );
             const softDeleteSpy = jest
                 .spyOn(teamMembersRepository, 'softDelete')
                 .mockResolvedValue({
@@ -325,7 +530,11 @@ describe('TeamMembersService', () => {
                     generatedMaps: [],
                 });
 
-            await teamMembersService.removeTeamMember(mockTeamId, mockMemberId);
+            await teamMembersService.removeTeamMember(
+                mockUserId,
+                mockTeamId,
+                mockMemberId,
+            );
 
             expect(softDeleteSpy).toHaveBeenCalledWith({
                 team: { id: mockTeamId },
