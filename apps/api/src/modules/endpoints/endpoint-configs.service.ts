@@ -73,10 +73,10 @@ export class EndpointConfigsService implements IEndpointConfigsService {
         }
 
         const updated = this.endpointsRepository.merge(endpoint, {
-            ...(updateEndpointConfigDto.excluded && {
+            ...(updateEndpointConfigDto.excluded !== undefined && {
                 excluded: updateEndpointConfigDto.excluded,
             }),
-            ...(updateEndpointConfigDto.targetResponseTimeMs && {
+            ...(updateEndpointConfigDto.targetResponseTimeMs !== undefined && {
                 targetResponseTimeMs:
                     updateEndpointConfigDto.targetResponseTimeMs,
             }),
@@ -101,7 +101,7 @@ export class EndpointConfigsService implements IEndpointConfigsService {
             throw new NotFoundException('Endpoint not found');
         }
 
-        const currentStatusCodes = endpoint.expectedStatusCodes ?? [];
+        const currentStatusCodes = endpoint.expectedStatusCodes;
         let newStatusCodes: number[];
 
         if (updateEndpointErrorConfigDto.expected) {
