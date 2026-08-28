@@ -97,9 +97,12 @@ describe('EndpointConfigsService', () => {
                 targetResponseTimeMs: 500,
             } as Endpoint;
             const updatedEndpoint = {
-                ...existingEndpoint,
-                ...dto,
-            } as unknown as Endpoint;
+                id: '1',
+                method: 'GET',
+                path: '/test',
+                excluded: false,
+                targetResponseTimeMs: 1000,
+            } as Endpoint;
 
             const findOneSpy = jest
                 .spyOn(repository, 'findOne')
@@ -117,6 +120,47 @@ describe('EndpointConfigsService', () => {
             expect(mergeSpy).toHaveBeenCalledWith(existingEndpoint, {
                 excluded: dto.excluded,
                 targetResponseTimeMs: dto.targetResponseTimeMs,
+            });
+            expect(saveSpy).toHaveBeenCalledWith(updatedEndpoint);
+        });
+
+        it('should update endpoint config when excluded is false', async () => {
+            const appId = 'app-1';
+            const dto: UpdateEndpointConfigDto = {
+                method: 'GET' as RestfulMethod,
+                path: '/test',
+                excluded: false,
+            };
+            const existingEndpoint = {
+                id: '1',
+                method: 'GET',
+                path: '/test',
+                excluded: true,
+                targetResponseTimeMs: 500,
+            } as Endpoint;
+            const updatedEndpoint = {
+                id: '1',
+                method: 'GET',
+                path: '/test',
+                excluded: false,
+                targetResponseTimeMs: 500,
+            } as Endpoint;
+
+            const findOneSpy = jest
+                .spyOn(repository, 'findOne')
+                .mockResolvedValue(existingEndpoint);
+            const mergeSpy = jest
+                .spyOn(repository, 'merge')
+                .mockReturnValue(updatedEndpoint);
+            const saveSpy = jest
+                .spyOn(repository, 'save')
+                .mockResolvedValue(updatedEndpoint);
+
+            await service.updateConfig(appId, dto);
+
+            expect(findOneSpy).toHaveBeenCalled();
+            expect(mergeSpy).toHaveBeenCalledWith(existingEndpoint, {
+                excluded: false,
             });
             expect(saveSpy).toHaveBeenCalledWith(updatedEndpoint);
         });
