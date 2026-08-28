@@ -1,5 +1,6 @@
 export * from './converter.js';
 export * from './is-supported.js';
+export * from './is-https.js';
 export * from './is-uuid.js';
 export * from './parser.js';
 export * from './pattern-matcher.js';

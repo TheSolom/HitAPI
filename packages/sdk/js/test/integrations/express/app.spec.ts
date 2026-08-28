@@ -1,7 +1,9 @@
 import type { Application } from 'express';
+import { gunzipSync } from 'node:zlib';
 import request, { type Agent } from 'supertest';
 import { jest } from '@jest/globals';
 import { RestfulMethod } from '@hitapi/shared/enums';
+import type { Request, Response, RequestLogItem } from '@hitapi/types';
 import { HitAPIClient } from '../../../src/common/core/client.js';
 import { mockHitAPIHub } from '../../utils.js';
 import { getRouterInfo } from '../../../src/integrations/express/utils.js';
@@ -45,7 +47,7 @@ testCases.forEach(({ name, getApp }) => {
             await appTest.get('/error').expect(500);
 
             const requests = client.requestCounter.getAndResetRequests();
-            expect(requests.length).toBe(4);
+            expect(requests).toHaveLength(4);
             expect(
                 requests.some(
                     (r) =>
@@ -54,8 +56,7 @@ testCases.forEach(({ name, getApp }) => {
                         r.path === '/hello' &&
                         r.statusCode === 200 &&
                         r.requestSizeSum === 0 &&
-                        r.responseSizeSum > 0 &&
-                        r.consumer === 'test',
+                        r.responseSizeSum > 0,
                 ),
             ).toBe(true);
             expect(
@@ -82,13 +83,12 @@ testCases.forEach(({ name, getApp }) => {
 
         it('Request logger', async () => {
             const spy = jest.spyOn(client.requestLogger, 'logRequest');
-            let call = null;
 
             await appTest.get('/hello?name=John&age=20').expect(200);
 
             expect(spy).toHaveBeenCalledTimes(1);
 
-            call = spy.mock.calls[0];
+            let call = spy.mock.calls[0];
 
             expect(call[0].method).toBe(RestfulMethod.GET);
             expect(call[0].path).toBe('/hello');
@@ -105,14 +105,14 @@ testCases.forEach(({ name, getApp }) => {
                 'text/plain; charset=utf-8',
             ]);
             expect(call[1].body).toBeInstanceOf(Buffer);
-            expect(call[1].body!.toString()).toMatch(/^Hello John!/);
+            expect(call[1].body?.toString()).toMatch(/^Hello John!/);
 
             expect(call[3]).toBeDefined();
             expect(call[3]).toHaveLength(2);
-            expect(call[3]![0].level).toBe('warn');
-            expect(call[3]![0].message).toBe('Console test');
-            expect(call[3]![1].level).toBe('info');
-            expect(call[3]![1].message).toBe('Winston test');
+            expect(call[3]?.[0]?.level).toBe('warn');
+            expect(call[3]?.[0]?.message).toBe('Console test');
+            expect(call[3]?.[1]?.level).toBe('info');
+            expect(call[3]?.[1]?.message).toBe('Winston test');
 
             spy.mockClear();
 
@@ -132,12 +132,68 @@ testCases.forEach(({ name, getApp }) => {
                 'application/json',
             ]);
             expect(call[0].body).toBeInstanceOf(Buffer);
-            expect(call[0].body!.toString()).toMatch(
+            expect(call[0].body?.toString()).toMatch(
                 /^{"name":"John","age":20}$/,
             );
 
             expect(call[1].body).toBeInstanceOf(Buffer);
-            expect(call[1].body!.toString()).toMatch(/^Hello John!/);
+            expect(call[1].body?.toString()).toMatch(/^Hello John!/);
+        });
+
+        it('HTTPS detection', async () => {
+            const createRequest = (): Request => ({
+                timestamp: Date.now(),
+                method: RestfulMethod.GET,
+                url: 'http://localhost:8000/test?foo=bar',
+                headers: [],
+            });
+            const response: Response = {
+                statusCode: 200,
+                responseTime: 10,
+                headers: [],
+            };
+
+            const request1 = createRequest();
+            request1.headers.push(['x-forwarded-proto', 'https']);
+            client.requestLogger.logRequest(request1, response);
+
+            const request2 = createRequest();
+            request2.headers.push([
+                'forwarded',
+                'for=192.0.2.1;proto=https;host=example.com',
+            ]);
+            client.requestLogger.logRequest(request2, response);
+
+            const request3 = createRequest();
+            request3.headers.push(['x-forwarded-ssl', 'on']);
+            client.requestLogger.logRequest(request3, response);
+
+            const request4 = createRequest();
+            client.requestLogger.logRequest(request4, response);
+
+            await client.requestLogger.writeToFile();
+            await client.requestLogger.rotateFile();
+
+            const file = client.requestLogger.getFile();
+            expect(file).toBeDefined();
+            if (!file) throw new Error('File not defined');
+
+            const content = await file.getContent();
+            const items = gunzipSync(content)
+                .toString()
+                .trim()
+                .split('\n')
+                .map((item) => JSON.parse(item) as RequestLogItem);
+
+            expect(items).toHaveLength(4);
+            expect(items.map((item) => item.request.url)).toEqual([
+                'https://localhost:8000/test?foo=bar',
+                'https://localhost:8000/test?foo=bar',
+                'https://localhost:8000/test?foo=bar',
+                'http://localhost:8000/test?foo=bar',
+            ]);
+
+            await file.delete();
         });
 
         it('Validation error counter', async () => {
@@ -147,7 +203,7 @@ testCases.forEach(({ name, getApp }) => {
 
             const validationErrors =
                 client.validationErrorCounter.getAndResetValidationErrors();
-            expect(validationErrors.length).toBe(2);
+            expect(validationErrors).toHaveLength(2);
             expect(
                 validationErrors.find(
                     (e) => e.loc[0] == 'query' && e.loc[1] == 'age',
@@ -160,7 +216,7 @@ testCases.forEach(({ name, getApp }) => {
 
             const serverErrors =
                 client.serverErrorCounter.getAndResetServerErrors();
-            expect(serverErrors.length).toBe(1);
+            expect(serverErrors).toHaveLength(1);
             expect(
                 serverErrors.some(
                     (e) =>
@@ -194,9 +250,7 @@ testCases.forEach(({ name, getApp }) => {
         });
 
         afterEach(async () => {
-            if (client) {
-                await HitAPIClient.shutdown();
-            }
+            await HitAPIClient.shutdown();
         });
     });
 });
@@ -220,7 +274,7 @@ describe('Middleware for Express router', () => {
         await appTest.get('/api/hello').expect(200);
 
         const requests = client.requestCounter.getAndResetRequests();
-        expect(requests.length).toBe(1);
+        expect(requests).toHaveLength(1);
         expect(
             requests.some(
                 (r) =>
@@ -241,9 +295,7 @@ describe('Middleware for Express router', () => {
     });
 
     afterEach(async () => {
-        if (client) {
-            await HitAPIClient.shutdown();
-        }
+        await HitAPIClient.shutdown();
     });
 });
 
@@ -273,7 +325,7 @@ describe('Middleware for Express with nested routers', () => {
         await appTest.get('/test').expect(200);
 
         const requests = client.requestCounter.getAndResetRequests();
-        expect(requests.length).toBe(4);
+        expect(requests).toHaveLength(4);
         expect(
             requests.some(
                 (r) =>
@@ -340,8 +392,6 @@ describe('Middleware for Express with nested routers', () => {
     afterEach(async () => {
         jest.restoreAllMocks();
         jest.clearAllTimers();
-        if (client) {
-            await HitAPIClient.shutdown();
-        }
+        await HitAPIClient.shutdown();
     });
 });

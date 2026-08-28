@@ -8,7 +8,11 @@ import type {
 } from '@hitapi/types';
 import type { RequestLoggingConfig } from '../../common/types/config.js';
 import { DataMasker } from './data-masker.js';
-import { isSupportedContentType, truncate } from '../../common/utils/index.js';
+import {
+    isHttps,
+    isSupportedContentType,
+    truncate,
+} from '../../common/utils/index.js';
 import { MAX_MSG_LENGTH } from '../../common/constants/server-error-counter.constant.js';
 import { truncateExceptionStackTrace } from '../../common/core/server-error-counter.js';
 import { MAX_LOG_MSG_LENGTH, MAX_BODY_SIZE } from './constants/index.js';
@@ -33,7 +37,7 @@ export class RequestLogItemBuilder {
     }
 
     #createLogRecords(logs: LogRecord[]) {
-        if (!logs?.length) return undefined;
+        if (logs.length === 0) return undefined;
 
         return logs.map((log) => ({
             timestamp: log.timestamp,
@@ -62,6 +66,12 @@ export class RequestLogItemBuilder {
         logs?: LogRecord[],
         traceId?: string,
     ): RequestLogItem {
+        const url = new URL(request.url);
+        if (url.protocol === 'http:' && isHttps(request.headers)) {
+            url.protocol = 'https:';
+            request.url = url.toString();
+        }
+
         const requestBody = this.#prepareBodyData(
             request.body,
             this.#config.logRequestBody,
