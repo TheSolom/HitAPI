@@ -33,6 +33,7 @@ export interface UpdateAppPayload {
     name?: string;
     frameworkId?: number;
     targetResponseTimeMs?: number;
+    active?: boolean;
 }
 
 export interface AppMetricsDto {

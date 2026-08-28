@@ -233,6 +233,37 @@ describe('AppsService', () => {
             ).rejects.toThrow(ConflictException);
         });
 
+        it('should update app active status and framework', async () => {
+            const existingApp = {
+                id: 'app-1',
+                name: 'App',
+                slug: 'app',
+                active: true,
+                team: { id: 'team-1' },
+            } as App;
+            const updateAppDto: UpdateAppDto = {
+                active: false,
+                frameworkId: 2,
+            };
+            const updatedApp = {
+                id: 'app-1',
+                name: 'App',
+                slug: 'app',
+                active: false,
+                framework: { id: 2 } as App['framework'],
+                team: { id: 'team-1' },
+            } as App;
+
+            jest.spyOn(service, 'findById').mockResolvedValue(existingApp);
+            jest.spyOn(appRepository, 'save').mockResolvedValue(updatedApp);
+
+            const result = await service.updateApp('app-1', updateAppDto);
+
+            expect(result.active).toBe(false);
+            expect(existingApp.active).toBe(false);
+            expect(existingApp.framework).toEqual({ id: 2 });
+        });
+
         it('should throw NotFoundException if app not found', async () => {
             jest.spyOn(service, 'findById').mockResolvedValue(null);
 

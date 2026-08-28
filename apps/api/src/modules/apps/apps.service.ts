@@ -106,6 +106,9 @@ export class AppsService implements IAppsService {
                 id: updateAppDto.frameworkId,
             } as App['framework'];
         }
+        if (updateAppDto.active !== undefined) {
+            app.active = updateAppDto.active;
+        }
 
         return this.saveApp(app);
     }

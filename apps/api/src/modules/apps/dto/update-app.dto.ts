@@ -1,5 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import {
+    IsBoolean,
+    IsInt,
+    IsOptional,
+    IsString,
+    Max,
+    Min,
+} from 'class-validator';
 import type { UpdateAppPayload } from '@hitapi/types';
 import { InStepRange } from '../../../common/validators/in-step-range.validator.js';
 
@@ -22,4 +29,9 @@ export class UpdateAppDto implements UpdateAppPayload {
     @IsInt()
     @IsOptional()
     targetResponseTimeMs?: number;
+
+    @ApiPropertyOptional({ type: 'boolean' })
+    @IsBoolean()
+    @IsOptional()
+    active?: boolean;
 }
