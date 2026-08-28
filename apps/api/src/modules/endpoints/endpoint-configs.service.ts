@@ -101,7 +101,9 @@ export class EndpointConfigsService implements IEndpointConfigsService {
             throw new NotFoundException('Endpoint not found');
         }
 
-        const currentStatusCodes = endpoint.expectedStatusCodes;
+        const currentStatusCodes = Array.isArray(endpoint.expectedStatusCodes)
+            ? endpoint.expectedStatusCodes
+            : [];
         let newStatusCodes: number[];
 
         if (updateEndpointErrorConfigDto.expected) {
