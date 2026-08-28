@@ -67,9 +67,15 @@ export class EndpointsService implements IEndpointsService {
         appId: string,
         createEndpointDto: CreateEndpointDto,
     ): Promise<Endpoint> {
-        const endpoint = this.endpointsRepository.create(
-            Object.assign({ app: { id: appId } }, createEndpointDto),
-        );
+        const endpoint = this.endpointsRepository.create({
+            app: { id: appId },
+            method: createEndpointDto.method,
+            path: createEndpointDto.path,
+            summary: createEndpointDto.summary,
+            description: createEndpointDto.description,
+            targetResponseTimeMs: createEndpointDto.targetResponseTimeMs,
+            excluded: createEndpointDto.excluded,
+        });
 
         return this.saveEndpoint(endpoint);
     }
