@@ -1,8 +1,12 @@
 import { jest } from '@jest/globals';
 import { Test, type TestingModule } from '@nestjs/testing';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { AppLoggerService } from '../../logger/logger.service.js';
 import type { IGeoIPService } from '../interfaces/geo-ip-service.interface.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const mockOpen = jest.fn<() => Promise<{ get: jest.Mock }>>();
 
@@ -110,11 +114,9 @@ describe('GeoIPService', () => {
 
     describe('onModuleInit', () => {
         it('should initialize the maxmind lookup', () => {
-            const expectedPath = path.join(
-                process.cwd(),
-                'apps/api/assets',
-                'GeoLite2-Country',
-                'GeoLite2-Country.mmdb',
+            const expectedPath = path.resolve(
+                __dirname,
+                '../../../../assets/GeoLite2-Country/GeoLite2-Country.mmdb',
             );
             expect(mockOpen).toHaveBeenCalledWith(expectedPath);
         });
