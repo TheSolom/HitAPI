@@ -104,6 +104,12 @@ describe('TeamsService', () => {
             expect(findSpy).toHaveBeenCalledWith({
                 where: { teamMembers: { user: { id: mockUserId } } },
                 order: { createdAt: 'DESC' },
+                relations: [
+                    'teamMembers',
+                    'teamMembers.user',
+                    'invites',
+                    'invites.inviter',
+                ],
             });
         });
 
@@ -120,6 +126,9 @@ describe('TeamsService', () => {
             jest.spyOn(teamRepository, 'findOneBy').mockResolvedValue(null);
             jest.spyOn(teamRepository, 'create').mockReturnValue(defaultTeam);
             jest.spyOn(teamRepository, 'save').mockResolvedValue(defaultTeam);
+            jest.spyOn(teamRepository, 'findOne').mockResolvedValue(
+                defaultTeam,
+            );
 
             const result = await teamsService.findAllByUser(mockUserId);
 

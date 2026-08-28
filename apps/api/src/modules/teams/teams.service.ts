@@ -59,11 +59,18 @@ export class TeamsService implements ITeamsService {
         const teams = await this.teamsRepository.find({
             where: { teamMembers: { user: { id: userId } } },
             order: { createdAt: 'DESC' },
+            relations: [
+                'teamMembers',
+                'teamMembers.user',
+                'invites',
+                'invites.inviter',
+            ],
         });
 
         if (teams.length === 0) {
             const defaultTeam = await this.createDefaultTeamForUser(userId);
-            return [defaultTeam];
+            const loadedDefaultTeam = await this.findOne(defaultTeam.id);
+            return loadedDefaultTeam ? [loadedDefaultTeam] : [defaultTeam];
         }
 
         return teams;
@@ -90,7 +97,7 @@ export class TeamsService implements ITeamsService {
         const existingTeam = await this.teamsRepository.findOneBy({ slug });
         if (existingTeam) throw new ConflictException('Team already exists');
 
-        return this.saveTeam(
+        const savedTeam = await this.saveTeam(
             this.teamsRepository.create({
                 name: createTeamDto.name,
                 demo: createTeamDto.demo,
@@ -104,6 +111,9 @@ export class TeamsService implements ITeamsService {
                 ],
             }),
         );
+
+        const loadedTeam = await this.findOne(savedTeam.id);
+        return loadedTeam ?? savedTeam;
     }
 
     async updateTeam(id: string, updateTeamDto: UpdateTeamDto): Promise<Team> {
