@@ -42,7 +42,7 @@ export class AppsService implements IAppsService {
     async findById(id: string): Promise<NullableType<App>> {
         return this.appsRepository.findOne({
             where: { id },
-            relations: { framework: true },
+            relations: { framework: true, team: true },
         });
     }
 
@@ -57,8 +57,12 @@ export class AppsService implements IAppsService {
         const DEFAULT_TARGET_RESPONSE_TIME_MS = 500;
         const slug = createSlug(createAppDto.name);
 
-        const existingApp = await this.appsRepository.findOneBy({ slug });
-        if (existingApp) throw new ConflictException('App already exists');
+        const existingApp = await this.appsRepository.findOne({
+            where: { slug, team: { id: createAppDto.teamId } },
+        });
+        if (existingApp) {
+            throw new ConflictException('App already exists in this team');
+        }
 
         return this.saveApp(
             this.appsRepository.create({
@@ -79,8 +83,20 @@ export class AppsService implements IAppsService {
         if (!app) throw new NotFoundException('App not found');
 
         if (updateAppDto.name) {
+            const newSlug = createSlug(updateAppDto.name);
+            if (newSlug !== app.slug) {
+                const existingApp = await this.appsRepository.findOne({
+                    where: { slug: newSlug, team: { id: app.team.id } },
+                });
+                if (existingApp && existingApp.id !== id) {
+                    throw new ConflictException(
+                        'App already exists in this team',
+                    );
+                }
+
+                app.slug = newSlug;
+            }
             app.name = updateAppDto.name;
-            app.slug = createSlug(updateAppDto.name);
         }
         if (updateAppDto.targetResponseTimeMs !== undefined) {
             app.targetResponseTimeMs = updateAppDto.targetResponseTimeMs;

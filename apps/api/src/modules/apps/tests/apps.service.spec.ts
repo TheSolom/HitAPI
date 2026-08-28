@@ -96,7 +96,7 @@ describe('AppsService', () => {
             expect(result).toEqual(mockApp);
             expect(findOneSpy).toHaveBeenCalledWith({
                 where: { id: 'app-1' },
-                relations: { framework: true },
+                relations: { framework: true, team: true },
             });
         });
 
@@ -141,7 +141,9 @@ describe('AppsService', () => {
                 targetResponseTimeMs: 500,
             } as App;
 
-            jest.spyOn(appRepository, 'findOneBy').mockResolvedValue(null);
+            const findOneSpy = jest
+                .spyOn(appRepository, 'findOne')
+                .mockResolvedValue(null);
             const createSpy = jest
                 .spyOn(appRepository, 'create')
                 .mockReturnValue(createdApp);
@@ -150,6 +152,9 @@ describe('AppsService', () => {
             const result = await service.createApp(createAppDto);
 
             expect(result).toEqual(createdApp);
+            expect(findOneSpy).toHaveBeenCalledWith({
+                where: { slug: 'new-app', team: { id: 'team-uuid' } },
+            });
             expect(createSpy).toHaveBeenCalledWith(
                 expect.objectContaining({
                     name: 'New App',
@@ -159,7 +164,7 @@ describe('AppsService', () => {
             );
         });
 
-        it('should throw ConflictException if app with slug already exists', async () => {
+        it('should throw ConflictException if app with slug already exists in the same team', async () => {
             const createAppDto: CreateAppDto = {
                 name: 'Existing App',
                 frameworkId: 1,
@@ -167,9 +172,7 @@ describe('AppsService', () => {
             };
             const existingApp = { id: 'app-1', slug: 'existing-app' } as App;
 
-            jest.spyOn(appRepository, 'findOneBy').mockResolvedValue(
-                existingApp,
-            );
+            jest.spyOn(appRepository, 'findOne').mockResolvedValue(existingApp);
 
             await expect(service.createApp(createAppDto)).rejects.toThrow(
                 ConflictException,
@@ -183,6 +186,7 @@ describe('AppsService', () => {
                 id: 'app-1',
                 name: 'Old App',
                 slug: 'old-app',
+                team: { id: 'team-1' },
             } as App;
             const updateAppDto: UpdateAppDto = {
                 name: 'Updated App',
@@ -193,15 +197,40 @@ describe('AppsService', () => {
                 name: 'Updated App',
                 slug: 'updated-app',
                 targetResponseTimeMs: 300,
+                team: { id: 'team-1' },
             } as App;
 
             jest.spyOn(service, 'findById').mockResolvedValue(existingApp);
+            jest.spyOn(appRepository, 'findOne').mockResolvedValue(null);
             jest.spyOn(appRepository, 'merge').mockReturnValue(updatedApp);
             jest.spyOn(appRepository, 'save').mockResolvedValue(updatedApp);
 
             const result = await service.updateApp('app-1', updateAppDto);
 
             expect(result).toEqual(updatedApp);
+        });
+
+        it('should throw ConflictException if updated name creates a slug that exists in the same team', async () => {
+            const existingApp = {
+                id: 'app-1',
+                name: 'Old App',
+                slug: 'old-app',
+                team: { id: 'team-1' },
+            } as App;
+            const conflictingApp = {
+                id: 'app-2',
+                slug: 'updated-app',
+                team: { id: 'team-1' },
+            } as App;
+
+            jest.spyOn(service, 'findById').mockResolvedValue(existingApp);
+            jest.spyOn(appRepository, 'findOne').mockResolvedValue(
+                conflictingApp,
+            );
+
+            await expect(
+                service.updateApp('app-1', { name: 'Updated App' }),
+            ).rejects.toThrow(ConflictException);
         });
 
         it('should throw NotFoundException if app not found', async () => {

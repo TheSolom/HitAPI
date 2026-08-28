@@ -1,5 +1,6 @@
 import {
     Entity,
+    Unique,
     PrimaryGeneratedColumn,
     Column,
     ManyToOne,
@@ -13,6 +14,7 @@ import { Framework } from './framework.entity.js';
 import { Endpoint } from '../../endpoints/entities/endpoint.entity.js';
 
 @Entity()
+@Unique('TeamAppSlug', ['team', 'slug'])
 export class App {
     @PrimaryGeneratedColumn('uuid')
     id: string;
@@ -20,7 +22,7 @@ export class App {
     @Column()
     name: string;
 
-    @Column({ unique: true })
+    @Column()
     slug: string;
 
     @Column({ unique: true })
