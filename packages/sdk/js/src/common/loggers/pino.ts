@@ -49,9 +49,8 @@ export async function patchPino(
         if (!(originalStreamSym in loggerAsRecord))
             loggerAsRecord[originalStreamSym] = loggerAsRecord[streamSym];
 
-        const originalStream = loggerAsRecord[
-            originalStreamSym
-        ] as DestinationStream;
+        const originalStream = loggerAsRecord[originalStreamSym] as
+            DestinationStream | undefined;
         if (!originalStream) return false;
 
         const pino = await import('pino');
@@ -95,20 +94,25 @@ class HitAPILogCaptureStream {
         const logs = this.#logsContext.getStore();
         if (!logs || logs.length >= MAX_BUFFER_SIZE) return;
 
-        let obj: Record<string, unknown>;
+        let parsed: unknown;
         try {
-            obj = JSON.parse(msg) as Record<string, unknown>;
+            parsed = JSON.parse(msg);
         } catch {
             return;
         }
 
         if (
-            obj === null ||
-            typeof obj !== 'object' ||
-            !this.#shouldCaptureLog(obj, this.#messageKey)
+            !parsed ||
+            typeof parsed !== 'object' ||
+            !this.#shouldCaptureLog(
+                parsed as Record<string, unknown>,
+                this.#messageKey,
+            )
         ) {
             return;
         }
+
+        const obj = parsed as Record<string, unknown>;
 
         try {
             let message: unknown = obj[this.#messageKey];
@@ -126,9 +130,10 @@ class HitAPILogCaptureStream {
 
             const time = obj.time;
             const timestamp = this.#convertTime(time);
+            const levelNum = typeof obj.level === 'number' ? obj.level : 30;
 
             logs.push({
-                level: logLevelMap[(obj.level as number) ?? 30] || 'info',
+                level: logLevelMap[levelNum] || 'info',
                 message: formattedMessage,
                 timestamp,
             });

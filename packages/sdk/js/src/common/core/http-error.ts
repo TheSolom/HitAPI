@@ -3,7 +3,7 @@ export class HTTPError extends Error {
 
     constructor(response: Response) {
         const reason = response.status
-            ? `${response.status} ${response.statusText}`
+            ? `${String(response.status)} ${response.statusText}`
             : 'xxx unknown error';
         super(`Request failed with ${reason}`);
 

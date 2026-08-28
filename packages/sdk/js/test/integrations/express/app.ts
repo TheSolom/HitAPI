@@ -78,7 +78,7 @@ export const getAppWithValidator = () => {
 
                 res.type('txt');
                 res.send(
-                    `Hello ${body.name as string}! You are ${body.age as number} years old!`,
+                    `Hello ${String(body.name)}! You are ${String(body.age)} years old!`,
                 );
                 return;
             }

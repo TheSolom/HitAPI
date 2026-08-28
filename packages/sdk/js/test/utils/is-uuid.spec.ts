@@ -47,7 +47,7 @@ describe('isValidUUID', () => {
     describe('UUID versions', () => {
         it('should accept version 1-5', () => {
             for (let version = 1; version <= 5; version++) {
-                const uuid = `123e4567-e89b-${version}123-a456-426614174000`;
+                const uuid = `123e4567-e89b-${String(version)}123-a456-426614174000`;
                 expect(isValidUUID(uuid)).toBe(true);
             }
         });
@@ -55,7 +55,7 @@ describe('isValidUUID', () => {
         it('should reject versions outside 1-5', () => {
             const invalidVersions = [0, 6, 7, 8, 9];
             invalidVersions.forEach((version) => {
-                const uuid = `123e4567-e89b-${version}123-a456-426614174000`;
+                const uuid = `123e4567-e89b-${String(version)}123-a456-426614174000`;
                 expect(isValidUUID(uuid)).toBe(false);
             });
         });

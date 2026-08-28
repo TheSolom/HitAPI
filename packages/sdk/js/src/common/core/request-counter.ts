@@ -41,10 +41,11 @@ export default class RequestCounter {
 
         this.#requestCounts.set(key, (this.#requestCounts.get(key) ?? 0) + 1);
 
-        if (!this.#responseTimes.has(key)) {
-            this.#responseTimes.set(key, new Map<number, number>());
+        let responseTimeMap = this.#responseTimes.get(key);
+        if (!responseTimeMap) {
+            responseTimeMap = new Map<number, number>();
+            this.#responseTimes.set(key, responseTimeMap);
         }
-        const responseTimeMap = this.#responseTimes.get(key)!;
         const responseTimeMsBin = this.#roundToNearestTen(
             requestInfo.responseTime,
         );
@@ -59,10 +60,11 @@ export default class RequestCounter {
                 key,
                 (this.#requestSizeSums.get(key) ?? 0) + requestSize,
             );
-            if (!this.#requestSizes.has(key)) {
-                this.#requestSizes.set(key, new Map<number, number>());
+            let requestSizeMap = this.#requestSizes.get(key);
+            if (!requestSizeMap) {
+                requestSizeMap = new Map<number, number>();
+                this.#requestSizes.set(key, requestSizeMap);
             }
-            const requestSizeMap = this.#requestSizes.get(key)!;
             const requestSizeKbBin = this.#roundToNearestKb(requestSize);
             requestSizeMap.set(
                 requestSizeKbBin,
@@ -76,10 +78,11 @@ export default class RequestCounter {
                 key,
                 (this.#responseSizeSums.get(key) ?? 0) + responseSize,
             );
-            if (!this.#responseSizes.has(key)) {
-                this.#responseSizes.set(key, new Map<number, number>());
+            let responseSizeMap = this.#responseSizes.get(key);
+            if (!responseSizeMap) {
+                responseSizeMap = new Map<number, number>();
+                this.#responseSizes.set(key, responseSizeMap);
             }
-            const responseSizeMap = this.#responseSizes.get(key)!;
             const responseSizeKbBin = this.#roundToNearestKb(responseSize);
             responseSizeMap.set(
                 responseSizeKbBin,

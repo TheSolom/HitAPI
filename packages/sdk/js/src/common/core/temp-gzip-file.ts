@@ -86,7 +86,11 @@ export default class TempGzipFile {
     }
 
     async close(): Promise<void> {
-        await new Promise<void>((resolve) => this.#gzip.end(() => resolve()));
+        await new Promise<void>((resolve) => {
+            this.#gzip.end(() => {
+                resolve();
+            });
+        });
 
         await this.#closedPromise;
     }

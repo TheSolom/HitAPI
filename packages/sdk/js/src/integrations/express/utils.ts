@@ -43,7 +43,7 @@ const isRouterOrApp = (value: unknown): value is AppOrRouter => {
  */
 export const getRouterInfo = (app: AppOrRouter): RouterInfo => {
     // Express 4: direct stack property
-    if (app.stack && Array.isArray(app.stack)) {
+    if (Array.isArray(app.stack)) {
         return { stack: app.stack, version: 'v4' };
     }
 
@@ -107,7 +107,7 @@ export const parseExpressPathRegExp = (
 
     while (hasParams(parsedRegExp) && paramIndex < keys.length) {
         const key = keys[paramIndex];
-        const paramName = typeof key === 'string' ? key : key?.name;
+        const paramName = typeof key === 'string' ? key : key.name;
         const paramId = `:${paramName}`;
 
         parsedRegExp = parsedRegExp.replace(
@@ -212,14 +212,11 @@ const parseStack = (
             return;
         }
 
-        let newBasePath = basePath;
-
         // Extract path based on Express version
-        if (version === 'v4') {
-            newBasePath = extractPathV4(stackItem, basePath);
-        } else if (version === 'v5') {
-            newBasePath = extractPathV5(stackItem, basePath);
-        }
+        const newBasePath =
+            version === 'v4'
+                ? extractPathV4(stackItem, basePath)
+                : extractPathV5(stackItem, basePath);
 
         // Recursively parse nested routers
         if (isRouterOrApp(stackItem.handle)) {
@@ -236,8 +233,6 @@ const parseStack = (
 const extractPathV4 = (stackItem: ILayer, basePath: string): string => {
     let newBasePath = basePath;
 
-    if (!stackItem.regexp) return newBasePath;
-
     const regexpStr = stackItem.regexp.toString();
     const isExpressPathRegExp = regExpToParseExpressPathRegExp.test(regexpStr);
 
@@ -253,10 +248,9 @@ const extractPathV4 = (stackItem: ILayer, basePath: string): string => {
         }
     } else if (
         !stackItem.path &&
-        stackItem.regexp &&
         regexpStr !== EXPRESS_ROOT_PATH_REGEXP_VALUE
     ) {
-        const regExpPath = `RegExp(${stackItem.regexp})`;
+        const regExpPath = `RegExp(${regexpStr})`;
         newBasePath += `/${regExpPath}`;
     }
 

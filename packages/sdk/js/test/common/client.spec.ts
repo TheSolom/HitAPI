@@ -4,7 +4,9 @@ import { mockHitAPIHub, CLIENT_ID, HITAPI_BASE_URL } from '../utils.js';
 import { HitAPIClient } from '../../src/common/core/client.js';
 
 describe('Client', () => {
-    beforeAll(() => mockHitAPIHub());
+    beforeAll(() => {
+        mockHitAPIHub();
+    });
 
     it('Initializes client Successfully', () => {
         const client = HitAPIClient.init({ clientId: CLIENT_ID });

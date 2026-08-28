@@ -21,15 +21,14 @@ describe('Winston logger', () => {
             logger.error('test', { code: 500 });
             logger.error(new Error('test error'));
 
-            const logs = logsContext.getStore();
-            expect(logs).toBeDefined();
+            const logs = logsContext.getStore() ?? [];
             expect(logs).toHaveLength(3);
-            expect(logs![0].level).toBe('info');
-            expect(logs![0].message).toBe('test\n{"foo":"bar"}');
-            expect(logs![1].level).toBe('error');
-            expect(logs![1].message).toBe('test\n{"code":500}');
-            expect(logs![2].level).toBe('error');
-            expect(logs![2].message).toBe('test error');
+            expect(logs[0]?.level).toBe('info');
+            expect(logs[0]?.message).toBe('test\n{"foo":"bar"}');
+            expect(logs[1]?.level).toBe('error');
+            expect(logs[1]?.message).toBe('test\n{"code":500}');
+            expect(logs[2]?.level).toBe('error');
+            expect(logs[2]?.message).toBe('test error');
         });
     });
 });

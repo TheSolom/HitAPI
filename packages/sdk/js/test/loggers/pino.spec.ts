@@ -16,13 +16,12 @@ describe('Pino logger', () => {
             logger.info('test');
             logger.error({ code: 500 }, 'test error');
 
-            const logs = logsContext.getStore();
-            expect(logs).toBeDefined();
+            const logs = logsContext.getStore() ?? [];
             expect(logs).toHaveLength(2);
-            expect(logs![0].level).toBe('info');
-            expect(logs![0].message).toBe('test');
-            expect(logs![1].level).toBe('error');
-            expect(logs![1].message).toBe('test error\n{"code":500}');
+            expect(logs[0]?.level).toBe('info');
+            expect(logs[0]?.message).toBe('test');
+            expect(logs[1]?.level).toBe('error');
+            expect(logs[1]?.message).toBe('test error\n{"code":500}');
         });
     });
 });

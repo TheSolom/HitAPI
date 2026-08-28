@@ -78,7 +78,7 @@ export default class DataSender {
 
                 if (response.headers.has('Retry-After')) {
                     const retryAfter = Number.parseInt(
-                        response.headers.get('Retry-After')!,
+                        response.headers.get('Retry-After') ?? '0',
                     );
                     if (retryAfter > 0) {
                         this.#client.requestLogger.suspendUntil =

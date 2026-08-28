@@ -4,12 +4,10 @@ export const consumerFromStringOrObject = (
     consumer: ConsumerInfo | string,
 ): ConsumerInfo | null => {
     if (typeof consumer === 'string') {
-        consumer = String(consumer).trim().substring(0, 128);
+        consumer = consumer.trim().substring(0, 128);
         return consumer ? { identifier: consumer } : null;
     } else {
-        consumer.identifier = String(consumer.identifier)
-            .trim()
-            .substring(0, 128);
+        consumer.identifier = consumer.identifier.trim().substring(0, 128);
         consumer.name = consumer.name?.trim().substring(0, 64);
         consumer.group = consumer.group?.trim().substring(0, 64);
         return consumer.identifier ? consumer : null;

@@ -6,7 +6,7 @@ import { MAX_BUFFER_SIZE } from '../constants/logger.constant.js';
 type LogLevel = 'log' | 'warn' | 'error' | 'info' | 'debug';
 
 let isPatched = false;
-let globalLogsContext: AsyncLocalStorage<LogRecord[]>;
+let globalLogsContext: AsyncLocalStorage<LogRecord[]> | undefined;
 
 export function patchConsole(logsContext: AsyncLocalStorage<LogRecord[]>) {
     globalLogsContext = logsContext;
@@ -15,10 +15,12 @@ export function patchConsole(logsContext: AsyncLocalStorage<LogRecord[]>) {
 
     const logMethods: LogLevel[] = ['log', 'warn', 'error', 'info', 'debug'];
     logMethods.forEach((method) => {
-        const originalMethod = console[method];
+        const originalMethod = console[method].bind(console) as (
+            ...args: unknown[]
+        ) => void;
         console[method] = function (...args: unknown[]): void {
             captureLog(method, args);
-            return originalMethod.apply(console, args);
+            originalMethod(...args);
         };
     });
 

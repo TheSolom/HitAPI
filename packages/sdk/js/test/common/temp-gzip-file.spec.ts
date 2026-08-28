@@ -1,4 +1,3 @@
-import { setImmediate } from 'node:timers/promises';
 import { gunzipSync } from 'node:zlib';
 import TempGzipFile from '../../src/common/core/temp-gzip-file.js';
 

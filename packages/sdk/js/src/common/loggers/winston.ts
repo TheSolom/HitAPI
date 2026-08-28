@@ -4,11 +4,11 @@ import { MAX_BUFFER_SIZE } from '../constants/logger.constant.js';
 import { removeKeys, formatMessage } from './utils.js';
 
 let isPatched = false;
-let globalLogsContext: AsyncLocalStorage<LogRecord[]>;
+let globalLogsContext: AsyncLocalStorage<LogRecord[]> | undefined;
 
 interface WinstonLogger {
     prototype: {
-        write: (info: Record<string, unknown>) => unknown;
+        write?: ((info: Record<string, unknown>) => unknown) | undefined;
     };
 }
 
@@ -23,10 +23,10 @@ export async function patchWinston(
         const loggerModule = (await import(
             // @ts-expect-error - file is not typed
             'winston/lib/winston/logger.js'
-        )) as { default: WinstonLogger };
-        const Logger = loggerModule.default;
+        )) as { default?: WinstonLogger | undefined } | undefined;
+        const Logger = loggerModule?.default;
 
-        if (Logger?.prototype?.write) {
+        if (Logger?.prototype.write) {
             const originalWrite = Logger.prototype.write;
             Logger.prototype.write = function (
                 info: Record<string, unknown>,
@@ -55,12 +55,12 @@ function captureLog(info: Record<string, unknown>): void {
             'message',
             'splat',
         ]);
-        const formattedMessage = formatMessage(info.message as string, rest);
+        const formattedMessage = formatMessage(info.message, rest);
         if (formattedMessage) {
             logs.push({
-                level: (info.level as string) || 'info',
+                level: typeof info.level === 'string' ? info.level : 'info',
                 message: formattedMessage.trim(),
-                timestamp: parseTimestamp(info?.timestamp),
+                timestamp: parseTimestamp(info.timestamp),
             });
         }
     } catch {
