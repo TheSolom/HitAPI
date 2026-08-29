@@ -12,9 +12,3 @@ export type ParsedPeriod =
           granularity: TruncUnit;
       }
     | { type: 'range'; startDate: Date; endDate: Date; granularity: TruncUnit };
-
-export interface PeriodQuery {
-    period?: Period;
-    start_time?: string;
-    end_time?: string;
-}

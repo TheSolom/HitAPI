@@ -1,3 +1,7 @@
+import type { RestfulMethod } from '@hitapi/shared/enums';
+import type { OrderDirection } from './common.js';
+import type { Period } from './period.js';
+
 export type ConsumerInfo = {
     identifier: string;
     name?: string;
@@ -55,4 +59,38 @@ export interface TrafficConsumersTableResponseDto {
     firstRequestAt: string;
     lastRequestAt: string;
     isNew: boolean;
+}
+
+export type ConsumerStatus = 'New' | 'Existing';
+
+export interface ConsumersChartResponseDto {
+    consumer_status?: ConsumerStatus;
+    timeWindows: string[];
+    consumerCounts: number[];
+}
+
+export interface GetTrafficConsumersTableOptions {
+    appId: string;
+    consumerGroupId?: number;
+    consumerId?: number;
+    method?: RestfulMethod;
+    onlyNew?: boolean;
+    path?: string;
+    pathExact?: boolean;
+    period?: Period;
+    search?: string;
+    sortBy?: 'name' | 'requests' | 'errorRate' | 'lastRequest';
+    order?: OrderDirection;
+    statusCode?: string;
+}
+
+export interface GetConsumersChartOptions {
+    appId: string;
+    consumerGroupId?: number;
+    consumerId?: number;
+    method?: RestfulMethod;
+    path?: string;
+    pathExact?: boolean;
+    period?: Period;
+    statusCode?: string;
 }
