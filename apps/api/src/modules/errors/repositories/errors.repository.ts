@@ -67,7 +67,7 @@ export class ErrorsRepository implements IErrorsRepository {
         }
         if (criteria.consumerGroupId) {
             qb.andWhere(
-                'rl.consumerId IN (SELECT id FROM consumers WHERE groupId = :groupId)',
+                'rl.consumerId IN (SELECT id FROM consumers WHERE "groupId" = :groupId)',
                 {
                     groupId: criteria.consumerGroupId,
                 },
