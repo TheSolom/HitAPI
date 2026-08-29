@@ -26,6 +26,7 @@ export class ConsumerGroupsService implements IConsumerGroupsService {
     async findAllConsumerGroups(appId: string): Promise<ConsumerGroup[]> {
         return this.consumerGroupRepository.find({
             where: { app: { id: appId } },
+            relations: { consumers: true },
             order: { name: 'ASC' },
         });
     }

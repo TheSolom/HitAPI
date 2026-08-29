@@ -129,7 +129,11 @@ export class ConsumersController {
     ): Promise<ConsumerGroupResponseDto[]> {
         const groups =
             await this.consumerGroupsService.findAllConsumerGroups(appId);
-        return plainToInstance(ConsumerGroupResponseDto, groups);
+        return groups.map((g) => {
+            const dto = plainToInstance(ConsumerGroupResponseDto, g);
+            dto.consumerCount = g.consumers.length;
+            return dto;
+        });
     }
 
     @Get('consumer-groups/:groupId')
@@ -149,7 +153,9 @@ export class ConsumersController {
             throw new NotFoundException(`Consumer group not found`);
         }
 
-        return plainToInstance(ConsumerGroupResponseDto, group);
+        const dto = plainToInstance(ConsumerGroupResponseDto, group);
+        dto.consumerCount = group.consumers.length;
+        return dto;
     }
 
     @Post('consumer-groups')

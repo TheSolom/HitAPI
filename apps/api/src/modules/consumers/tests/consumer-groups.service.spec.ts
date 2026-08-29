@@ -60,6 +60,7 @@ describe('ConsumerGroupsService', () => {
             );
             expect(mockConsumerGroupRepository.find).toHaveBeenCalledWith({
                 where: { app: { id: 'app-id-1' } },
+                relations: { consumers: true },
                 order: { name: 'ASC' },
             });
         });
@@ -128,10 +129,7 @@ describe('ConsumerGroupsService', () => {
             ).mockResolvedValue(group);
             (
                 mockConsumerGroupRepository.save as jest.Mock<any>
-            ).mockResolvedValue({
-                ...group,
-                ...dto,
-            });
+            ).mockResolvedValue(Object.assign(new ConsumerGroup(), group, dto));
 
             await service.updateConsumerGroup('app-id-1', 1, dto);
 
