@@ -194,13 +194,18 @@ export class SyncDataIngestionProcessor extends BaseProcessor<
                 ? groupMap.get(consumerInfo.group)
                 : undefined;
 
-            if (existingId && consumerInfo.name) {
-                await this.consumersService.updateConsumer(
-                    appId,
-                    existingId,
-                    { name: consumerInfo.name, consumerGroupId: groupId },
-                    queryRunner,
-                );
+            if (existingId) {
+                if (consumerInfo.name !== undefined || groupId !== undefined) {
+                    await this.consumersService.updateConsumer(
+                        appId,
+                        existingId,
+                        {
+                            name: consumerInfo.name,
+                            consumerGroupId: groupId,
+                        },
+                        queryRunner,
+                    );
+                }
             } else {
                 const inserted = await this.consumersService.createConsumers(
                     appId,

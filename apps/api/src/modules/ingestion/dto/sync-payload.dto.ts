@@ -9,11 +9,13 @@ import {
     IsInt,
     Min,
     Max,
+    IsBoolean,
+    IsNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import type { ConsumerInfo } from '@hitapi/types';
 import { PathInfoDto } from './path-info.dto.js';
-import { CreateConsumerDto } from '../../consumers/dto/create-consumer.dto.js';
 
 export class ConsumerMethodPathDto extends PathInfoDto {
     @ApiPropertyOptional({ type: 'string' })
@@ -105,6 +107,28 @@ export class ValidationErrorsItemDto extends ConsumerMethodPathDto {
     errorCount: number;
 }
 
+export class SyncConsumerItemDto implements ConsumerInfo {
+    @ApiProperty({ type: 'string' })
+    @IsString()
+    @IsNotEmpty()
+    identifier: string;
+
+    @ApiPropertyOptional({ type: 'string' })
+    @IsString()
+    @IsOptional()
+    name?: string;
+
+    @ApiPropertyOptional({ type: 'string' })
+    @IsString()
+    @IsOptional()
+    group?: string;
+
+    @ApiPropertyOptional({ type: 'boolean' })
+    @IsBoolean()
+    @IsOptional()
+    hidden?: boolean;
+}
+
 export class ResourcesDto {
     @ApiProperty({ type: 'number', minimum: 0, nullable: true })
     @Min(0)
@@ -141,11 +165,11 @@ export class SyncPayloadDto {
     @IsArray()
     validationErrors: ValidationErrorsItemDto[];
 
-    @ApiProperty({ type: CreateConsumerDto, isArray: true })
-    @Type(() => CreateConsumerDto)
+    @ApiProperty({ type: () => SyncConsumerItemDto, isArray: true })
+    @Type(() => SyncConsumerItemDto)
     @ValidateNested({ each: true })
     @IsArray()
-    consumers: CreateConsumerDto[];
+    consumers: SyncConsumerItemDto[];
 
     @ApiProperty()
     @Type(() => ResourcesDto)
