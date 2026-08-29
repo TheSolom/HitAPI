@@ -6,6 +6,7 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     Unique,
+    JoinColumn,
     type Relation,
 } from 'typeorm';
 import { App } from '../../apps/entities/app.entity.js';
@@ -26,12 +27,16 @@ export class Consumer {
     @Column({ default: false })
     hidden: boolean = false;
 
+    @Column({ nullable: true })
+    groupId: number | null;
+
     @ManyToOne(() => App, { onDelete: 'CASCADE', nullable: false })
     app: Relation<App>;
 
     @ManyToOne(() => ConsumerGroup, (group) => group.consumers, {
         onDelete: 'SET NULL',
     })
+    @JoinColumn({ name: 'groupId' })
     group: Relation<ConsumerGroup> | null;
 
     @CreateDateColumn()

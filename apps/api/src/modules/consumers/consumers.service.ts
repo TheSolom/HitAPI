@@ -1,10 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, type QueryRunner } from 'typeorm';
 import { IConsumersService } from './interfaces/consumers-service.interface.js';
 import { Consumer } from './entities/consumer.entity.js';
-import { Services } from '../../common/constants/services.constant.js';
-import type { IConsumerGroupsService } from './interfaces/consumer-groups-service.interface.js';
 import type { NullableType } from '@hitapi/types';
 import type { CreateConsumerDto } from './dto/create-consumer.dto.js';
 import type { UpdateConsumerDto } from './dto/update-consumer.dto.js';
@@ -14,8 +12,6 @@ export class ConsumersService implements IConsumersService {
     constructor(
         @InjectRepository(Consumer)
         private readonly consumerRepository: Repository<Consumer>,
-        @Inject(Services.CONSUMER_GROUPS)
-        private readonly consumerGroupsService: IConsumerGroupsService,
     ) {}
 
     async findAllByAppId(appId: string): Promise<Consumer[]> {
@@ -65,9 +61,11 @@ export class ConsumersService implements IConsumersService {
         queryRunner?: QueryRunner,
     ): Promise<{ id: number; identifier: string }[]> {
         const consumers = createConsumersDto.map((c) => ({
-            ...c,
+            identifier: c.identifier,
+            name: c.name,
+            hidden: c.hidden,
             app: { id: appId },
-            group: { id: c.groupId },
+            groupId: c.groupId ?? null,
         }));
 
         const repository = queryRunner
@@ -79,6 +77,7 @@ export class ConsumersService implements IConsumersService {
             .insert()
             .into(Consumer)
             .values(consumers)
+            .orUpdate(['updatedAt'], ['appId', 'identifier'])
             .returning(['id', 'identifier'])
             .execute();
 
@@ -91,7 +90,7 @@ export class ConsumersService implements IConsumersService {
     async updateConsumer(
         appId: string,
         consumerId: number,
-        updateConsumerDto: UpdateConsumerDto,
+        updateConsumerDto: Partial<UpdateConsumerDto>,
         queryRunner?: QueryRunner,
     ): Promise<void> {
         const repository = queryRunner
@@ -107,19 +106,12 @@ export class ConsumersService implements IConsumersService {
             throw new Error('Consumer not found');
         }
 
-        consumer.name = updateConsumerDto.name;
+        if (updateConsumerDto.name !== undefined) {
+            consumer.name = updateConsumerDto.name;
+        }
 
         if (updateConsumerDto.consumerGroupId !== undefined) {
-            if (updateConsumerDto.consumerGroupId === null) {
-                consumer.group = null;
-            } else {
-                const group =
-                    await this.consumerGroupsService.findConsumerGroup(
-                        appId,
-                        updateConsumerDto.consumerGroupId,
-                    );
-                consumer.group = group;
-            }
+            consumer.groupId = updateConsumerDto.consumerGroupId;
         }
 
         await repository.save(consumer);

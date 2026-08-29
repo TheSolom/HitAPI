@@ -93,6 +93,7 @@ export class ConsumerGroupsService implements IConsumerGroupsService {
             .insert()
             .into(ConsumerGroup)
             .values(groups)
+            .orUpdate(['updatedAt'], ['appId', 'name'])
             .returning(['id', 'name'])
             .execute();
 

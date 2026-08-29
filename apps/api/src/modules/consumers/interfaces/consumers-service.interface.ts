@@ -65,7 +65,7 @@ export interface IConsumersService {
     updateConsumer(
         appId: string,
         consumerId: number,
-        updateConsumerDto: UpdateConsumerDto,
+        updateConsumerDto: Partial<UpdateConsumerDto>,
         queryRunner?: QueryRunner,
     ): Promise<void>;
 }
