@@ -1,0 +1,23 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "extends": "../../tsconfig.web.json",
+    "compilerOptions": {
+        "composite": true,
+        "tsBuildInfoFile": "node_modules/.cache/tsconfig.app.tsbuildinfo",
+        "paths": {
+            "@/*": ["./src/*"],
+            "@hitapi/shared": ["../../packages/shared/dist/index.d.ts"],
+            "@hitapi/shared/enums": ["../../packages/shared/dist/enums/index.d.ts"],
+            "@hitapi/shared/utils": ["../../packages/shared/dist/utils/index.d.ts"],
+            "@hitapi/shared/*": ["../../packages/shared/dist/*"],
+            "@hitapi/types": ["../../packages/types/dist/index.d.ts"],
+            "@hitapi/types/*": ["../../packages/types/dist/*"]
+        },
+        "noEmit": true
+    },
+    "include": ["src"],
+    "references": [
+        { "path": "../../packages/shared" },
+        { "path": "../../packages/types" }
+    ]
+}
