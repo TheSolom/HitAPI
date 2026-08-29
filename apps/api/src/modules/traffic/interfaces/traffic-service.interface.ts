@@ -7,6 +7,7 @@ import type { RequestsPerMinuteChartResponseDto } from '../dto/requests-per-minu
 import type { DataTransferredChartResponseDto } from '../dto/data-transferred-chart-response.dto.js';
 import type { RequestsByConsumerChartResponseDto } from '../dto/requests-by-consumer-chart-response.dto.js';
 import type { GetRequestsByConsumerChartOptionsDto } from '../dto/get-requests-by-consumer-chart-options.dto.js';
+import type { ConsumersChartResponseDto } from '../dto/consumers-chart-response.dto.js';
 import type { SizeHistogramResponseDto } from '../dto/size-histogram-response.dto.js';
 import type { TrafficEndpointsTableResponseDto } from '../dto/traffic-endpoints-table-response.dto.js';
 import type { StatusCodeCountsResponseDto } from '../dto/status-code-counts-response.dto.js';
@@ -64,6 +65,14 @@ export interface ITrafficService {
     getRequestsByConsumerChart(
         getRequestsByConsumerChartOptionsDto: GetRequestsByConsumerChartOptionsDto,
     ): Promise<RequestsByConsumerChartResponseDto[]>;
+    /**
+     * Get consumers chart for an app within a period.
+     * @param getConsumersChartOptionsDto
+     * @returns {Promise<ConsumersChartResponseDto[]>}
+     */
+    getConsumersChart(
+        getConsumersChartOptionsDto: GetTrafficOptionsDto,
+    ): Promise<ConsumersChartResponseDto[]>;
     /**
      * Get request size histogram for an app within a period.
      * @param getRequestSizeHistogramOptionsDto

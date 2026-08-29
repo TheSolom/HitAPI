@@ -27,6 +27,7 @@ import { RequestsPerMinuteChartResponseDto } from './dto/requests-per-minute-cha
 import { DataTransferredChartResponseDto } from './dto/data-transferred-chart-response.dto.js';
 import { RequestsByConsumerChartResponseDto } from './dto/requests-by-consumer-chart-response.dto.js';
 import { GetRequestsByConsumerChartOptionsDto } from './dto/get-requests-by-consumer-chart-options.dto.js';
+import { ConsumersChartResponseDto } from './dto/consumers-chart-response.dto.js';
 import { SizeHistogramResponseDto } from './dto/size-histogram-response.dto.js';
 import { TrafficEndpointsTableResponseDto } from './dto/traffic-endpoints-table-response.dto.js';
 import { GetTrafficConsumersTableOptionsDto } from './dto/get-traffic-consumers-table-options.dto.js';
@@ -100,6 +101,18 @@ export class TrafficController {
     ) {
         return this.trafficService.getRequestsByConsumerChart(
             getRequestsByConsumerChartOptionsDto,
+        );
+    }
+
+    @Get('consumers-chart')
+    @ApiOkResponse({
+        type: createCustomResponse(ConsumersChartResponseDto, true),
+    })
+    async getConsumersChart(
+        @Query() getConsumersChartOptionsDto: GetTrafficOptionsDto,
+    ) {
+        return this.trafficService.getConsumersChart(
+            getConsumersChartOptionsDto,
         );
     }
 

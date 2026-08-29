@@ -28,6 +28,12 @@ export interface IRequestsByConsumerChart {
     count: string;
 }
 
+export interface IConsumersChart {
+    timeWindow: Date;
+    consumerStatus: string;
+    count: string;
+}
+
 export interface ITrafficEndpointsTable {
     id: string;
     method: string;
@@ -102,6 +108,14 @@ export interface ITrafficRepository {
     getRequestsByConsumerChart(
         criteria: GetTrafficOptionsDto,
     ): Promise<IRequestsByConsumerChart[]>;
+    /**
+     * Get consumers chart for an app within a period.
+     * @param criteria
+     * @returns {Promise<IConsumersChart[]>}
+     */
+    getConsumersChart(
+        criteria: GetTrafficOptionsDto,
+    ): Promise<IConsumersChart[]>;
     /**
      * Get size histogram for an app within a period.
      * @param criteria

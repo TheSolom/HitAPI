@@ -19,6 +19,8 @@ import type { RequestsPerMinuteChartResponseDto } from './dto/requests-per-minut
 import type { DataTransferredChartResponseDto } from './dto/data-transferred-chart-response.dto.js';
 import type { RequestsByConsumerChartResponseDto } from './dto/requests-by-consumer-chart-response.dto.js';
 import type { GetRequestsByConsumerChartOptionsDto } from './dto/get-requests-by-consumer-chart-options.dto.js';
+import type { ConsumersChartResponseDto } from './dto/consumers-chart-response.dto.js';
+import type { ConsumerStatus } from './enums/consumer-status.enum.js';
 import type { SizeHistogramResponseDto } from './dto/size-histogram-response.dto.js';
 import type { TrafficEndpointsTableResponseDto } from './dto/traffic-endpoints-table-response.dto.js';
 import type { GetTrafficConsumersTableOptionsDto } from './dto/get-traffic-consumers-table-options.dto.js';
@@ -297,6 +299,46 @@ export class TrafficService implements ITrafficService {
                     Number.parseInt(row.statusCode),
                     Number.parseInt(row.count),
                 ]);
+            }
+        }
+
+        return Array.from(datasets.values());
+    }
+
+    async getConsumersChart(
+        getConsumersChartOptionsDto: GetTrafficOptionsDto,
+    ): Promise<ConsumersChartResponseDto[]> {
+        const consumersChart = await this.trafficRepository.getConsumersChart(
+            getConsumersChartOptionsDto,
+        );
+
+        const datasets = new Map<string, ConsumersChartResponseDto>();
+
+        for (const row of consumersChart) {
+            const status = row.consumerStatus as ConsumerStatus;
+
+            if (!datasets.has(status)) {
+                datasets.set(status, {
+                    consumer_status: status,
+                    timeWindows: [],
+                    consumerCounts: [],
+                });
+            }
+
+            const dataset = datasets.get(status);
+            if (!dataset) continue;
+
+            const timeWindow = row.timeWindow.toISOString();
+
+            const existingIndex = dataset.timeWindows.indexOf(timeWindow);
+            if (existingIndex === -1) {
+                dataset.timeWindows.push(timeWindow);
+                dataset.consumerCounts.push(Number.parseInt(row.count, 10));
+            } else {
+                dataset.consumerCounts[existingIndex] += Number.parseInt(
+                    row.count,
+                    10,
+                );
             }
         }
 

@@ -9,6 +9,7 @@ import type {
     IRequestsPerMinuteChart,
     IDataTransferredChart,
     IRequestsByConsumerChart,
+    IConsumersChart,
     ITrafficEndpointsTable,
     ITrafficConsumersTableRow,
     IStatusCodeCounts,
@@ -57,7 +58,7 @@ export class TrafficRepository implements ITrafficRepository {
         }
         if (criteria.consumerGroupId) {
             qb.andWhere(
-                'rl.consumerId IN (SELECT id FROM consumers WHERE groupId = :groupId)',
+                'rl.consumerId IN (SELECT id FROM consumers WHERE "groupId" = :groupId)',
                 {
                     groupId: criteria.consumerGroupId,
                 },
@@ -195,6 +196,43 @@ export class TrafficRepository implements ITrafficRepository {
             .orderBy('COUNT(*)', 'DESC')
             .limit(criteria.limit)
             .getRawMany<IRequestsByConsumerChart>();
+    }
+
+    async getConsumersChart(
+        criteria: GetTrafficOptionsDto,
+    ): Promise<IConsumersChart[]> {
+        const qb = this.requestLogsRepository.createQueryBuilder('rl');
+
+        this.applyFilters<RequestLog>(qb, criteria);
+        const period = parsePeriod(criteria.period);
+        applyPeriodFilter<RequestLog>(qb, period, 'rl', 'timestamp');
+
+        const periodStart =
+            period.type === 'range' ? period.startDate : period.since;
+
+        qb.innerJoin('rl.consumer', 'c').andWhere('c.hidden = false');
+
+        return qb
+            .select(
+                `DATE_TRUNC('${period.granularity}', rl.timestamp)`,
+                'timeWindow',
+            )
+            .addSelect(
+                `
+                    CASE 
+                        WHEN c.createdAt >= :periodStart THEN 'New'
+                        ELSE 'Existing'
+                    END
+                `,
+                'consumerStatus',
+            )
+            .addSelect('COUNT(DISTINCT c.id)', 'count')
+            .setParameter('periodStart', periodStart)
+            .groupBy('"timeWindow"')
+            .addGroupBy('"consumerStatus"')
+            .orderBy('"timeWindow"', 'ASC')
+            .addOrderBy('"consumerStatus"')
+            .getRawMany<IConsumersChart>();
     }
 
     async getSizeHistogram(

@@ -56,7 +56,7 @@ export class TrafficMetricsRepository implements ITrafficMetricsRepository {
         }
         if (criteria.consumerGroupId) {
             qb.andWhere(
-                'rl.consumerId IN (SELECT id FROM consumers WHERE groupId = :groupId)',
+                'rl.consumerId IN (SELECT id FROM consumers WHERE "groupId" = :groupId)',
                 {
                     groupId: criteria.consumerGroupId,
                 },
@@ -182,9 +182,17 @@ export class TrafficMetricsRepository implements ITrafficMetricsRepository {
 
         await repository.upsert(
             {
-                ...createTrafficMetricsDto,
+                requestCount: createTrafficMetricsDto.requestCount,
+                requestSizeSum: createTrafficMetricsDto.requestSizeSum,
+                responseSizeSum: createTrafficMetricsDto.responseSizeSum,
+                responseTimeP50: createTrafficMetricsDto.responseTimeP50,
+                responseTimeP75: createTrafficMetricsDto.responseTimeP75,
+                responseTimeP95: createTrafficMetricsDto.responseTimeP95,
+                timeWindow: createTrafficMetricsDto.timeWindow,
                 endpoint: { id: createTrafficMetricsDto.endpointId },
-                consumer: { id: createTrafficMetricsDto.consumerId },
+                consumer: createTrafficMetricsDto.consumerId
+                    ? { id: createTrafficMetricsDto.consumerId }
+                    : undefined,
             },
             {
                 conflictPaths: ['endpoint', 'consumer', 'timeWindow'],

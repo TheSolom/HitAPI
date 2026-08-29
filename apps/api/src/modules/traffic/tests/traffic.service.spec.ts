@@ -28,6 +28,7 @@ describe('TrafficService', () => {
         getSizeHistogram: jest.fn(),
         getTrafficEndpointsTable: jest.fn(),
         getTrafficConsumersTable: jest.fn(),
+        getConsumersChart: jest.fn(),
         getStatusCodeCounts: jest.fn(),
         getTrafficData: jest.fn(),
     };
@@ -137,6 +138,59 @@ describe('TrafficService', () => {
                 firstRequestAt: rawRows[1].firstRequestAt.toISOString(),
                 lastRequestAt: rawRows[1].lastRequestAt.toISOString(),
                 isNew: false,
+            });
+        });
+    });
+
+    describe('getConsumersChart', () => {
+        it('should group and format consumers chart datasets by consumer status across time windows', async () => {
+            const time1 = new Date('2026-08-29T10:00:00.000Z');
+            const time2 = new Date('2026-08-29T11:00:00.000Z');
+
+            (
+                mockTrafficRepository.getConsumersChart as jest.Mock<any>
+            ).mockResolvedValue([
+                {
+                    timeWindow: time1,
+                    consumerStatus: 'New',
+                    count: '3',
+                },
+                {
+                    timeWindow: time2,
+                    consumerStatus: 'New',
+                    count: '5',
+                },
+                {
+                    timeWindow: time1,
+                    consumerStatus: 'Existing',
+                    count: '12',
+                },
+                {
+                    timeWindow: time2,
+                    consumerStatus: 'Existing',
+                    count: '15',
+                },
+            ]);
+
+            const result = await trafficService.getConsumersChart({
+                appId: '1ffe3093-0742-45d0-9e9b-7cf340052806',
+                period: '24h',
+            });
+
+            expect(result).toHaveLength(2);
+
+            // New Dataset
+            expect(result[0]).toEqual({
+                consumer_status: 'New',
+                timeWindows: [time1.toISOString(), time2.toISOString()],
+                consumerCounts: [3, 5],
+            });
+
+            // Existing Dataset
+            expect(result[1]).toEqual({
+                consumer_status: 'Existing',
+                timeWindows: [time1.toISOString(), time2.toISOString()],
+                consumerCounts: [12, 15],
             });
         });
     });
