@@ -39,3 +39,8 @@ export interface UpdateConsumerGroupPayload {
     name: string;
     consumerIds?: number[] | null;
 }
+
+export interface ConsumerMetricsResponseDto {
+    totalConsumers: number;
+    newConsumers: number;
+}

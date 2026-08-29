@@ -8,10 +8,18 @@ import { Consumer } from '../entities/consumer.entity.js';
 describe('ConsumersService', () => {
     let consumersService: IConsumersService;
 
+    const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getCount: jest.fn(),
+    };
+
     const mockConsumerRepository = {
         find: jest.fn(),
         findOne: jest.fn(),
+        count: jest.fn(),
         save: jest.fn(),
+        createQueryBuilder: jest.fn().mockReturnValue(mockQueryBuilder),
     };
 
     beforeEach(async () => {
@@ -133,6 +141,48 @@ describe('ConsumersService', () => {
                     name: 'test',
                 }),
             ).rejects.toThrow('Consumer not found');
+        });
+    });
+
+    describe('getConsumerMetrics', () => {
+        it('should return total and new consumers with period', async () => {
+            (mockConsumerRepository.count as jest.Mock<any>).mockResolvedValue(
+                10,
+            );
+            (mockQueryBuilder.getCount as jest.Mock<any>).mockResolvedValue(3);
+
+            const result = await consumersService.getConsumerMetrics(
+                'app-id-1',
+                '24h',
+            );
+
+            expect(result).toEqual({
+                totalConsumers: 10,
+                newConsumers: 3,
+            });
+            expect(mockConsumerRepository.count).toHaveBeenCalledWith({
+                where: { app: { id: 'app-id-1' }, hidden: false },
+            });
+            expect(
+                mockConsumerRepository.createQueryBuilder,
+            ).toHaveBeenCalled();
+        });
+
+        it('should return total consumers and 0 new consumers without period', async () => {
+            (mockConsumerRepository.count as jest.Mock<any>).mockResolvedValue(
+                5,
+            );
+
+            const result =
+                await consumersService.getConsumerMetrics('app-id-1');
+
+            expect(result).toEqual({
+                totalConsumers: 5,
+                newConsumers: 0,
+            });
+            expect(mockConsumerRepository.count).toHaveBeenCalledWith({
+                where: { app: { id: 'app-id-1' }, hidden: false },
+            });
         });
     });
 });

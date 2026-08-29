@@ -3,9 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In, type QueryRunner } from 'typeorm';
 import { IConsumersService } from './interfaces/consumers-service.interface.js';
 import { Consumer } from './entities/consumer.entity.js';
-import type { NullableType } from '@hitapi/types';
+import type { NullableType, Period } from '@hitapi/types';
 import type { CreateConsumerDto } from './dto/create-consumer.dto.js';
 import type { UpdateConsumerDto } from './dto/update-consumer.dto.js';
+import type { ConsumerMetricsResponseDto } from './dto/consumer-metrics-response.dto.js';
+import {
+    parsePeriod,
+    applyPeriodFilter,
+} from '../../common/utils/period.util.js';
 
 @Injectable()
 export class ConsumersService implements IConsumersService {
@@ -115,5 +120,36 @@ export class ConsumersService implements IConsumersService {
         }
 
         await repository.save(consumer);
+    }
+
+    async getConsumerMetrics(
+        appId: string,
+        period?: Period,
+    ): Promise<ConsumerMetricsResponseDto> {
+        const totalConsumersPromise = this.consumerRepository.count({
+            where: { app: { id: appId }, hidden: false },
+        });
+
+        let newConsumersPromise: Promise<number> = Promise.resolve(0);
+        if (period) {
+            const parsedPeriod = parsePeriod(period);
+            const qb = this.consumerRepository
+                .createQueryBuilder('consumer')
+                .where('consumer.appId = :appId', { appId })
+                .andWhere('consumer.hidden = :hidden', { hidden: false });
+
+            applyPeriodFilter(qb, parsedPeriod, 'consumer', 'createdAt');
+            newConsumersPromise = qb.getCount();
+        }
+
+        const [totalConsumers, newConsumers] = await Promise.all([
+            totalConsumersPromise,
+            newConsumersPromise,
+        ]);
+
+        return {
+            totalConsumers,
+            newConsumers,
+        };
     }
 }

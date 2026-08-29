@@ -1,8 +1,9 @@
 import type { QueryRunner } from 'typeorm';
-import type { NullableType } from '@hitapi/types';
+import type { NullableType, Period } from '@hitapi/types';
 import type { Consumer } from '../entities/consumer.entity.js';
 import type { CreateConsumerDto } from '../dto/create-consumer.dto.js';
 import type { UpdateConsumerDto } from '../dto/update-consumer.dto.js';
+import type { ConsumerMetricsResponseDto } from '../dto/consumer-metrics-response.dto.js';
 
 export interface IConsumersService {
     /**
@@ -68,4 +69,14 @@ export interface IConsumersService {
         updateConsumerDto: Partial<UpdateConsumerDto>,
         queryRunner?: QueryRunner,
     ): Promise<void>;
+    /**
+     * Get consumer metrics for an application.
+     * @param appId - The ID of the application.
+     * @param period - The optional period.
+     * @returns The consumer metrics.
+     */
+    getConsumerMetrics(
+        appId: string,
+        period?: Period,
+    ): Promise<ConsumerMetricsResponseDto>;
 }

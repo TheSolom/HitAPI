@@ -6,6 +6,7 @@ import {
     Delete,
     Body,
     Param,
+    Query,
     ParseIntPipe,
     ParseUUIDPipe,
     Inject,
@@ -37,6 +38,8 @@ import { ConsumerGroupResponseDto } from './dto/consumer-group-response.dto.js';
 import { UpdateConsumerDto } from './dto/update-consumer.dto.js';
 import { CreateConsumerGroupDto } from './dto/create-consumer-group.dto.js';
 import { UpdateConsumerGroupDto } from './dto/update-consumer-group.dto.js';
+import { ConsumerMetricsResponseDto } from './dto/consumer-metrics-response.dto.js';
+import { GetConsumerMetricsOptionsDto } from './dto/get-consumer-metrics-options.dto.js';
 
 @ApiTags('Consumers')
 @ApiBearerAuth('JWT')
@@ -62,6 +65,22 @@ export class ConsumersController {
         const consumers = await this.consumersService.findAllByAppId(appId);
 
         return plainToInstance(ConsumerResponseDto, consumers);
+    }
+
+    @Get('consumers/metrics')
+    @ApiOkResponse({
+        type: createCustomResponse(ConsumerMetricsResponseDto),
+    })
+    async getConsumerMetrics(
+        @Param('appId', ParseUUIDPipe) appId: string,
+        @Query() getConsumerMetricsOptionsDto: GetConsumerMetricsOptionsDto,
+    ): Promise<ConsumerMetricsResponseDto> {
+        const metrics = await this.consumersService.getConsumerMetrics(
+            appId,
+            getConsumerMetricsOptionsDto.period,
+        );
+
+        return plainToInstance(ConsumerMetricsResponseDto, metrics);
     }
 
     @Get('consumers/:consumerId')
