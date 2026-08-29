@@ -24,22 +24,34 @@ export default class ConsumerRegistry {
     }
 
     public addOrUpdateConsumer(consumer?: ConsumerInfo | null): void {
-        if (!consumer || (!consumer.name && !consumer.group)) {
+        if (!consumer?.identifier) {
             return;
         }
 
         const existing = this.#consumers.get(consumer.identifier);
         if (existing) {
+            let updated = false;
             if (consumer.name && consumer.name !== existing.name) {
                 existing.name = consumer.name;
-                this.#updated.add(consumer.identifier);
+                updated = true;
             }
             if (consumer.group && consumer.group !== existing.group) {
                 existing.group = consumer.group;
+                updated = true;
+            }
+            if (
+                consumer.hidden !== undefined &&
+                consumer.hidden !== existing.hidden
+            ) {
+                existing.hidden = consumer.hidden;
+                updated = true;
+            }
+
+            if (updated) {
                 this.#updated.add(consumer.identifier);
             }
         } else {
-            this.#consumers.set(consumer.identifier, consumer);
+            this.#consumers.set(consumer.identifier, { ...consumer });
             this.#updated.add(consumer.identifier);
         }
     }

@@ -35,9 +35,17 @@ describe('Consumer registry', () => {
     it('Add or update consumers', () => {
         const consumerRegistry = new ConsumerRegistry();
         consumerRegistry.addOrUpdateConsumer(null);
-        consumerRegistry.addOrUpdateConsumer({ identifier: 'test' });
         let data = consumerRegistry.getAndResetUpdatedConsumers();
-        expect(data.length).toBe(0);
+        expect(data).toHaveLength(0);
+
+        consumerRegistry.addOrUpdateConsumer({ identifier: 'test' });
+        data = consumerRegistry.getAndResetUpdatedConsumers();
+        expect(data).toHaveLength(1);
+        expect(data[0]).toEqual({ identifier: 'test' });
+
+        consumerRegistry.addOrUpdateConsumer({ identifier: 'test' });
+        data = consumerRegistry.getAndResetUpdatedConsumers();
+        expect(data).toHaveLength(0);
 
         const testConsumer = {
             identifier: 'test',
@@ -46,12 +54,12 @@ describe('Consumer registry', () => {
         };
         consumerRegistry.addOrUpdateConsumer(testConsumer);
         data = consumerRegistry.getAndResetUpdatedConsumers();
-        expect(data.length).toBe(1);
+        expect(data).toHaveLength(1);
         expect(data[0]).toEqual(testConsumer);
 
         consumerRegistry.addOrUpdateConsumer(testConsumer);
         data = consumerRegistry.getAndResetUpdatedConsumers();
-        expect(data.length).toBe(0);
+        expect(data).toHaveLength(0);
 
         consumerRegistry.addOrUpdateConsumer({
             identifier: 'test',
@@ -59,6 +67,6 @@ describe('Consumer registry', () => {
             group: 'Testers 2',
         });
         data = consumerRegistry.getAndResetUpdatedConsumers();
-        expect(data.length).toBe(1);
+        expect(data).toHaveLength(1);
     });
 });
