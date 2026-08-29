@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
+import type { ConsumerResponseDto as IConsumerResponseDto } from '@hitapi/types';
 import { ConsumerGroupResponseDto } from './consumer-group-response.dto.js';
 
-export class ConsumerResponseDto {
+export class ConsumerResponseDto implements IConsumerResponseDto {
     @Expose()
     @ApiProperty({ type: 'integer' })
     id: number;

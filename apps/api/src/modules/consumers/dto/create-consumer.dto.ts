@@ -6,8 +6,9 @@ import {
     IsOptional,
     IsString,
 } from 'class-validator';
+import type { CreateConsumerPayload } from '@hitapi/types';
 
-export class CreateConsumerDto {
+export class CreateConsumerDto implements CreateConsumerPayload {
     @ApiProperty({ type: 'string' })
     @IsString()
     @IsNotEmpty()

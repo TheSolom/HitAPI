@@ -6,8 +6,9 @@ import {
     IsArray,
     IsInt,
 } from 'class-validator';
+import type { CreateConsumerGroupPayload } from '@hitapi/types';
 
-export class CreateConsumerGroupDto {
+export class CreateConsumerGroupDto implements CreateConsumerGroupPayload {
     @ApiProperty({ type: 'string' })
     @IsString()
     @IsNotEmpty()
