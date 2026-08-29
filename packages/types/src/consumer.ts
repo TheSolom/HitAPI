@@ -44,3 +44,15 @@ export interface ConsumerMetricsResponseDto {
     totalConsumers: number;
     newConsumers: number;
 }
+
+export interface TrafficConsumersTableResponseDto {
+    id: number;
+    identifier: string;
+    name: string;
+    group?: ConsumerGroupResponseDto;
+    requests: number;
+    errorRate: number;
+    firstRequestAt: string;
+    lastRequestAt: string;
+    isNew: boolean;
+}

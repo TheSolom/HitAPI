@@ -10,11 +10,13 @@ import type {
     IDataTransferredChart,
     IRequestsByConsumerChart,
     ITrafficEndpointsTable,
+    ITrafficConsumersTableRow,
     IStatusCodeCounts,
     ITrafficData,
 } from '../interfaces/traffic-repository.interface.js';
 import { RequestLog } from '../../request-logs/entities/request-log.entity.js';
 import type { GetTrafficOptionsDto } from '../dto/get-traffic-options.dto.js';
+import type { GetTrafficConsumersTableOptionsDto } from '../dto/get-traffic-consumers-table-options.dto.js';
 import {
     parsePeriod,
     applyPeriodFilter,
@@ -261,6 +263,78 @@ export class TrafficRepository implements ITrafficRepository {
             .addGroupBy('removed')
             .orderBy('"totalRequestCount"', 'DESC')
             .getRawMany<ITrafficEndpointsTable>();
+    }
+
+    async getTrafficConsumersTable(
+        criteria: GetTrafficConsumersTableOptionsDto,
+    ): Promise<ITrafficConsumersTableRow[]> {
+        const qb = this.requestLogsRepository.createQueryBuilder('rl');
+
+        this.applyFilters<RequestLog>(qb, criteria);
+        const period = parsePeriod(criteria.period);
+        applyPeriodFilter<RequestLog>(qb, period, 'rl', 'timestamp');
+
+        qb.innerJoin('rl.consumer', 'c');
+        qb.leftJoin('c.group', 'cg');
+        qb.andWhere('c.hidden = false');
+
+        if (criteria.search) {
+            qb.andWhere(
+                '(LOWER(c.identifier) LIKE :search OR (c.name IS NOT NULL AND LOWER(c.name) LIKE :search))',
+                { search: `%${criteria.search.toLowerCase()}%` },
+            );
+        }
+
+        const periodStart =
+            period.type === 'range' ? period.startDate : period.since;
+
+        if (criteria.onlyNew) {
+            qb.andWhere('c.createdAt >= :periodStart', { periodStart });
+        }
+
+        qb.select('c.id', 'id')
+            .addSelect('c.identifier', 'identifier')
+            .addSelect('c.name', 'name')
+            .addSelect('cg.id', 'groupId')
+            .addSelect('cg.name', 'groupName')
+            .addSelect('c.createdAt', 'consumerCreatedAt')
+            .addSelect('COUNT(rl.id)', 'requests')
+            .addSelect(
+                'SUM(CASE WHEN rl.statusCode >= 400 THEN 1 ELSE 0 END)',
+                'errorCount',
+            )
+            .addSelect('MIN(rl.timestamp)', 'firstRequestAt')
+            .addSelect('MAX(rl.timestamp)', 'lastRequestAt')
+            .groupBy('c.id')
+            .addGroupBy('c.identifier')
+            .addGroupBy('c.name')
+            .addGroupBy('c.createdAt')
+            .addGroupBy('cg.id')
+            .addGroupBy('cg.name');
+
+        switch (criteria.sortBy) {
+            case 'name':
+                qb.orderBy(
+                    'LOWER(COALESCE(c.name, c.identifier))',
+                    criteria.order,
+                );
+                break;
+            case 'errorRate':
+                qb.orderBy(
+                    '(CAST(SUM(CASE WHEN rl.statusCode >= 400 THEN 1 ELSE 0 END) AS FLOAT) / NULLIF(COUNT(rl.id), 0))',
+                    criteria.order,
+                );
+                break;
+            case 'lastRequest':
+                qb.orderBy('MAX(rl.timestamp)', criteria.order);
+                break;
+            case 'requests':
+            default:
+                qb.orderBy('COUNT(rl.id)', criteria.order);
+                break;
+        }
+
+        return qb.getRawMany<ITrafficConsumersTableRow>();
     }
 
     async getStatusCodeCounts(

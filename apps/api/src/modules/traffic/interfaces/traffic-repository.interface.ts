@@ -1,5 +1,6 @@
 import type { ExportTrafficCsvOptionsDto } from '../dto/export-traffic-csv-options.dto.js';
 import type { GetTrafficOptionsDto } from '../dto/get-traffic-options.dto.js';
+import type { GetTrafficConsumersTableOptionsDto } from '../dto/get-traffic-consumers-table-options.dto.js';
 
 export interface IRequestsChart {
     timeWindow: Date;
@@ -38,6 +39,19 @@ export interface ITrafficEndpointsTable {
     dataTransferred: string;
     excluded: string;
     removed: string;
+}
+
+export interface ITrafficConsumersTableRow {
+    id: string;
+    identifier: string;
+    name: string | null;
+    groupId: string | null;
+    groupName: string | null;
+    consumerCreatedAt: Date;
+    requests: string;
+    errorCount: string;
+    firstRequestAt: Date;
+    lastRequestAt: Date;
 }
 
 export interface IStatusCodeCounts {
@@ -106,6 +120,14 @@ export interface ITrafficRepository {
     getTrafficEndpointsTable(
         criteria: GetTrafficOptionsDto,
     ): Promise<ITrafficEndpointsTable[]>;
+    /**
+     * Get traffic consumers table for an app within a period.
+     * @param criteria
+     * @returns {Promise<ITrafficConsumersTableRow[]>}
+     */
+    getTrafficConsumersTable(
+        criteria: GetTrafficConsumersTableOptionsDto,
+    ): Promise<ITrafficConsumersTableRow[]>;
     /**
      * Get status code counts for an app within a period.
      * @param criteria

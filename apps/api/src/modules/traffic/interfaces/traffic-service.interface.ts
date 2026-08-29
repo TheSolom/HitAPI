@@ -11,6 +11,8 @@ import type { SizeHistogramResponseDto } from '../dto/size-histogram-response.dt
 import type { TrafficEndpointsTableResponseDto } from '../dto/traffic-endpoints-table-response.dto.js';
 import type { StatusCodeCountsResponseDto } from '../dto/status-code-counts-response.dto.js';
 import type { ExportTrafficCsvOptionsDto } from '../dto/export-traffic-csv-options.dto.js';
+import type { GetTrafficConsumersTableOptionsDto } from '../dto/get-traffic-consumers-table-options.dto.js';
+import type { TrafficConsumersTableResponseDto } from '../dto/traffic-consumers-table-response.dto.js';
 
 export interface ITrafficService {
     /**
@@ -86,6 +88,14 @@ export interface ITrafficService {
     getTrafficEndpointsTable(
         getTrafficEndpointsTableOptionsDto: GetTrafficOptionsDto,
     ): Promise<TrafficEndpointsTableResponseDto[]>;
+    /**
+     * Get traffic consumers table for an app within a period.
+     * @param getTrafficConsumersTableOptionsDto
+     * @returns {Promise<TrafficConsumersTableResponseDto[]>}
+     */
+    getTrafficConsumersTable(
+        getTrafficConsumersTableOptionsDto: GetTrafficConsumersTableOptionsDto,
+    ): Promise<TrafficConsumersTableResponseDto[]>;
     /**
      * Get status code counts for an app within a period.
      * @param getStatusCodeCountsOptionsDto

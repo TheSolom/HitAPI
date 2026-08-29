@@ -21,6 +21,8 @@ import type { RequestsByConsumerChartResponseDto } from './dto/requests-by-consu
 import type { GetRequestsByConsumerChartOptionsDto } from './dto/get-requests-by-consumer-chart-options.dto.js';
 import type { SizeHistogramResponseDto } from './dto/size-histogram-response.dto.js';
 import type { TrafficEndpointsTableResponseDto } from './dto/traffic-endpoints-table-response.dto.js';
+import type { GetTrafficConsumersTableOptionsDto } from './dto/get-traffic-consumers-table-options.dto.js';
+import type { TrafficConsumersTableResponseDto } from './dto/traffic-consumers-table-response.dto.js';
 import { calculateRate } from '../../common/utils/rates.util.js';
 import type { StatusCodeCountsResponseDto } from './dto/status-code-counts-response.dto.js';
 import type { ExportTrafficCsvOptionsDto } from './dto/export-traffic-csv-options.dto.js';
@@ -391,6 +393,43 @@ export class TrafficService implements ITrafficService {
             excluded: row.excluded === 'true',
             removed: row.removed === 'true',
         }));
+    }
+
+    async getTrafficConsumersTable(
+        getTrafficConsumersTableOptionsDto: GetTrafficConsumersTableOptionsDto,
+    ): Promise<TrafficConsumersTableResponseDto[]> {
+        const rawRows = await this.trafficRepository.getTrafficConsumersTable(
+            getTrafficConsumersTableOptionsDto,
+        );
+
+        const period = parsePeriod(getTrafficConsumersTableOptionsDto.period);
+        const periodStart =
+            period.type === 'range' ? period.startDate : period.since;
+
+        return rawRows.map((row) => {
+            const requests = Number.parseInt(row.requests);
+            const errorCount = Number.parseInt(row.errorCount);
+            const errorRate = calculateRate(errorCount, requests, 2);
+            const createdAt = new Date(row.consumerCreatedAt);
+            const isNew = createdAt >= periodStart;
+
+            return {
+                id: Number.parseInt(row.id),
+                identifier: row.identifier,
+                name: row.name || row.identifier,
+                group: row.groupId
+                    ? {
+                          id: Number.parseInt(row.groupId),
+                          name: row.groupName ?? '',
+                      }
+                    : undefined,
+                requests,
+                errorRate,
+                firstRequestAt: new Date(row.firstRequestAt).toISOString(),
+                lastRequestAt: new Date(row.lastRequestAt).toISOString(),
+                isNew,
+            };
+        });
     }
 
     async getStatusCodeCounts(

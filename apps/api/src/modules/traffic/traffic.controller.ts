@@ -29,6 +29,8 @@ import { RequestsByConsumerChartResponseDto } from './dto/requests-by-consumer-c
 import { GetRequestsByConsumerChartOptionsDto } from './dto/get-requests-by-consumer-chart-options.dto.js';
 import { SizeHistogramResponseDto } from './dto/size-histogram-response.dto.js';
 import { TrafficEndpointsTableResponseDto } from './dto/traffic-endpoints-table-response.dto.js';
+import { GetTrafficConsumersTableOptionsDto } from './dto/get-traffic-consumers-table-options.dto.js';
+import { TrafficConsumersTableResponseDto } from './dto/traffic-consumers-table-response.dto.js';
 import { StatusCodeCountsResponseDto } from './dto/status-code-counts-response.dto.js';
 import { SkipResponseInterceptor } from '../../common/decorators/skip-response-interceptor.decorator.js';
 import { ExportTrafficCsvOptionsDto } from './dto/export-traffic-csv-options.dto.js';
@@ -134,6 +136,19 @@ export class TrafficController {
     ) {
         return this.trafficService.getTrafficEndpointsTable(
             getTrafficEndpointsTableOptionsDto,
+        );
+    }
+
+    @Get('consumers-table')
+    @ApiOkResponse({
+        type: createCustomResponse(TrafficConsumersTableResponseDto, true),
+    })
+    async getTrafficConsumersTable(
+        @Query()
+        getTrafficConsumersTableOptionsDto: GetTrafficConsumersTableOptionsDto,
+    ) {
+        return this.trafficService.getTrafficConsumersTable(
+            getTrafficConsumersTableOptionsDto,
         );
     }
 
