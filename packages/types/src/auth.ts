@@ -47,11 +47,11 @@ export interface SetPasswordPayload {
 }
 
 export interface RefreshTokenPayload {
-    refreshToken: string;
+    refreshToken?: string;
 }
 
 export interface LogoutPayload {
-    refreshToken: string;
+    refreshToken?: string;
 }
 
 export interface UserProfile {

@@ -132,6 +132,7 @@ export class AuthController {
     @HttpCode(HttpStatus.NO_CONTENT)
     @SkipResponseInterceptor()
     @ApiNoContentResponse()
+    @ApiBody({ type: LogoutDto, required: false })
     async logout(
         @Req() req: Request,
         @Res({ passthrough: true }) res: Response,
