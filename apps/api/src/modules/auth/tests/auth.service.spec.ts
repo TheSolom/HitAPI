@@ -23,12 +23,12 @@ describe('AuthService', () => {
     const HASHED_PASSWORD = 'hashedPassword';
 
     const createMockUser = (overrides?: Partial<User>): User =>
-        ({
+        Object.assign(new User(), {
             id: TEST_USER_ID,
             email: TEST_EMAIL,
             password: HASHED_PASSWORD,
             ...overrides,
-        }) as User;
+        });
 
     beforeEach(async () => {
         const usersServiceMock: jest.Mocked<
