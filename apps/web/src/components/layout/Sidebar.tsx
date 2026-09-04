@@ -105,6 +105,10 @@ export function Sidebar() {
         };
     }, [toggleSidebar]);
 
+    const toggleLabel = collapsed
+        ? 'Expand sidebar (Ctrl+B)'
+        : 'Collapse sidebar (Ctrl+B)';
+
     return (
         <TooltipProvider delayDuration={150}>
             {/* Desktop Animated Sidebar */}
@@ -115,55 +119,76 @@ export function Sidebar() {
                     collapsed ? 'w-17' : 'w-60',
                 )}
             >
-                <div className="relative flex h-14 items-center overflow-hidden border-b border-sidebar-border px-3">
-                    <div
-                        className={cn(
-                            'flex items-center gap-2.5 overflow-hidden transition-[max-width,opacity,transform] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
-                            collapsed
-                                ? 'max-w-0 opacity-0 -translate-x-4 pointer-events-none'
-                                : 'max-w-40 opacity-100 translate-x-0',
+                <div
+                    className={cn(
+                        'relative flex overflow-hidden border-b border-sidebar-border transition-[height,padding] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
+                        collapsed
+                            ? 'h-24 flex-col items-center justify-center gap-2 px-2 py-3'
+                            : 'h-14 flex-row items-center justify-between px-3',
+                    )}
+                >
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Link
+                                to="/"
+                                className="group/logo flex items-center overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                aria-label="HitAPI home"
+                            >
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-xs transition-transform duration-200 group-hover/logo:scale-105">
+                                    <Radar
+                                        className="h-4 w-4"
+                                        aria-hidden="true"
+                                    />
+                                </span>
+                                <span
+                                    className={cn(
+                                        'text-sm font-bold tracking-[0.18em] text-sidebar-foreground whitespace-nowrap overflow-hidden transition-[max-width,opacity,transform,margin] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
+                                        collapsed
+                                            ? 'max-w-0 opacity-0 -translate-x-2 ml-0'
+                                            : 'max-w-32 opacity-100 translate-x-0 ml-2.5',
+                                    )}
+                                >
+                                    HitAPI
+                                </span>
+                            </Link>
+                        </TooltipTrigger>
+                        {collapsed && (
+                            <TooltipContent
+                                side="right"
+                                sideOffset={12}
+                                className="font-medium"
+                            >
+                                HitAPI
+                            </TooltipContent>
                         )}
-                    >
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-xs transition-transform duration-200 hover:scale-105">
-                            <Radar className="h-4 w-4" aria-hidden="true" />
-                        </span>
-                        <span className="text-sm font-bold tracking-[0.18em] text-sidebar-foreground whitespace-nowrap">
-                            HitAPI
-                        </span>
-                    </div>
+                    </Tooltip>
 
-                    <div
-                        className={cn(
-                            'flex items-center',
-                            collapsed
-                                ? 'w-full justify-center'
-                                : 'ml-auto justify-end',
-                        )}
-                    >
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
-                            onClick={toggleSidebar}
-                            aria-label={
-                                collapsed
-                                    ? 'Expand sidebar (Ctrl+B)'
-                                    : 'Collapse sidebar (Ctrl+B)'
-                            }
-                            title={
-                                collapsed
-                                    ? 'Expand sidebar (Ctrl+B)'
-                                    : 'Collapse sidebar (Ctrl+B)'
-                            }
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
+                                onClick={toggleSidebar}
+                                aria-label={toggleLabel}
+                            >
+                                <PanelLeftClose
+                                    className={cn(
+                                        'h-4 w-4 transition-transform duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
+                                        collapsed && 'rotate-180',
+                                    )}
+                                    aria-hidden="true"
+                                />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent
+                            side={collapsed ? 'right' : 'bottom'}
+                            sideOffset={12}
+                            className="font-medium"
                         >
-                            <PanelLeftClose
-                                className={cn(
-                                    'h-4 w-4 transition-transform duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
-                                    collapsed && 'rotate-180',
-                                )}
-                            />
-                        </Button>
-                    </div>
+                            {toggleLabel}
+                        </TooltipContent>
+                    </Tooltip>
                 </div>
 
                 <nav
@@ -250,4 +275,3 @@ export function Sidebar() {
         </TooltipProvider>
     );
 }
-
