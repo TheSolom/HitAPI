@@ -8,7 +8,10 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useSocialAccountsQuery, useUnlinkSocialAccountMutation } from '../../hooks';
+import {
+    useSocialAccountsQuery,
+    useUnlinkSocialAccountMutation,
+} from '../../hooks';
 import { GoogleButton } from './GoogleButton';
 
 function GoogleIcon() {
@@ -39,10 +42,16 @@ function GoogleIcon() {
 }
 
 export function ConnectedAccountsCard() {
-    const { data: accounts = [], isLoading, isError } = useSocialAccountsQuery();
+    const {
+        data: accounts = [],
+        isLoading,
+        isError,
+    } = useSocialAccountsQuery();
     const unlink = useUnlinkSocialAccountMutation();
 
-    const hasGoogle = accounts.some((a) => a.provider.toLowerCase() === 'google');
+    const hasGoogle = accounts.some(
+        (a) => a.provider.toLowerCase() === 'google',
+    );
 
     let content: React.ReactNode;
     if (isLoading) {
@@ -141,7 +150,8 @@ export function ConnectedAccountsCard() {
                     </Badge>
                 </CardTitle>
                 <CardDescription>
-                    Third-party OAuth providers linked to your login credentials.
+                    Third-party OAuth providers linked to your login
+                    credentials.
                 </CardDescription>
             </CardHeader>
             <CardContent>{content}</CardContent>

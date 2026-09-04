@@ -26,7 +26,8 @@ export function AuthInitializer({ children }: AuthInitializerProps) {
                             Unable to Connect
                         </h2>
                         <p className="text-xs text-muted-foreground max-w-xs">
-                            We're having trouble reaching the service. Please check your internet connection and try again.
+                            We're having trouble reaching the service. Please
+                            check your internet connection and try again.
                         </p>
                     </div>
                     <Button
@@ -40,7 +41,9 @@ export function AuthInitializer({ children }: AuthInitializerProps) {
                             className={`h-4 w-4 ${isRetrying ? 'animate-spin' : ''}`}
                             aria-hidden="true"
                         />
-                        <span>{isRetrying ? 'Connecting...' : 'Try Again'}</span>
+                        <span>
+                            {isRetrying ? 'Connecting...' : 'Try Again'}
+                        </span>
                     </Button>
                 </div>
             </div>

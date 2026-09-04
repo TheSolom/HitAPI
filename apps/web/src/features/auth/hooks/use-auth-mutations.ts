@@ -22,7 +22,11 @@ export function useLoginMutation() {
     const setUser = useAuthStore((s) => s.setUser);
     const queryClient = useQueryClient();
 
-    return useMutation<{ tokens: AuthTokens; user: UserProfile | null }, Error, LoginPayload>({
+    return useMutation<
+        { tokens: AuthTokens; user: UserProfile | null },
+        Error,
+        LoginPayload
+    >({
         mutationFn: async (payload: LoginPayload) => {
             const tokens = await authApi.login(payload);
             setTokens(tokens);
@@ -147,7 +151,11 @@ export function useVerifyEmailMutation() {
     const setTokens = useAuthStore((s) => s.setTokens);
     const setUser = useAuthStore((s) => s.setUser);
 
-    return useMutation<{ tokens: AuthTokens; user: UserProfile | null }, Error, VerifyEmailPayload>({
+    return useMutation<
+        { tokens: AuthTokens; user: UserProfile | null },
+        Error,
+        VerifyEmailPayload
+    >({
         mutationFn: async (payload: VerifyEmailPayload) => {
             const tokens = await authApi.verifyEmail(payload);
             setTokens(tokens);

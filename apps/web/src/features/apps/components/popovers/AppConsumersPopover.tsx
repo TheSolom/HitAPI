@@ -139,7 +139,8 @@ export function AppConsumersPopover({
                                     {appName} Clients
                                 </DialogTitle>
                                 <DialogDescription className="text-xs text-muted-foreground">
-                                    All registered API consumers and client cohorts for this app
+                                    All registered API consumers and client
+                                    cohorts for this app
                                 </DialogDescription>
                             </div>
                         </div>
@@ -196,7 +197,8 @@ export function AppConsumersPopover({
                                 No clients registered yet
                             </p>
                             <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                                Clients identified via SDK middleware or header tags will appear automatically here.
+                                Clients identified via SDK middleware or header
+                                tags will appear automatically here.
                             </p>
                         </div>
                     ) : filteredConsumers.length === 0 ? (
@@ -263,7 +265,10 @@ export function AppConsumersPopover({
                                                     >
                                                         <Layers className="h-2.5 w-2.5" />
                                                         <span className="truncate max-w-[80px]">
-                                                            {consumer.group.name}
+                                                            {
+                                                                consumer.group
+                                                                    .name
+                                                            }
                                                         </span>
                                                     </Badge>
                                                 ) : null}

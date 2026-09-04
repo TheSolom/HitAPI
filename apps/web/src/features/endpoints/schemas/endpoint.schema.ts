@@ -41,6 +41,4 @@ export const getEndpointsFilterSchema = z.object({
     search: z.string().optional(),
 });
 
-export type GetEndpointsFilterValues = z.infer<
-    typeof getEndpointsFilterSchema
->;
+export type GetEndpointsFilterValues = z.infer<typeof getEndpointsFilterSchema>;

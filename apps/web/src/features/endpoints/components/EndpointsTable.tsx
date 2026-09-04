@@ -96,7 +96,9 @@ export function EndpointsTable({ appId, endpoints }: EndpointsTableProps) {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-28">Method</TableHead>
-                            <TableHead className="w-64 sm:w-80">Route Path</TableHead>
+                            <TableHead className="w-64 sm:w-80">
+                                Route Path
+                            </TableHead>
                             <TableHead>Summary</TableHead>
                             <TableHead className="w-32 text-center">
                                 Monitored
@@ -268,5 +270,3 @@ export function EndpointsTable({ appId, endpoints }: EndpointsTableProps) {
         </>
     );
 }
-
-

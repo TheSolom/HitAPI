@@ -49,4 +49,3 @@ export function formatPeriodDescription(period?: string | null): string {
     }
     return period;
 }
-

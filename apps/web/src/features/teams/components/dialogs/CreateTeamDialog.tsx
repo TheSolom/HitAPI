@@ -21,10 +21,7 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-    createTeamSchema,
-    type CreateTeamFormValues,
-} from '../../schemas';
+import { createTeamSchema, type CreateTeamFormValues } from '../../schemas';
 import { useCreateTeamMutation } from '../../hooks';
 import { applyFormErrors } from '@/lib/api';
 

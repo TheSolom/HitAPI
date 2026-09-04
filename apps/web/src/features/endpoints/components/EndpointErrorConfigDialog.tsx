@@ -81,11 +81,7 @@ export function EndpointErrorConfigDialog({
     };
 
     const defaultTrigger = (
-        <Button
-            variant="ghost"
-            size="sm"
-            aria-label="Configure error policy"
-        >
+        <Button variant="ghost" size="sm" aria-label="Configure error policy">
             <AlertTriangle className="h-4 w-4" />
         </Button>
     );

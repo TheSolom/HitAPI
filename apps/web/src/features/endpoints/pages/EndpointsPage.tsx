@@ -70,9 +70,7 @@ export function EndpointsPage({ appId }: EndpointsPageProps) {
             );
         }
 
-        return (
-            <EndpointsTable appId={resolvedAppId} endpoints={endpoints} />
-        );
+        return <EndpointsTable appId={resolvedAppId} endpoints={endpoints} />;
     };
 
     return (

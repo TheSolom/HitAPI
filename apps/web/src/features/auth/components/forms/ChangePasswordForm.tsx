@@ -12,7 +12,10 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
-import { changePasswordSchema, type ChangePasswordFormData } from '../../schemas';
+import {
+    changePasswordSchema,
+    type ChangePasswordFormData,
+} from '../../schemas';
 import { useChangePasswordMutation } from '../../hooks';
 import { applyFormErrors } from '@/lib/api';
 
@@ -54,7 +57,9 @@ export function ChangePasswordForm() {
             <form
                 className="space-y-3.5"
                 noValidate
-                onSubmit={(event) => { void form.handleSubmit(onSubmit)(event); }}
+                onSubmit={(event) => {
+                    void form.handleSubmit(onSubmit)(event);
+                }}
             >
                 <FormField
                     control={form.control}
@@ -68,7 +73,11 @@ export function ChangePasswordForm() {
                             <div className="relative">
                                 <FormControl>
                                     <Input
-                                        type={showCurrentPassword ? 'text' : 'password'}
+                                        type={
+                                            showCurrentPassword
+                                                ? 'text'
+                                                : 'password'
+                                        }
                                         autoComplete="current-password"
                                         className="pr-10"
                                         {...field}
@@ -80,7 +89,11 @@ export function ChangePasswordForm() {
                                         setShowCurrentPassword((prev) => !prev);
                                     }}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                                    aria-label={showCurrentPassword ? 'Hide password' : 'Show password'}
+                                    aria-label={
+                                        showCurrentPassword
+                                            ? 'Hide password'
+                                            : 'Show password'
+                                    }
                                 >
                                     {showCurrentPassword ? (
                                         <EyeOff className="h-4 w-4" />
@@ -105,7 +118,11 @@ export function ChangePasswordForm() {
                             <div className="relative">
                                 <FormControl>
                                     <Input
-                                        type={showNewPassword ? 'text' : 'password'}
+                                        type={
+                                            showNewPassword
+                                                ? 'text'
+                                                : 'password'
+                                        }
                                         autoComplete="new-password"
                                         className="pr-10"
                                         {...field}
@@ -117,7 +134,11 @@ export function ChangePasswordForm() {
                                         setShowNewPassword((prev) => !prev);
                                     }}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                                    aria-label={showNewPassword ? 'Hide password' : 'Show password'}
+                                    aria-label={
+                                        showNewPassword
+                                            ? 'Hide password'
+                                            : 'Show password'
+                                    }
                                 >
                                     {showNewPassword ? (
                                         <EyeOff className="h-4 w-4" />
@@ -142,7 +163,11 @@ export function ChangePasswordForm() {
                             <div className="relative">
                                 <FormControl>
                                     <Input
-                                        type={showConfirmPassword ? 'text' : 'password'}
+                                        type={
+                                            showConfirmPassword
+                                                ? 'text'
+                                                : 'password'
+                                        }
                                         autoComplete="new-password"
                                         className="pr-10"
                                         {...field}
@@ -154,7 +179,11 @@ export function ChangePasswordForm() {
                                         setShowConfirmPassword((prev) => !prev);
                                     }}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                                    aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                                    aria-label={
+                                        showConfirmPassword
+                                            ? 'Hide password'
+                                            : 'Show password'
+                                    }
                                 >
                                     {showConfirmPassword ? (
                                         <EyeOff className="h-4 w-4" />
@@ -173,7 +202,9 @@ export function ChangePasswordForm() {
                         disabled={changePassword.isPending}
                         className="w-full sm:w-auto"
                     >
-                        {changePassword.isPending ? 'Updating...' : 'Update password'}
+                        {changePassword.isPending
+                            ? 'Updating...'
+                            : 'Update password'}
                     </Button>
                 </div>
             </form>

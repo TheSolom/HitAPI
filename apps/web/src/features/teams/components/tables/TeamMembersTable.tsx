@@ -102,7 +102,10 @@ export function TeamMembersTable({ teamId }: Readonly<TeamMembersTableProps>) {
                                                     'Unnamed member'}
                                             </span>
                                             {isOwner ? (
-                                                <span title="Owner" className="inline-flex items-center">
+                                                <span
+                                                    title="Owner"
+                                                    className="inline-flex items-center"
+                                                >
                                                     <Crown
                                                         className="h-3.5 w-3.5 text-amber-500 shrink-0"
                                                         aria-label="Owner"

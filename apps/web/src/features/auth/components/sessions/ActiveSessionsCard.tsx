@@ -10,7 +10,11 @@ import { useActiveSessionsQuery } from '../../hooks';
 import { SessionItem } from './SessionItem';
 
 export function ActiveSessionsCard() {
-    const { data: sessions = [], isLoading, isError } = useActiveSessionsQuery();
+    const {
+        data: sessions = [],
+        isLoading,
+        isError,
+    } = useActiveSessionsQuery();
 
     let content: React.ReactNode;
     if (isLoading) {
@@ -51,7 +55,8 @@ export function ActiveSessionsCard() {
                     </Badge>
                 </CardTitle>
                 <CardDescription>
-                    Manage and revoke device sessions where your account is currently signed in.
+                    Manage and revoke device sessions where your account is
+                    currently signed in.
                 </CardDescription>
             </CardHeader>
             <CardContent>{content}</CardContent>

@@ -53,7 +53,11 @@ export function SessionItem({ session }: Readonly<SessionItemProps>) {
                         {parsedDevice.label}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">
-                        IP: <span className="font-mono">{session.ipAddress ?? 'Unknown'}</span> • Created: {createdDate}
+                        IP:{' '}
+                        <span className="font-mono">
+                            {session.ipAddress ?? 'Unknown'}
+                        </span>{' '}
+                        • Created: {createdDate}
                         {lastActiveDate && ` • Last active: ${lastActiveDate}`}
                     </p>
                 </div>

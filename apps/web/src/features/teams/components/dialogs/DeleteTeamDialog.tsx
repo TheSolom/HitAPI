@@ -85,7 +85,10 @@ export function DeleteTeamDialog({
     if (deleteTeam.isPending) {
         deleteButtonContent = (
             <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                <Loader2
+                    className="mr-2 h-4 w-4 animate-spin"
+                    aria-hidden="true"
+                />
                 Deleting team...
             </>
         );
@@ -105,8 +108,10 @@ export function DeleteTeamDialog({
                 <Alert variant="destructive">
                     <AlertTitle>Cannot delete your only team</AlertTitle>
                     <AlertDescription className="mt-2 text-xs">
-                        Every user must have at least one active team to manage apps and credentials.
-                        To delete this team, you must first create or join another team, or delete your entire account in Profile &amp; Security.
+                        Every user must have at least one active team to manage
+                        apps and credentials. To delete this team, you must
+                        first create or join another team, or delete your entire
+                        account in Profile &amp; Security.
                     </AlertDescription>
                 </Alert>
             </div>
@@ -119,18 +124,28 @@ export function DeleteTeamDialog({
                     <AlertDescription className="mt-2">
                         <ul className="list-disc space-y-1 pl-4 text-xs">
                             <li>
-                                All applications, endpoints, and metrics belonging to this team will be permanently deactivated.
+                                All applications, endpoints, and metrics
+                                belonging to this team will be permanently
+                                deactivated.
                             </li>
                             <li>
-                                All team members will lose access to this team workspace immediately.
+                                All team members will lose access to this team
+                                workspace immediately.
                             </li>
                         </ul>
                     </AlertDescription>
                 </Alert>
 
                 <div className="space-y-2">
-                    <Label htmlFor="delete-team-confirm" className="text-sm font-medium">
-                        To confirm, type <span className="font-mono font-semibold text-foreground select-all">{requiredConfirmation}</span> below:
+                    <Label
+                        htmlFor="delete-team-confirm"
+                        className="text-sm font-medium"
+                    >
+                        To confirm, type{' '}
+                        <span className="font-mono font-semibold text-foreground select-all">
+                            {requiredConfirmation}
+                        </span>{' '}
+                        below:
                     </Label>
                     <Input
                         id="delete-team-confirm"
@@ -163,7 +178,8 @@ export function DeleteTeamDialog({
                         Delete {teamName}?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action will deactivate and soft-delete this team workspace.
+                        This action will deactivate and soft-delete this team
+                        workspace.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
 

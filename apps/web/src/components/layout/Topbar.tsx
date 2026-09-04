@@ -124,15 +124,14 @@ export function Topbar() {
                     </SelectContent>
                 </Select>
 
-                <Select
-                    value={selectValue}
-                    onValueChange={handlePeriodChange}
-                >
+                <Select value={selectValue} onValueChange={handlePeriodChange}>
                     <SelectTrigger
                         className="h-8.5 w-24 min-w-20 text-xs sm:h-9 sm:w-36 sm:text-sm md:w-48 shrink-0"
                         aria-label="Select time period"
                     >
-                        <span className="truncate">{getPeriodDisplayLabel(period)}</span>
+                        <span className="truncate">
+                            {getPeriodDisplayLabel(period)}
+                        </span>
                     </SelectTrigger>
                     <SelectContent>
                         {PERIODS.map((p) => (
@@ -169,7 +168,10 @@ export function Topbar() {
                     <DropdownMenuContent align="end">
                         <DropdownMenuItem
                             onSelect={(e) => {
-                                setTheme('light', e as unknown as React.MouseEvent);
+                                setTheme(
+                                    'light',
+                                    e as unknown as React.MouseEvent,
+                                );
                             }}
                             aria-current={theme === 'light'}
                         >
@@ -178,7 +180,10 @@ export function Topbar() {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             onSelect={(e) => {
-                                setTheme('dark', e as unknown as React.MouseEvent);
+                                setTheme(
+                                    'dark',
+                                    e as unknown as React.MouseEvent,
+                                );
                             }}
                             aria-current={theme === 'dark'}
                         >
@@ -187,7 +192,10 @@ export function Topbar() {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             onSelect={(e) => {
-                                setTheme('system', e as unknown as React.MouseEvent);
+                                setTheme(
+                                    'system',
+                                    e as unknown as React.MouseEvent,
+                                );
                             }}
                             aria-current={theme === 'system'}
                         >

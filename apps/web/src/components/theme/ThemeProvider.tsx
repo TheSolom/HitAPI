@@ -78,11 +78,16 @@ export function ThemeProvider({
                 }
             };
 
-            const doc = typeof document !== 'undefined' ? (document as Document & {
-                startViewTransition?: (updateCallback: () => void) => {
-                    ready: Promise<void>;
-                };
-            }) : null;
+            const doc =
+                typeof document !== 'undefined'
+                    ? (document as Document & {
+                          startViewTransition?: (
+                              updateCallback: () => void,
+                          ) => {
+                              ready: Promise<void>;
+                          };
+                      })
+                    : null;
 
             if (
                 !doc ||

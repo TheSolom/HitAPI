@@ -52,4 +52,3 @@ export function useAuthInit() {
         retry: initAuth,
     };
 }
-

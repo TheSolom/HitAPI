@@ -47,9 +47,12 @@ export function ProfilePage() {
             <div className="grid gap-6 lg:grid-cols-2">
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-base">Personal Details</CardTitle>
+                        <CardTitle className="text-base">
+                            Personal Details
+                        </CardTitle>
                         <CardDescription>
-                            These details appear on team invites and alert notifications.
+                            These details appear on team invites and alert
+                            notifications.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>{profileCardContent}</CardContent>
@@ -59,7 +62,8 @@ export function ProfilePage() {
                     <CardHeader>
                         <CardTitle className="text-base">Password</CardTitle>
                         <CardDescription>
-                            Choose a strong password you don&apos;t use anywhere else.
+                            Choose a strong password you don&apos;t use anywhere
+                            else.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>

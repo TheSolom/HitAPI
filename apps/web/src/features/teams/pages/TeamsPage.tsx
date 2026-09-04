@@ -23,7 +23,10 @@ export function TeamsPage() {
         [teamsQuery.data?.data],
     );
 
-    const demoCount = useMemo(() => teams.filter((t) => t.demo).length, [teams]);
+    const demoCount = useMemo(
+        () => teams.filter((t) => t.demo).length,
+        [teams],
+    );
     const stealthCount = useMemo(
         () => teams.filter((t) => t.stealth).length,
         [teams],
@@ -219,4 +222,3 @@ export function TeamsPage() {
         </div>
     );
 }
-

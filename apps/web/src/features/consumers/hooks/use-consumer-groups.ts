@@ -92,13 +92,8 @@ export function useDeleteConsumerGroupMutation() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({
-            appId,
-            groupId,
-        }: {
-            appId: string;
-            groupId: number;
-        }) => consumersApi.deleteGroup(appId, groupId),
+        mutationFn: ({ appId, groupId }: { appId: string; groupId: number }) =>
+            consumersApi.deleteGroup(appId, groupId),
         onSuccess: () => {
             void queryClient.invalidateQueries({ queryKey: consumerKeys.all });
             toast.success('Consumer group deleted');

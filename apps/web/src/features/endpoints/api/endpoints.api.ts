@@ -15,11 +15,7 @@ export type GetEndpointConfigResponse =
     CustomResponse<EndpointConfigResponseDto>;
 
 export const endpointsApi = {
-    list: (
-        appId: string,
-        params?: GetEndpointsQuery,
-        signal?: AbortSignal,
-    ) =>
+    list: (appId: string, params?: GetEndpointsQuery, signal?: AbortSignal) =>
         api.get<GetEndpointsResponse>(
             `/apps/${appId}/endpoints`,
             params?.search ? { search: params.search } : undefined,

@@ -24,11 +24,7 @@ export const frameworksApi = {
         api.post<GetFrameworkResponse>('/frameworks', payload),
 
     update: (id: number, payload: UpdateFrameworkPayload) =>
-        api.patch<GetFrameworkResponse>(
-            `/frameworks/${String(id)}`,
-            payload,
-        ),
+        api.patch<GetFrameworkResponse>(`/frameworks/${String(id)}`, payload),
 
-    remove: (id: number) =>
-        api.delete<undefined>(`/frameworks/${String(id)}`),
+    remove: (id: number) => api.delete<undefined>(`/frameworks/${String(id)}`),
 };

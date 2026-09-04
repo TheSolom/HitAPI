@@ -22,8 +22,7 @@ export function useUnlinkSocialAccountMutation() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (provider: string) =>
-            authApi.unlinkSocialAccount(provider),
+        mutationFn: (provider: string) => authApi.unlinkSocialAccount(provider),
         onSuccess: () => {
             void queryClient.invalidateQueries({
                 queryKey: authKeys.socialAccounts(),

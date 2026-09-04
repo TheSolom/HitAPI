@@ -66,4 +66,3 @@ export function applyFormErrors<TFieldValues extends FieldValues>(
 
     return true;
 }
-

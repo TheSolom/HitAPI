@@ -27,20 +27,14 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { useAuthStore } from '@/stores/auth-store';
-import {
-    inviteMemberSchema,
-    type InviteMemberFormValues,
-} from '../../schemas';
+import { inviteMemberSchema, type InviteMemberFormValues } from '../../schemas';
 import { useInviteMemberMutation } from '../../hooks';
 
 interface InviteMemberFormProps {
     readonly teamId: string;
 }
 
-const ROLES = [
-    TeamMemberRoles.ADMIN,
-    TeamMemberRoles.MEMBER,
-] as const;
+const ROLES = [TeamMemberRoles.ADMIN, TeamMemberRoles.MEMBER] as const;
 
 export function InviteMemberForm({ teamId }: InviteMemberFormProps) {
     const invite = useInviteMemberMutation(teamId);

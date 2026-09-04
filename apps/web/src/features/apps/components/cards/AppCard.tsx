@@ -111,15 +111,15 @@ export function AppCard({ app }: AppCardProps) {
                                             Open Overview
                                         </Link>
                                     </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                            onClick={(e) => {
-                                                handleCopyClientId(e);
-                                            }}
-                                        >
-                                            <Copy className="mr-2 h-4 w-4 text-muted-foreground" />
-                                            Copy Client Key
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        onClick={(e) => {
+                                            handleCopyClientId(e);
+                                        }}
+                                    >
+                                        <Copy className="mr-2 h-4 w-4 text-muted-foreground" />
+                                        Copy Client Key
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
                                     <DropdownMenuItem
                                         onClick={() => {
                                             setEditDialogOpen(true);
@@ -245,7 +245,10 @@ export function AppCard({ app }: AppCardProps) {
                                 <Network className="h-3.5 w-3.5" />
                             </Link>
                         </Button>
-                        <AppConsumersPopover appId={app.id} appName={app.name} />
+                        <AppConsumersPopover
+                            appId={app.id}
+                            appName={app.name}
+                        />
                     </div>
 
                     <Button
@@ -278,4 +281,3 @@ export function AppCard({ app }: AppCardProps) {
         </>
     );
 }
-

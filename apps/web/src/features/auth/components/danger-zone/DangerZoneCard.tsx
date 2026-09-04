@@ -22,7 +22,8 @@ export function DangerZoneCard({ user }: DangerZoneCardProps) {
                     <span>Danger Zone</span>
                 </CardTitle>
                 <CardDescription>
-                    Irreversible actions that affect your entire account credentials and workspace memberships.
+                    Irreversible actions that affect your entire account
+                    credentials and workspace memberships.
                 </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
@@ -31,7 +32,8 @@ export function DangerZoneCard({ user }: DangerZoneCardProps) {
                         Delete Personal Account
                     </p>
                     <p className="text-xs text-muted-foreground">
-                        Permanently removes your account, revoking active sessions and personal resources.
+                        Permanently removes your account, revoking active
+                        sessions and personal resources.
                     </p>
                 </div>
                 <DeleteAccountDialog user={user} />

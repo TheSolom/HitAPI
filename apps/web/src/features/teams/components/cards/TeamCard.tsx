@@ -221,7 +221,9 @@ export function TeamCard({ team }: TeamCardProps) {
                                         className="inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-card bg-primary text-[10px] font-bold text-primary-foreground shadow-xs"
                                     >
                                         {m.displayName
-                                            ? m.displayName.slice(0, 1).toUpperCase()
+                                            ? m.displayName
+                                                  .slice(0, 1)
+                                                  .toUpperCase()
                                             : 'U'}
                                     </div>
                                 ))

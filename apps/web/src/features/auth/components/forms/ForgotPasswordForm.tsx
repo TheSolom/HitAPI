@@ -10,7 +10,10 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
-import { forgotPasswordSchema, type ForgotPasswordFormData } from '../../schemas';
+import {
+    forgotPasswordSchema,
+    type ForgotPasswordFormData,
+} from '../../schemas';
 import { useRequestPasswordResetMutation } from '../../hooks';
 
 interface ForgotPasswordFormProps {

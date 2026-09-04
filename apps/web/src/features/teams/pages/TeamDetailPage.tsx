@@ -223,4 +223,3 @@ export function TeamDetailPage({ teamId }: TeamDetailPageProps) {
         </div>
     );
 }
-

@@ -15,10 +15,7 @@ import {
 } from '../api';
 import { endpointKeys } from './endpoints.keys';
 
-export function useEndpointsQuery(
-    appId?: string,
-    params?: GetEndpointsQuery,
-) {
+export function useEndpointsQuery(appId?: string, params?: GetEndpointsQuery) {
     return useQuery<GetEndpointsResponse>({
         queryKey: endpointKeys.list(appId ?? '', params),
         queryFn: ({ signal }) => {
@@ -53,10 +50,7 @@ export function useEndpointConfigQuery(
         path: '',
     };
     return useQuery<GetEndpointConfigResponse>({
-        queryKey: endpointKeys.config(
-            appId ?? '',
-            params ?? fallbackParams,
-        ),
+        queryKey: endpointKeys.config(appId ?? '', params ?? fallbackParams),
         queryFn: ({ signal }) => {
             if (!appId || !params) {
                 throw new Error('appId and config params are required');
@@ -83,7 +77,9 @@ export function useUpdateEndpointConfigMutation() {
         },
         onError: (err: unknown) => {
             const message =
-                err instanceof Error ? err.message : 'Failed to save endpoint settings';
+                err instanceof Error
+                    ? err.message
+                    : 'Failed to save endpoint settings';
             toast.error(message);
         },
     });
@@ -105,7 +101,9 @@ export function useUpdateEndpointErrorConfigMutation() {
         },
         onError: (err: unknown) => {
             const message =
-                err instanceof Error ? err.message : 'Failed to save error policy';
+                err instanceof Error
+                    ? err.message
+                    : 'Failed to save error policy';
             toast.error(message);
         },
     });

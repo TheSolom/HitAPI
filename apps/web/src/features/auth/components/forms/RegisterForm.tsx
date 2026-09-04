@@ -54,7 +54,9 @@ export function RegisterForm({ onSuccess }: Readonly<RegisterFormProps>) {
         <div className="space-y-4">
             <Form {...form}>
                 <form
-                    onSubmit={(event) => void form.handleSubmit(onSubmit)(event)}
+                    onSubmit={(event) =>
+                        void form.handleSubmit(onSubmit)(event)
+                    }
                     className="space-y-4"
                     noValidate
                 >

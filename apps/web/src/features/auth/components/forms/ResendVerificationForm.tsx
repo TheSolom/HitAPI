@@ -104,9 +104,7 @@ export function ResendVerificationForm({
     return (
         <Form {...form}>
             <form
-                onSubmit={(event) =>
-                    void form.handleSubmit(handleSend)(event)
-                }
+                onSubmit={(event) => void form.handleSubmit(handleSend)(event)}
                 className="space-y-4 pt-2"
                 noValidate
             >
