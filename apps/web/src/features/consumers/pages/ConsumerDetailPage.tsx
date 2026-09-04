@@ -27,6 +27,11 @@ import { ErrorState } from '@/components/states/ErrorState';
 import { useUiStore } from '@/stores/ui-store';
 import { useConsumerQuery, useConsumersTableQuery } from '../hooks';
 import { ConsumersChart, EditConsumerDialog } from '../components';
+import {
+    ConsumerAvatar,
+    ConsumersChart,
+    EditConsumerDialog,
+} from '../components';
 
 interface ConsumerDetailPageProps {
     readonly consumerId: number;
@@ -147,6 +152,11 @@ export function ConsumerDetailPage({ consumerId }: ConsumerDetailPageProps) {
                         >
                             {initials}
                         </div>
+                        <ConsumerAvatar
+                            name={consumer.name}
+                            identifier={consumer.identifier}
+                            size="lg"
+                        />
                         <div>
                             <div className="flex items-center gap-2.5">
                                 <span className="text-xl font-bold tracking-tight">
