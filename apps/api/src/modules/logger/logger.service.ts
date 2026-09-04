@@ -2,7 +2,7 @@ import { Injectable, Scope, Inject, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { INQUIRER } from '@nestjs/core';
 import type { Logger } from 'winston';
-import type { ClsService } from 'nestjs-cls';
+import { ClsService } from 'nestjs-cls';
 import type { AppClsStore, LogMeta } from './interfaces/logger.interface.js';
 
 @Injectable({ scope: Scope.TRANSIENT })
