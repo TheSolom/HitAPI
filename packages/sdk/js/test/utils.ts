@@ -1,8 +1,8 @@
 import nock from 'nock';
 
 const getApiUrl = (): string => {
-    const baseURL = process.env.API_URL || 'http://localhost:3000/api';
-    const version = process.env.API_VERSION || '1';
+    const baseURL = 'https://hitapi-api.koyeb.app/api';
+    const version = '1';
     return `${baseURL}/v${version}/ingest/`;
 };
 
