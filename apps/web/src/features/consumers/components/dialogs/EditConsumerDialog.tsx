@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Edit } from 'lucide-react';
-import type { ConsumerResponseDto } from '@hitapi/types';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -98,7 +96,8 @@ export function EditConsumerDialog({
                     <DialogTitle>Edit Consumer</DialogTitle>
                     <DialogDescription>
                         Update friendly name and customer group assignment for{' '}
-                        <span className="font-mono">{consumer.identifier}</span>.
+                        <span className="font-mono">{consumer.identifier}</span>
+                        .
                     </DialogDescription>
                 </DialogHeader>
 

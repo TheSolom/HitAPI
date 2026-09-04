@@ -65,8 +65,7 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
     if (!active || !payload || payload.length === 0) return null;
 
-    const newCount =
-        payload.find((p) => p.dataKey === 'New')?.value ?? 0;
+    const newCount = payload.find((p) => p.dataKey === 'New')?.value ?? 0;
     const existingCount =
         payload.find((p) => p.dataKey === 'Existing')?.value ?? 0;
     const total = newCount + existingCount;
@@ -83,7 +82,9 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-1.5">
                         <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-xs" />
-                        <span className="text-muted-foreground font-medium">New Clients:</span>
+                        <span className="text-muted-foreground font-medium">
+                            New Clients:
+                        </span>
                     </div>
                     <div className="flex items-center gap-1 font-semibold text-foreground">
                         <span>{newCount}</span>
@@ -97,7 +98,9 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-1.5">
                         <span className="h-2.5 w-2.5 rounded-full bg-violet-500 shadow-xs" />
-                        <span className="text-muted-foreground font-medium">Existing:</span>
+                        <span className="text-muted-foreground font-medium">
+                            Existing:
+                        </span>
                     </div>
                     <div className="flex items-center gap-1 font-semibold text-foreground">
                         <span>{existingCount}</span>
@@ -128,9 +131,8 @@ export function ConsumersChart({
         consumerId,
     });
 
-    const datasets = chartQuery.data ?? [];
-
     const chartData = useMemo(() => {
+        const datasets = chartQuery.data ?? [];
         const timeMap = new Map<
             string,
             {
@@ -170,16 +172,16 @@ export function ConsumersChart({
                 new Date(a.timeWindow).getTime() -
                 new Date(b.timeWindow).getTime(),
         );
-    }, [datasets]);
+    }, [chartQuery.data]);
 
-    const { totalNew, totalExisting, totalActive } = useMemo(() => {
+    const { totalNew, totalExisting } = useMemo(() => {
         let n = 0;
         let e = 0;
         for (const item of chartData) {
             n += item.New;
             e += item.Existing;
         }
-        return { totalNew: n, totalExisting: e, totalActive: n + e };
+        return { totalNew: n, totalExisting: e };
     }, [chartData]);
 
     if (chartQuery.isLoading) {
@@ -199,7 +201,8 @@ export function ConsumersChart({
                         </CardTitle>
                     </div>
                     <CardDescription className="text-xs text-muted-foreground">
-                        Volume of unique active consumers making API requests across time windows
+                        Volume of unique active consumers making API requests
+                        across time windows
                     </CardDescription>
                 </div>
 
@@ -226,7 +229,9 @@ export function ConsumersChart({
                         {/* Chart Type Toggle */}
                         <div className="flex items-center rounded-lg border bg-background p-0.5">
                             <Button
-                                variant={chartType === 'bar' ? 'secondary' : 'ghost'}
+                                variant={
+                                    chartType === 'bar' ? 'secondary' : 'ghost'
+                                }
                                 size="icon"
                                 className="h-7 w-7"
                                 onClick={() => {
@@ -237,7 +242,9 @@ export function ConsumersChart({
                                 <BarChart2 className="h-3.5 w-3.5" />
                             </Button>
                             <Button
-                                variant={chartType === 'area' ? 'secondary' : 'ghost'}
+                                variant={
+                                    chartType === 'area' ? 'secondary' : 'ghost'
+                                }
                                 size="icon"
                                 className="h-7 w-7"
                                 onClick={() => {
@@ -256,8 +263,13 @@ export function ConsumersChart({
                 {chartData.length === 0 ? (
                     <div className="flex h-56 flex-col items-center justify-center rounded-xl border border-dashed text-center text-xs text-muted-foreground">
                         <Activity className="h-8 w-8 text-muted-foreground/40 mb-2" />
-                        <p className="font-medium text-foreground">No active consumer traffic recorded</p>
-                        <p className="text-[11px] mt-0.5">Incoming requests identified with client headers or SDK will appear in this timeline.</p>
+                        <p className="font-medium text-foreground">
+                            No active consumer traffic recorded
+                        </p>
+                        <p className="text-[11px] mt-0.5">
+                            Incoming requests identified with client headers or
+                            SDK will appear in this timeline.
+                        </p>
                     </div>
                 ) : (
                     <div className="h-64 w-full">
@@ -265,7 +277,12 @@ export function ConsumersChart({
                             {chartType === 'bar' ? (
                                 <BarChart
                                     data={chartData}
-                                    margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                                    margin={{
+                                        top: 10,
+                                        right: 10,
+                                        left: -20,
+                                        bottom: 0,
+                                    }}
                                 >
                                     <CartesianGrid
                                         strokeDasharray="3 3"
@@ -288,7 +305,10 @@ export function ConsumersChart({
                                     />
                                     <Tooltip content={<CustomTooltip />} />
                                     <Legend
-                                        wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
+                                        wrapperStyle={{
+                                            fontSize: '11px',
+                                            paddingTop: '10px',
+                                        }}
                                     />
                                     <Bar
                                         dataKey="Existing"
@@ -308,16 +328,49 @@ export function ConsumersChart({
                             ) : (
                                 <AreaChart
                                     data={chartData}
-                                    margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                                    margin={{
+                                        top: 10,
+                                        right: 10,
+                                        left: -20,
+                                        bottom: 0,
+                                    }}
                                 >
                                     <defs>
-                                        <linearGradient id="gradientNew" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
-                                            <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
+                                        <linearGradient
+                                            id="gradientNew"
+                                            x1="0"
+                                            y1="0"
+                                            x2="0"
+                                            y2="1"
+                                        >
+                                            <stop
+                                                offset="5%"
+                                                stopColor="#10b981"
+                                                stopOpacity={0.4}
+                                            />
+                                            <stop
+                                                offset="95%"
+                                                stopColor="#10b981"
+                                                stopOpacity={0.0}
+                                            />
                                         </linearGradient>
-                                        <linearGradient id="gradientExisting" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.4} />
-                                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.0} />
+                                        <linearGradient
+                                            id="gradientExisting"
+                                            x1="0"
+                                            y1="0"
+                                            x2="0"
+                                            y2="1"
+                                        >
+                                            <stop
+                                                offset="5%"
+                                                stopColor="#8b5cf6"
+                                                stopOpacity={0.4}
+                                            />
+                                            <stop
+                                                offset="95%"
+                                                stopColor="#8b5cf6"
+                                                stopOpacity={0.0}
+                                            />
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid
@@ -341,7 +394,10 @@ export function ConsumersChart({
                                     />
                                     <Tooltip content={<CustomTooltip />} />
                                     <Legend
-                                        wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
+                                        wrapperStyle={{
+                                            fontSize: '11px',
+                                            paddingTop: '10px',
+                                        }}
                                     />
                                     <Area
                                         type="monotone"

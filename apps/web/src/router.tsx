@@ -183,6 +183,7 @@ const consumerGroupsRoute = createRoute({
     getParentRoute: () => protectedRoute,
     path: '/consumer-groups',
     beforeLoad: () => {
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw redirect({
             to: '/consumers',
             search: { tab: 'groups' },

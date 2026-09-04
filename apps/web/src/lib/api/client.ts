@@ -189,7 +189,9 @@ export async function silentRefreshTokenDetails(): Promise<RefreshResult> {
         if (!response.ok) {
             return {
                 status: 'network_error',
-                error: new Error(`Server returned status ${response.status}`),
+                error: new Error(
+                    `Server returned status ${String(response.status)}`,
+                ),
             };
         }
 

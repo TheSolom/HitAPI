@@ -8,7 +8,6 @@ import {
     Layers,
     Search,
     User,
-    Users,
     X,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -188,7 +187,8 @@ export function GroupConsumersDialog({
                                 No clients assigned to this group yet
                             </p>
                             <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                                You can assign consumers to this group by editing them in the Consumers table.
+                                You can assign consumers to this group by
+                                editing them in the Consumers table.
                             </p>
                         </div>
                     ) : filteredConsumers.length === 0 ? (

@@ -31,9 +31,11 @@ export function useConsumersQuery(appId?: string) {
     });
 }
 
-export function useConsumersTableQuery(options: Partial<GetTrafficConsumersTableOptions>) {
+export function useConsumersTableQuery(
+    options: Partial<GetTrafficConsumersTableOptions>,
+) {
     return useQuery<TrafficConsumersTableResponseDto[]>({
-        queryKey: consumerKeys.table(options as Record<string, unknown>),
+        queryKey: consumerKeys.table(options),
         queryFn: async ({ signal }) => {
             if (!options.appId) {
                 throw new Error('appId is required');
@@ -49,9 +51,11 @@ export function useConsumersTableQuery(options: Partial<GetTrafficConsumersTable
     });
 }
 
-export function useConsumersChartQuery(options: Partial<GetConsumersChartOptions>) {
+export function useConsumersChartQuery(
+    options: Partial<GetConsumersChartOptions>,
+) {
     return useQuery<ConsumersChartResponseDto[]>({
-        queryKey: consumerKeys.chart(options as Record<string, unknown>),
+        queryKey: consumerKeys.chart(options),
         queryFn: async ({ signal }) => {
             if (!options.appId) {
                 throw new Error('appId is required');
@@ -113,7 +117,9 @@ export function useUpdateConsumerMutation() {
         },
         onError: (err: unknown) => {
             const message =
-                err instanceof Error ? err.message : 'Failed to update consumer';
+                err instanceof Error
+                    ? err.message
+                    : 'Failed to update consumer';
             toast.error(message);
         },
     });

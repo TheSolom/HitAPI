@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import {
     ArrowDown,
@@ -69,9 +69,13 @@ function SortIcon({ column, sortBy, order }: SortIconProps) {
         );
     }
     if (order === OrderDirection.ASC) {
-        return <ArrowUp className="h-3.5 w-3.5 text-primary animate-in fade-in-50 duration-200" />;
+        return (
+            <ArrowUp className="h-3.5 w-3.5 text-primary animate-in fade-in-50 duration-200" />
+        );
     }
-    return <ArrowDown className="h-3.5 w-3.5 text-primary animate-in fade-in-50 duration-200" />;
+    return (
+        <ArrowDown className="h-3.5 w-3.5 text-primary animate-in fade-in-50 duration-200" />
+    );
 }
 
 interface ConsumersTableProps {
@@ -150,13 +154,18 @@ export function ConsumersTable({
     const [onlyNew, setOnlyNew] = useState(false);
     const [sortBy, setSortBy] = useState<SortField>('requests');
     const [order, setOrder] = useState<OrderDirection>(OrderDirection.DESC);
-    const [copiedIdentifier, setCopiedIdentifier] = useState<string | null>(null);
+    const [copiedIdentifier, setCopiedIdentifier] = useState<string | null>(
+        null,
+    );
 
-    useEffect(() => {
+    const [prevInitialGroupId, setPrevInitialGroupId] =
+        useState(initialGroupId);
+    if (initialGroupId !== prevInitialGroupId) {
+        setPrevInitialGroupId(initialGroupId);
         if (initialGroupId !== undefined && initialGroupId !== '') {
             setSelectedGroupFilter(initialGroupId);
         }
-    }, [initialGroupId]);
+    }
 
     const consumerGroupId =
         selectedGroupFilter !== 'all' && selectedGroupFilter !== 'unassigned'
@@ -164,7 +173,9 @@ export function ConsumersTable({
             : undefined;
 
     const activeFiltersCount =
-        (selectedGroupFilter !== 'all' ? 1 : 0) + (onlyNew ? 1 : 0) + (search ? 1 : 0);
+        (selectedGroupFilter !== 'all' ? 1 : 0) +
+        (onlyNew ? 1 : 0) +
+        (search ? 1 : 0);
 
     const tableQuery = useConsumersTableQuery({
         appId,
@@ -504,7 +515,9 @@ export function ConsumersTable({
                                                     </div>
                                                     {hasDistinctName ? (
                                                         <span className="font-mono text-xs text-muted-foreground block truncate">
-                                                            {consumer.identifier}
+                                                            {
+                                                                consumer.identifier
+                                                            }
                                                         </span>
                                                     ) : null}
                                                 </div>
@@ -609,7 +622,9 @@ export function ConsumersTable({
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         onClick={() => {
-                                                            handleEdit(consumer);
+                                                            handleEdit(
+                                                                consumer,
+                                                            );
                                                         }}
                                                     >
                                                         <Edit className="mr-2 h-4 w-4 text-muted-foreground" />

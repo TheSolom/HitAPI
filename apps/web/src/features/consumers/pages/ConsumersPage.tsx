@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Layers, Plus, Search, Users } from 'lucide-react';
-import type { ConsumerGroupResponseDto, Period } from '@hitapi/types';
+import type { ConsumerGroupResponseDto } from '@hitapi/types';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -9,10 +9,7 @@ import { LoadingRows } from '@/components/states/LoadingState';
 import { ErrorState } from '@/components/states/ErrorState';
 import { EmptyState } from '@/components/states/EmptyState';
 import { useUiStore } from '@/stores/ui-store';
-import {
-    useConsumerGroupsQuery,
-    useConsumerMetricsQuery,
-} from '../hooks';
+import { useConsumerGroupsQuery, useConsumerMetricsQuery } from '../hooks';
 import {
     ConsumerGroupCard,
     ConsumerMetricsCards,
@@ -36,7 +33,7 @@ export function ConsumersPage({
 }: ConsumersPageProps) {
     const activeAppId = useUiStore((s) => s.activeAppId);
     const setActiveAppId = useUiStore((s) => s.setActiveAppId);
-    const period = useUiStore((s) => s.period) as Period;
+    const period = useUiStore((s) => s.period);
 
     // Sync appId from search params if provided
     useEffect(() => {
@@ -48,16 +45,17 @@ export function ConsumersPage({
     const resolvedAppId = appId ?? activeAppId ?? '';
 
     const [activeTab, setActiveTab] = useState<'consumers' | 'groups'>(
-        initialTab ?? 'consumers',
+        initialGroupId ? 'consumers' : (initialTab ?? 'consumers'),
     );
-    const [groupSearch, setGroupSearch] = useState('');
-
-    // When initialGroupId is provided, ensure 'consumers' tab is active
-    useEffect(() => {
+    const [prevInitialGroupId, setPrevInitialGroupId] =
+        useState(initialGroupId);
+    if (initialGroupId !== prevInitialGroupId) {
+        setPrevInitialGroupId(initialGroupId);
         if (initialGroupId) {
             setActiveTab('consumers');
         }
-    }, [initialGroupId]);
+    }
+    const [groupSearch, setGroupSearch] = useState('');
 
     const [selectedGroup, setSelectedGroup] =
         useState<ConsumerGroupResponseDto | null>(null);
@@ -65,7 +63,10 @@ export function ConsumersPage({
     const [deleteGroupDialogOpen, setDeleteGroupDialogOpen] = useState(false);
 
     const groupsQuery = useConsumerGroupsQuery(resolvedAppId || undefined);
-    const metricsQuery = useConsumerMetricsQuery(resolvedAppId || undefined, period);
+    const metricsQuery = useConsumerMetricsQuery(
+        resolvedAppId || undefined,
+        period,
+    );
 
     const groups: ConsumerGroupResponseDto[] = groupsQuery.data?.data ?? [];
     const totalConsumers = metricsQuery.data?.totalConsumers ?? 0;
@@ -96,10 +97,7 @@ export function ConsumersPage({
                 />
 
                 {/* Consumers Chart (Active Clients Over Time) */}
-                <ConsumersChart
-                    appId={resolvedAppId}
-                    period={period}
-                />
+                <ConsumersChart appId={resolvedAppId} period={period} />
 
                 {/* Rich Consumers Table with Search, Filter & Telemetry */}
                 <ConsumersTable

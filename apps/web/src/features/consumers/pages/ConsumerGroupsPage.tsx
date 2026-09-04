@@ -26,7 +26,10 @@ export function ConsumerGroupsPage() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const groupsQuery = useConsumerGroupsQuery(activeAppId || undefined);
-    const groups: ConsumerGroupResponseDto[] = groupsQuery.data?.data ?? [];
+    const groups: ConsumerGroupResponseDto[] = useMemo(
+        () => groupsQuery.data?.data ?? [],
+        [groupsQuery.data],
+    );
 
     const handleEdit = (group: ConsumerGroupResponseDto) => {
         setSelectedGroup(group);
@@ -177,7 +180,10 @@ export function ConsumerGroupsPage() {
                     activeAppId ? (
                         <div className="flex items-center gap-2">
                             <Button asChild variant="outline" size="sm">
-                                <Link to="/consumers" search={{ appId: activeAppId }}>
+                                <Link
+                                    to="/consumers"
+                                    search={{ appId: activeAppId }}
+                                >
                                     <Users className="mr-2 h-4 w-4" />
                                     View Consumers
                                 </Link>

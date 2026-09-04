@@ -9,6 +9,7 @@ import type {
     GetConsumersChartOptions,
     GetTrafficConsumersTableOptions,
     Period,
+    QueryParams,
     TrafficConsumersTableResponseDto,
     UpdateConsumerGroupPayload,
     UpdateConsumerPayload,
@@ -44,23 +45,17 @@ export const consumersApi = {
             signal,
         ),
 
-    table: (
-        options: GetTrafficConsumersTableOptions,
-        signal?: AbortSignal,
-    ) =>
+    table: (options: GetTrafficConsumersTableOptions, signal?: AbortSignal) =>
         api.get<GetConsumersTableResponse>(
             '/traffic/consumers-table',
-            options as Record<string, unknown>,
+            options as unknown as QueryParams,
             signal,
         ),
 
-    chart: (
-        options: GetConsumersChartOptions,
-        signal?: AbortSignal,
-    ) =>
+    chart: (options: GetConsumersChartOptions, signal?: AbortSignal) =>
         api.get<GetConsumersChartResponse>(
             '/traffic/consumers-chart',
-            options as Record<string, unknown>,
+            options as unknown as QueryParams,
             signal,
         ),
 

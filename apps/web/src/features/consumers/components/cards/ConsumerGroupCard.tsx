@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import { ArrowRight, Edit, Layers, MoreVertical, Trash2, Users } from 'lucide-react';
+import {
+    ArrowRight,
+    Edit,
+    Layers,
+    MoreVertical,
+    Trash2,
+    Users,
+} from 'lucide-react';
 import type { ConsumerGroupResponseDto } from '@hitapi/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardDescription,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardTitle } from '@/components/ui/card';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -62,7 +65,10 @@ export function ConsumerGroupCard({
                                     <MoreVertical className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-44 shadow-lg border-border/80">
+                            <DropdownMenuContent
+                                align="end"
+                                className="w-44 shadow-lg border-border/80"
+                            >
                                 {onEdit && (
                                     <DropdownMenuItem
                                         onClick={() => {

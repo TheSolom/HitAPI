@@ -25,7 +25,7 @@ import {
 import { LoadingCards } from '@/components/states/LoadingState';
 import { ErrorState } from '@/components/states/ErrorState';
 import { useUiStore } from '@/stores/ui-store';
-import { useConsumerQuery } from '../hooks';
+import { useConsumerQuery, useConsumersTableQuery } from '../hooks';
 import { ConsumersChart, EditConsumerDialog } from '../components';
 
 interface ConsumerDetailPageProps {
@@ -59,7 +59,7 @@ const AVATAR_PALETTES = [
 function getAvatarPalette(str: string) {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        hash = (str.codePointAt(i) ?? 0) + ((hash << 5) - hash);
     }
     const index = Math.abs(hash) % AVATAR_PALETTES.length;
     return AVATAR_PALETTES[index];
@@ -81,6 +81,12 @@ export function ConsumerDetailPage({ consumerId }: ConsumerDetailPageProps) {
 
     const consumerQuery = useConsumerQuery(activeAppId, consumerId);
     const consumer = consumerQuery.data;
+
+    const tableQuery = useConsumersTableQuery({
+        appId: activeAppId,
+        consumerId,
+    });
+    const consumerTraffic = tableQuery.data?.[0];
 
     const handleCopy = (identifier: string) => {
         void navigator.clipboard.writeText(identifier);
@@ -223,7 +229,8 @@ export function ConsumerDetailPage({ consumerId }: ConsumerDetailPageProps) {
                     </CardHeader>
                     <CardContent className="pt-0">
                         <p className="text-[11px] text-muted-foreground">
-                            Unique ID used for authentication & telemetry tracking
+                            Unique ID used for authentication & telemetry
+                            tracking
                         </p>
                     </CardContent>
                 </Card>
@@ -285,7 +292,9 @@ export function ConsumerDetailPage({ consumerId }: ConsumerDetailPageProps) {
                             </span>
                         </CardDescription>
                         <CardTitle className="text-2xl font-bold font-mono tracking-tight text-foreground pt-1">
-                            {consumer.requestCount ? consumer.requestCount.toLocaleString() : '0'}
+                            {consumerTraffic?.requests !== undefined
+                                ? consumerTraffic.requests.toLocaleString()
+                                : '0'}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="pt-0">
@@ -295,28 +304,29 @@ export function ConsumerDetailPage({ consumerId }: ConsumerDetailPageProps) {
                     </CardContent>
                 </Card>
 
-                {/* Errors Encountered Card */}
+                {/* Error Rate Card */}
                 <Card className="border-border/60 shadow-xs bg-linear-to-br from-card to-card/60">
                     <CardHeader className="pb-2">
                         <CardDescription className="flex items-center justify-between text-xs">
                             <span className="flex items-center gap-1.5">
                                 <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
-                                <span>Errors Encountered</span>
+                                <span>Error Rate</span>
                             </span>
                         </CardDescription>
                         <CardTitle className="text-2xl font-bold font-mono tracking-tight pt-1">
-                            {consumer.errorCount && consumer.errorCount > 0 ? (
+                            {consumerTraffic &&
+                            consumerTraffic.errorRate > 0 ? (
                                 <span className="text-amber-600 dark:text-amber-400">
-                                    {consumer.errorCount.toLocaleString()}
+                                    {consumerTraffic.errorRate.toFixed(1)}%
                                 </span>
                             ) : (
-                                <span className="text-foreground">0</span>
+                                <span className="text-foreground">0%</span>
                             )}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="pt-0">
                         <p className="text-[11px] text-muted-foreground">
-                            Failed status code responses (4xx/5xx)
+                            Percentage of failed responses (4xx/5xx)
                         </p>
                     </CardContent>
                 </Card>
@@ -324,10 +334,7 @@ export function ConsumerDetailPage({ consumerId }: ConsumerDetailPageProps) {
 
             {/* Traffic Activity Chart for this Consumer */}
             {activeAppId && (
-                <ConsumersChart
-                    appId={activeAppId}
-                    consumerId={consumer.id}
-                />
+                <ConsumersChart appId={activeAppId} consumerId={consumer.id} />
             )}
 
             {/* Controlled Edit Consumer Dialog (no stray trigger in DOM) */}
