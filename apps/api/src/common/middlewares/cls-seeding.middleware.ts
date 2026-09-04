@@ -11,7 +11,10 @@ export class ClsSeedingMiddleware implements NestMiddleware {
     constructor(private readonly cls: ClsService<AppClsStore>) {}
 
     use(req: Request, res: Response, next: NextFunction): void {
-        const traceId = (req.headers['x-trace-id'] as string) ?? randomUUID();
+        const rawTraceId = req.headers['x-trace-id'];
+        const traceId =
+            (Array.isArray(rawTraceId) ? rawTraceId[0] : rawTraceId) ??
+            randomUUID();
 
         this.cls.set('traceId', traceId);
         this.cls.set('startTime', hrtime.bigint());

@@ -1,12 +1,6 @@
 import ms, { type StringValue } from 'ms';
 import type { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
-import type {
-    RelativePeriod,
-    RangePeriod,
-    Period,
-    ParsedPeriod,
-    TruncUnit,
-} from '@hitapi/types';
+import type { Period, ParsedPeriod, TruncUnit } from '@hitapi/types';
 
 /**
  * Determine the SQL DATE_TRUNC granularity based on duration
@@ -29,9 +23,6 @@ function pickGranularity(durationMs: number): TruncUnit {
  * Parse a period string into either a relative or range period
  * Ensures range start is within the last 12 months
  */
-export function parsePeriod(period: RelativePeriod): ParsedPeriod;
-export function parsePeriod(period: RangePeriod): ParsedPeriod;
-export function parsePeriod(period: Period): ParsedPeriod;
 export function parsePeriod(period: Period): ParsedPeriod {
     // Relative period (e.g., "1h", "7d")
     const duration = ms(period as StringValue);
@@ -94,8 +85,6 @@ export function applyPeriodFilter<T extends ObjectLiteral>(
     alias: string,
     column: string,
 ): void {
-    if (!period) return;
-
     const path = `${alias}.${column}`;
 
     if (period.type === 'relative') {

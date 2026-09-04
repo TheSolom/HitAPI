@@ -123,6 +123,7 @@ export class PasswordsService implements IPasswordsService {
 
         const isValid = await this.hashingService.verifyPassword(
             currentPassword,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             user.password!,
         );
 

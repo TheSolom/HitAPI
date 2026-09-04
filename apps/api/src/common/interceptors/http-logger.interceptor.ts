@@ -26,15 +26,19 @@ export class HttpLoggerInterceptor implements NestInterceptor {
 
         return next.handle().pipe(
             tap({
-                next: () => this.logRequest(req, res),
-                error: () => this.logRequest(req, res),
+                next: () => {
+                    this.logRequest(req, res);
+                },
+                error: () => {
+                    this.logRequest(req, res);
+                },
             }),
         );
     }
 
     private logRequest(req: Request, res: Response): void {
         const { method, originalUrl: path } = req;
-        const { statusCode } = res;
+        const statusCode: HttpStatus = res.statusCode;
         const durationMs = Number(
             (hrtime.bigint() - this.cls.get('startTime')) / 1_000_000n,
         );
@@ -50,17 +54,19 @@ export class HttpLoggerInterceptor implements NestInterceptor {
             userAgent: this.cls.get('userAgent'),
         };
 
-        const logMessage = `${method} ${path} ${statusCode} - ${durationMs}ms`;
+        const logMessage = `${method} ${path} ${String(statusCode)} - ${String(durationMs)}ms`;
 
-        if (<number>HttpStatus.INTERNAL_SERVER_ERROR <= statusCode) {
-            return this.logger.error(logMessage, logData);
+        if (HttpStatus.INTERNAL_SERVER_ERROR <= statusCode) {
+            this.logger.error(logMessage, logData);
+            return;
         }
         if (
-            <number>HttpStatus.BAD_REQUEST <= statusCode &&
-            <number>HttpStatus.INTERNAL_SERVER_ERROR > statusCode
+            HttpStatus.BAD_REQUEST <= statusCode &&
+            HttpStatus.INTERNAL_SERVER_ERROR > statusCode
         ) {
-            return this.logger.warn(logMessage, logData);
+            this.logger.warn(logMessage, logData);
+            return;
         }
-        return this.logger.info(logMessage, logData);
+        this.logger.info(logMessage, logData);
     }
 }

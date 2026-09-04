@@ -1,10 +1,5 @@
 import { Strategy } from 'passport-local';
-import {
-    Inject,
-    Injectable,
-    BadRequestException,
-    UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable, BadRequestException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { plainToInstance } from 'class-transformer';
@@ -31,10 +26,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
             throw new BadRequestException(messages);
         }
 
-        const authUser = await this.authService.validateUser(loginDto);
-        if (!authUser) throw new UnauthorizedException('Invalid credentials');
-
-        return authUser;
+        return this.authService.validateUser(loginDto);
     }
 
     private formatValidationErrors(errors: ValidationError[]): string[] {

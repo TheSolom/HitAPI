@@ -53,7 +53,7 @@ export class PostgresExceptionFilter implements ExceptionFilter {
             (hrtime.bigint() - this.cls.get('startTime')) / 1_000_000n,
         );
         const { statusCode } = res;
-        const logMessage = `${method} ${path} ${statusCode} - ${durationMs}ms`;
+        const logMessage = `${method} ${path} ${String(statusCode)} - ${String(durationMs)}ms`;
 
         const logMeta = {
             userId: req.user?.id,
@@ -75,7 +75,9 @@ export class PostgresExceptionFilter implements ExceptionFilter {
             );
 
             const response: RFC9457Response = {
-                title: STATUS_CODES[HttpStatus.INTERNAL_SERVER_ERROR]!,
+                title:
+                    STATUS_CODES[HttpStatus.INTERNAL_SERVER_ERROR] ??
+                    'Internal Server Error',
                 status: HttpStatus.INTERNAL_SERVER_ERROR,
                 detail: 'An unexpected database error occurred',
                 instance: req.url,
@@ -94,7 +96,7 @@ export class PostgresExceptionFilter implements ExceptionFilter {
 
             const errors = this.extractDuplicateMessage(detail);
             const response: RFC9457Response = {
-                title: STATUS_CODES[HttpStatus.CONFLICT]!,
+                title: STATUS_CODES[HttpStatus.CONFLICT] ?? 'Conflict',
                 status: HttpStatus.CONFLICT,
                 detail: 'This value already exists',
                 instance: req.url,
@@ -111,7 +113,7 @@ export class PostgresExceptionFilter implements ExceptionFilter {
 
             const errors = this.extractForeignKeyMessage(detail);
             const response: RFC9457Response = {
-                title: STATUS_CODES[HttpStatus.BAD_REQUEST]!,
+                title: STATUS_CODES[HttpStatus.BAD_REQUEST] ?? 'Bad Request',
                 status: HttpStatus.BAD_REQUEST,
                 detail: 'Invalid value',
                 instance: req.url,
@@ -130,7 +132,9 @@ export class PostgresExceptionFilter implements ExceptionFilter {
         );
 
         const response: RFC9457Response = {
-            title: STATUS_CODES[HttpStatus.INTERNAL_SERVER_ERROR]!,
+            title:
+                STATUS_CODES[HttpStatus.INTERNAL_SERVER_ERROR] ??
+                'Internal Server Error',
             status: HttpStatus.INTERNAL_SERVER_ERROR,
             detail:
                 this.config.get<Environment>('NODE_ENV') ===

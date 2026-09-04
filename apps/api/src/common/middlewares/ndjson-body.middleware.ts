@@ -6,7 +6,10 @@ export class NdjsonBodyMiddleware implements NestMiddleware {
     use(req: Request, _res: Response, next: NextFunction): void {
         const isNdjson = req.headers['content-type']?.includes('ndjson');
 
-        if (!isNdjson) return next();
+        if (!isNdjson) {
+            next();
+            return;
+        }
 
         try {
             const raw = Buffer.isBuffer(req.body)

@@ -36,6 +36,6 @@ export async function startApp(
     logger.log(`🌐 Application URL: ${apiUrl}`);
     if (docsUrl) logger.log(`📚 Swagger Documentation: ${docsUrl}`);
     if (queuesUrl) logger.log(`📊 Queues Dashboard: ${queuesUrl}`);
-    logger.log(`💾 Process ID: ${process.pid}`);
+    logger.log(`💾 Process ID: ${String(process.pid)}`);
     logger.log('='.repeat(50));
 }

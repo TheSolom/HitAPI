@@ -41,14 +41,14 @@ export function InStepRange(
                     const higher = lower + step;
 
                     if (lower < min) {
-                        return `Please enter a valid value. The nearest valid value is ${higher}.`;
+                        return `Please enter a valid value. The nearest valid value is ${String(higher)}.`;
                     }
 
                     if (higher > max) {
-                        return `Please enter a valid value. The nearest valid value is ${lower}.`;
+                        return `Please enter a valid value. The nearest valid value is ${String(lower)}.`;
                     }
 
-                    return `Please enter a valid value. The two nearest valid values are ${lower} and ${higher}.`;
+                    return `Please enter a valid value. The two nearest valid values are ${String(lower)} and ${String(higher)}.`;
                 },
             },
         });

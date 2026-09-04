@@ -26,7 +26,7 @@ export function configureSwagger(
         .setVersion('1.0.0')
         .setLicense('MIT', 'https://opensource.org/licenses/MIT')
         .addServer(
-            `http://localhost:${config.get<number>('PORT', 3000)}`,
+            `http://localhost:${String(config.get<number>('PORT', 3000))}`,
             'Local Development',
         )
         .addBearerAuth(

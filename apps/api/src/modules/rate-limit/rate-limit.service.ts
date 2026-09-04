@@ -31,12 +31,6 @@ export class RateLimitService implements IRateLimitService {
     ): RateLimitConfig {
         const base = this.DEFAULT_CONFIGS[type];
 
-        if (!base) {
-            throw new Error(
-                `No rate limit configuration found for type: "${type}"`,
-            );
-        }
-
         const resolved = { ...base, ...overrides };
 
         if (!resolved.maxRequests || !resolved.windowMs) {
@@ -68,7 +62,7 @@ export class RateLimitService implements IRateLimitService {
                 : Math.ceil(windowMs / 1000);
 
             throw new ThrottlerException(
-                `Too many requests. Try again in ${secondsLeft} second${secondsLeft === 1 ? '' : 's'}`,
+                `Too many requests. Try again in ${String(secondsLeft)} second${secondsLeft === 1 ? '' : 's'}`,
             );
         }
 

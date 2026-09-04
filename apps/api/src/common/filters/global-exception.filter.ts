@@ -48,21 +48,20 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     }
 
     private logException(exception: unknown, req: Request): void {
-        const statusCode =
+        const statusCode: HttpStatus =
             exception instanceof HttpException
                 ? exception.getStatus()
                 : HttpStatus.INTERNAL_SERVER_ERROR;
-        const isServerError =
-            <number>HttpStatus.INTERNAL_SERVER_ERROR <= statusCode;
+        const isServerError = HttpStatus.INTERNAL_SERVER_ERROR <= statusCode;
         const isClientError =
-            <number>HttpStatus.BAD_REQUEST <= statusCode &&
-            <number>HttpStatus.INTERNAL_SERVER_ERROR > statusCode;
+            HttpStatus.BAD_REQUEST <= statusCode &&
+            HttpStatus.INTERNAL_SERVER_ERROR > statusCode;
 
         const { method, originalUrl: path } = req;
         const durationMs = Number(
-            (hrtime.bigint() - (this.cls.get('startTime') ?? 0n)) / 1_000_000n,
+            (hrtime.bigint() - this.cls.get('startTime')) / 1_000_000n,
         );
-        const logMessage = `${method} ${path} ${statusCode} - ${durationMs}ms`;
+        const logMessage = `${method} ${path} ${String(statusCode)} - ${String(durationMs)}ms`;
 
         const logMeta: LogMeta = {
             userId: req.user?.id,
@@ -76,29 +75,30 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         };
 
         if (isServerError) {
-            return this.logger.error('Unhandled exception: ' + logMessage, {
+            this.logger.error('Unhandled exception: ' + logMessage, {
                 ...logMeta,
                 error:
                     exception instanceof Error
                         ? exception.stack
                         : JSON.stringify(exception),
             });
+            return;
         }
 
-        if (isClientError && <number>HttpStatus.NOT_FOUND !== statusCode) {
+        if (isClientError && HttpStatus.NOT_FOUND !== statusCode) {
             if (
-                <number>HttpStatus.UNAUTHORIZED == statusCode ||
-                <number>HttpStatus.FORBIDDEN === statusCode
+                HttpStatus.UNAUTHORIZED === statusCode ||
+                HttpStatus.FORBIDDEN === statusCode
             ) {
-                return this.logger.warn('Auth failure: ' + logMessage, logMeta);
+                this.logger.warn('Auth failure: ' + logMessage, logMeta);
+                return;
             }
-            if (<number>HttpStatus.TOO_MANY_REQUESTS === statusCode) {
-                return this.logger.warn(
-                    'Rate limit hit: ' + logMessage,
-                    logMeta,
-                );
+            if (HttpStatus.TOO_MANY_REQUESTS === statusCode) {
+                this.logger.warn('Rate limit hit: ' + logMessage, logMeta);
+                return;
             }
-            return this.logger.debug('Client error: ' + logMessage, logMeta);
+            this.logger.debug('Client error: ' + logMessage, logMeta);
+            return;
         }
     }
 
@@ -121,7 +121,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         return {
             statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
             response: {
-                title: STATUS_CODES[HttpStatus.INTERNAL_SERVER_ERROR]!,
+                title:
+                    STATUS_CODES[HttpStatus.INTERNAL_SERVER_ERROR] ??
+                    'Internal Server Error',
                 status: HttpStatus.INTERNAL_SERVER_ERROR,
                 detail: 'An unexpected error occurred',
                 instance: url,
@@ -138,14 +140,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         statusCode: number;
         response: RFC9457Response;
     } {
-        const statusCode = exception.getStatus();
+        const statusCode: HttpStatus = exception.getStatus();
         const exceptionResponse = exception.getResponse() as Record<
             string,
             unknown
         >;
 
         if (
-            statusCode === <number>HttpStatus.BAD_REQUEST &&
+            statusCode === HttpStatus.BAD_REQUEST &&
             Array.isArray(exceptionResponse.message)
         ) {
             return {
@@ -191,7 +193,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         return {
             statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
             response: {
-                title: STATUS_CODES[HttpStatus.INTERNAL_SERVER_ERROR]!,
+                title:
+                    STATUS_CODES[HttpStatus.INTERNAL_SERVER_ERROR] ??
+                    'Internal Server Error',
                 status: HttpStatus.INTERNAL_SERVER_ERROR,
                 detail:
                     this.config.get<Environment>('NODE_ENV') ===

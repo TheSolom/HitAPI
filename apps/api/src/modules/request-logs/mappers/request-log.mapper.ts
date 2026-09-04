@@ -6,8 +6,8 @@ import type { RequestLog } from '../entities/request-log.entity.js';
 import type { PartialRequestLog } from '../interfaces/request-logs-repository.interface.js';
 import type { LogCountByLevel } from '../interfaces/log-count-by-level.interface.js';
 
-export class RequestLogMapper {
-    static toRequestLogResponseDto(
+export const RequestLogMapper = {
+    toRequestLogResponseDto(
         items: PartialRequestLog[],
         logCountMap: Map<string, Record<string, number>>,
     ): RequestLogResponseDto[] {
@@ -33,9 +33,9 @@ export class RequestLogMapper {
             applicationLogsCountByLevel:
                 logCountMap.get(item.requestUuid) ?? {},
         }));
-    }
+    },
 
-    static toRequestLogDetailsResponseDto(
+    toRequestLogDetailsResponseDto(
         log: RequestLog,
         logsCount: number,
         logCountByLevel: Record<string, number>,
@@ -73,9 +73,9 @@ export class RequestLogMapper {
             applicationLogsCountByLevel: logCountByLevel,
             applicationLogsCount: logsCount,
         };
-    }
+    },
 
-    static buildLogCountMap(
+    buildLogCountMap(
         logCounts: LogCountByLevel[],
     ): Map<string, Record<string, number>> {
         const logCountMap = new Map<string, Record<string, number>>();
@@ -92,9 +92,9 @@ export class RequestLogMapper {
         }
 
         return logCountMap;
-    }
+    },
 
-    static buildLogCountByLevel(
+    buildLogCountByLevel(
         logsByLevel: { level: string; count: string }[],
     ): Record<string, number> {
         const logCountByLevel: Record<string, number> = {};
@@ -104,5 +104,5 @@ export class RequestLogMapper {
         }
 
         return logCountByLevel;
-    }
-}
+    },
+};

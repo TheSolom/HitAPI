@@ -22,8 +22,12 @@ export async function createCSV(
             }
         });
 
-        stringifier.on('error', (err) => reject(err));
-        stringifier.on('finish', () => resolve(csv));
+        stringifier.on('error', (err) => {
+            reject(err);
+        });
+        stringifier.on('finish', () => {
+            resolve(csv);
+        });
 
         data.forEach((item) => stringifier.write(item));
         stringifier.end();

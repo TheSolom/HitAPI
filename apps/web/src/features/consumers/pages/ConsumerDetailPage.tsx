@@ -26,7 +26,6 @@ import { LoadingCards } from '@/components/states/LoadingState';
 import { ErrorState } from '@/components/states/ErrorState';
 import { useUiStore } from '@/stores/ui-store';
 import { useConsumerQuery, useConsumersTableQuery } from '../hooks';
-import { ConsumersChart, EditConsumerDialog } from '../components';
 import {
     ConsumerAvatar,
     ConsumersChart,

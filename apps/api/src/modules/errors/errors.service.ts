@@ -98,11 +98,13 @@ export class ErrorsService {
             const statusCode = stringToInt(row.statusCode);
             const count = stringToInt(row.requestCount);
 
-            if (!timeWindowMap.has(timeWindow)) {
-                timeWindowMap.set(timeWindow, new Map());
+            let statusMap = timeWindowMap.get(timeWindow);
+            if (!statusMap) {
+                statusMap = new Map();
+                timeWindowMap.set(timeWindow, statusMap);
             }
 
-            timeWindowMap.get(timeWindow)!.set(statusCode, count);
+            statusMap.set(statusCode, count);
         });
 
         const timeWindows = Array.from(timeWindowMap.keys()).sort((a, b) =>
@@ -112,7 +114,9 @@ export class ErrorsService {
         const statusCodeCounts: [number, number][][] = [];
 
         timeWindows.forEach((tw) => {
-            const statusMap = timeWindowMap.get(tw)!;
+            const statusMap = timeWindowMap.get(tw);
+            if (!statusMap) return;
+
             const total = Array.from(statusMap.values()).reduce(
                 (sum, count) => sum + count,
                 0,
@@ -262,7 +266,7 @@ export class ErrorsService {
             requestCount: stringToInt(error?.requestCount),
             affectedConsumers: stringToInt(error?.affectedConsumers),
             lastTimestamp:
-                error?.lastTimestamp?.toISOString() || new Date().toISOString(),
+                error?.lastTimestamp.toISOString() ?? new Date().toISOString(),
         };
     }
 }

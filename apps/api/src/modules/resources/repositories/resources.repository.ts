@@ -27,8 +27,6 @@ export class ResourcesRepository implements IResourcesRepository {
         qb: SelectQueryBuilder<T>,
         period: ParsedPeriod,
     ): void {
-        if (!period) return;
-
         if (period.type === 'relative') {
             qb.andWhere('r.timeWindow >= :periodTimestamp', {
                 periodTimestamp: period.since.toISOString(),

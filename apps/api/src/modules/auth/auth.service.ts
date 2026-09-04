@@ -19,12 +19,13 @@ export class AuthService implements IAuthService {
         const user = await this.usersService.findByEmail(loginDto.email, {
             includePassword: true,
         });
-        if (!user) {
+        if (!user?.hasPassword()) {
             throw new UnauthorizedException('Invalid credentials');
         }
 
         const isValidPassword = await this.hashingService.verifyPassword(
             loginDto.password,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             user.password!,
         );
 

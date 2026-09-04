@@ -75,13 +75,14 @@ export abstract class BaseProcessor<
     }
 
     private seedClsStore(job: MinimalJob<BaseJobData>): void {
-        const traceId = job.data?.traceId ?? `job-${job.queueName}-${job.id}`;
+        const traceId =
+            job.data.traceId ?? `job-${job.queueName}-${job.id ?? 'unknown'}`;
 
         this.cls.set('traceId', traceId);
         this.cls.set('jobId', job.id);
         this.cls.set('jobName', job.name);
         this.cls.set('queue', job.queueName);
 
-        if (job.data?.appId) this.cls.set('appId', job.data.appId);
+        if (job.data.appId) this.cls.set('appId', job.data.appId);
     }
 }
