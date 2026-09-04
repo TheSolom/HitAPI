@@ -34,7 +34,7 @@ import {
     useTeamsQuery,
     CreateTeamDialog as NewTeamDialog,
 } from '@/features/teams';
-import { TargetResponseTimeSlider } from '@/components/ui/target-response-time-slider';
+import { TargetResponseTimeSlider } from '@/components/common/target-response-time-slider';
 import { createAppSchema, type CreateAppFormValues } from '../../schemas';
 import { useCreateAppMutation, useFrameworksQuery } from '../../hooks';
 import { applyFormErrors } from '@/lib/api';
@@ -260,9 +260,7 @@ export function CreateAppDialog({ trigger, teamId }: CreateAppDialogProps) {
                             name="targetResponseTimeMs"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>
-                                        Target Response Time
-                                    </FormLabel>
+                                    <FormLabel>Target Response Time</FormLabel>
                                     <FormControl>
                                         <TargetResponseTimeSlider
                                             value={field.value}

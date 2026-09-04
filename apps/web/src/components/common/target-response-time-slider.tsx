@@ -24,12 +24,17 @@ const PRESETS = [
     { label: '2000ms', value: 2000, desc: '2.0s' },
 ] as const;
 
-function snapToStep(val: number, step: number, min: number, max: number): number {
+function snapToStep(
+    val: number,
+    step: number,
+    min: number,
+    max: number,
+): number {
     if (Number.isNaN(val)) return min;
     const clamped = Math.max(min, Math.min(max, val));
     const remainder = (clamped - min) % step;
     if (remainder === 0) return clamped;
-    
+
     // Round to nearest step multiple
     if (remainder >= step / 2) {
         return Math.min(max, clamped + (step - remainder));
@@ -47,7 +52,8 @@ export function TargetResponseTimeSlider({
     className,
     disabled = false,
 }: Readonly<TargetResponseTimeSliderProps>) {
-    const currentValue = typeof value === 'number' && !Number.isNaN(value) ? value : 500;
+    const currentValue =
+        typeof value === 'number' && !Number.isNaN(value) ? value : 500;
     const sliderValue = Math.min(currentValue, sliderMax);
 
     const handleSliderChange = useCallback(
@@ -81,7 +87,9 @@ export function TargetResponseTimeSlider({
         onChange(snapped);
     }, [currentValue, onChange, step, min, max]);
 
-    const formattedSeconds = (currentValue / 1000).toFixed(currentValue >= 1000 ? 1 : 2);
+    const formattedSeconds = (currentValue / 1000).toFixed(
+        currentValue >= 1000 ? 1 : 2,
+    );
     const toleratingThreshold = currentValue * 4;
 
     return (
@@ -110,7 +118,9 @@ export function TargetResponseTimeSlider({
                         className="h-9 w-24 text-right font-mono font-medium"
                         aria-label="Target response time value in milliseconds"
                     />
-                    <span className="text-xs font-semibold text-muted-foreground">ms</span>
+                    <span className="text-xs font-semibold text-muted-foreground">
+                        ms
+                    </span>
                 </div>
             </div>
 
@@ -127,7 +137,8 @@ export function TargetResponseTimeSlider({
                                 disabled={disabled}
                                 className={cn(
                                     'h-6 px-2 text-xs font-mono transition-colors',
-                                    isSelected && 'border-primary/50 font-semibold text-primary',
+                                    isSelected &&
+                                        'border-primary/50 font-semibold text-primary',
                                 )}
                                 onClick={() => {
                                     onChange(preset.value);
@@ -140,11 +151,17 @@ export function TargetResponseTimeSlider({
                 </div>
 
                 <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                    <Badge variant="outline" className="h-5 px-1.5 text-[10px] font-normal">
+                    <Badge
+                        variant="outline"
+                        className="h-5 px-1.5 text-[10px] font-normal"
+                    >
                         Satisfied: &le; {currentValue}ms ({formattedSeconds}s)
                     </Badge>
                     <span className="text-muted-foreground/60">&bull;</span>
-                    <Badge variant="outline" className="h-5 px-1.5 text-[10px] font-normal">
+                    <Badge
+                        variant="outline"
+                        className="h-5 px-1.5 text-[10px] font-normal"
+                    >
                         Tolerating: &le; {toleratingThreshold}ms
                     </Badge>
                 </div>

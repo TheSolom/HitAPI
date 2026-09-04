@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { TargetResponseTimeSlider } from '@/components/ui/target-response-time-slider';
+import { TargetResponseTimeSlider } from '@/components/common/target-response-time-slider';
 import { applyFormErrors } from '@/lib/api';
 import {
     updateEndpointConfigSchema,

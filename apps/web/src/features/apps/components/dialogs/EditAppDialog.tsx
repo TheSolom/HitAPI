@@ -31,7 +31,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { TargetResponseTimeSlider } from '@/components/ui/target-response-time-slider';
+import { TargetResponseTimeSlider } from '@/components/common/target-response-time-slider';
 import { updateAppSchema, type UpdateAppFormValues } from '../../schemas';
 import { useUpdateAppMutation, useFrameworksQuery } from '../../hooks';
 import { applyFormErrors } from '@/lib/api';
@@ -173,9 +173,7 @@ export function EditAppDialog({
                             name="targetResponseTimeMs"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>
-                                        Target Response Time
-                                    </FormLabel>
+                                    <FormLabel>Target Response Time</FormLabel>
                                     <FormControl>
                                         <TargetResponseTimeSlider
                                             value={field.value}
@@ -198,7 +196,8 @@ export function EditAppDialog({
                                             Active status
                                         </FormLabel>
                                         <FormDescription>
-                                            Enable or disable data ingestion and monitoring for this app.
+                                            Enable or disable data ingestion and
+                                            monitoring for this app.
                                         </FormDescription>
                                     </div>
                                     <FormControl>
