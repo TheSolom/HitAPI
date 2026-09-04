@@ -133,6 +133,27 @@ export default defineConfig([
     },
 
     //
+    // Shadcn / Generated UI Components Override
+    //
+    {
+        files: ['apps/web/src/components/ui/**/*.{ts,tsx}'],
+        rules: {
+            '@typescript-eslint/no-deprecated': 'off',
+            '@typescript-eslint/no-empty-object-type': 'off',
+            '@typescript-eslint/no-unnecessary-condition': 'off',
+            '@typescript-eslint/no-unsafe-assignment': 'off',
+            '@typescript-eslint/no-unsafe-member-access': 'off',
+            '@typescript-eslint/no-unsafe-argument': 'off',
+            '@typescript-eslint/no-unsafe-call': 'off',
+            '@typescript-eslint/no-unused-expressions': 'off',
+            '@typescript-eslint/restrict-template-expressions': 'off',
+            'react-refresh/only-export-components': 'off',
+            'react-hooks/purity': 'off',
+            'react-hooks/set-state-in-effect': 'off',
+        },
+    },
+
+    //
     // Tests
     //
     {
