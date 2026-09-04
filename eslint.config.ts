@@ -87,7 +87,10 @@ export default defineConfig([
             },
         },
 
-        rules: sharedTsRules,
+        rules: {
+            ...sharedTsRules,
+            '@typescript-eslint/no-misused-spread': 'off',
+        },
     },
 
     //
