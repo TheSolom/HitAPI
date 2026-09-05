@@ -105,10 +105,6 @@ export function Sidebar() {
         };
     }, [toggleSidebar]);
 
-    const toggleLabel = collapsed
-        ? 'Expand sidebar (Ctrl+B)'
-        : 'Collapse sidebar (Ctrl+B)';
-
     return (
         <TooltipProvider delayDuration={150}>
             {/* Desktop Animated Sidebar */}
@@ -125,15 +121,16 @@ export function Sidebar() {
                         collapsed ? 'h-24' : 'h-14',
                     )}
                 >
+                    {/* Logo */}
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Link
                                 to="/"
                                 className={cn(
-                                    'group/logo absolute top-3 flex items-center overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-[left] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
+                                    'group/logo absolute top-3 left-4.5 flex items-center overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-[max-width] duration-200 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
                                     collapsed
-                                        ? 'left-[calc(50%-16px)]'
-                                        : 'left-3',
+                                        ? 'max-w-8 delay-100'
+                                        : 'max-w-40 delay-0',
                                 )}
                                 aria-label="HitAPI home"
                             >
@@ -145,10 +142,10 @@ export function Sidebar() {
                                 </span>
                                 <span
                                     className={cn(
-                                        'text-sm font-bold tracking-[0.18em] text-sidebar-foreground whitespace-nowrap overflow-hidden transition-[max-width,opacity,transform,margin] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
+                                        'text-sm font-bold tracking-[0.18em] text-sidebar-foreground whitespace-nowrap ml-2.5 motion-reduce:transition-none',
                                         collapsed
-                                            ? 'max-w-0 opacity-0 -translate-x-2 ml-0'
-                                            : 'max-w-32 opacity-100 translate-x-0 ml-2.5',
+                                            ? 'opacity-0 pointer-events-none transition-opacity duration-100 ease-out'
+                                            : 'opacity-100 pointer-events-auto transition-opacity duration-200 delay-150 ease-in',
                                     )}
                                 >
                                     HitAPI
@@ -166,36 +163,70 @@ export function Sidebar() {
                         )}
                     </Tooltip>
 
+                    {/* Collapse toggle button: top-right when expanded */}
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button
                                 variant="ghost"
                                 size="icon"
+                                tabIndex={collapsed ? -1 : 0}
                                 className={cn(
-                                    'absolute h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent transition-[top,left,background-color] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
+                                    'absolute right-3 top-3 h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent transition-all duration-200 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
                                     collapsed
-                                        ? 'top-13 left-[calc(50%-16px)]'
-                                        : 'top-3 left-[calc(100%-44px)]',
+                                        ? 'opacity-0 scale-75 pointer-events-none'
+                                        : 'opacity-100 scale-100 pointer-events-auto',
                                 )}
                                 onClick={toggleSidebar}
-                                aria-label={toggleLabel}
+                                aria-label="Collapse sidebar (Ctrl+B)"
                             >
                                 <PanelLeftClose
-                                    className={cn(
-                                        'h-4 w-4 transition-transform duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
-                                        collapsed && 'rotate-180',
-                                    )}
+                                    className="h-4 w-4"
                                     aria-hidden="true"
                                 />
                             </Button>
                         </TooltipTrigger>
-                        <TooltipContent
-                            side={collapsed ? 'right' : 'bottom'}
-                            sideOffset={12}
-                            className="font-medium"
-                        >
-                            {toggleLabel}
-                        </TooltipContent>
+                        {!collapsed && (
+                            <TooltipContent
+                                side="bottom"
+                                sideOffset={12}
+                                className="font-medium"
+                            >
+                                Collapse sidebar (Ctrl+B)
+                            </TooltipContent>
+                        )}
+                    </Tooltip>
+
+                    {/* Expand toggle button: placed below the logo when collapsed */}
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                tabIndex={collapsed ? 0 : -1}
+                                className={cn(
+                                    'absolute left-4.5 bottom-3 h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent transition-all duration-200 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
+                                    collapsed
+                                        ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto delay-100'
+                                        : 'opacity-0 scale-75 -translate-y-2 pointer-events-none',
+                                )}
+                                onClick={toggleSidebar}
+                                aria-label="Expand sidebar (Ctrl+B)"
+                            >
+                                <PanelLeftClose
+                                    className="h-4 w-4 rotate-180"
+                                    aria-hidden="true"
+                                />
+                            </Button>
+                        </TooltipTrigger>
+                        {collapsed && (
+                            <TooltipContent
+                                side="right"
+                                sideOffset={12}
+                                className="font-medium"
+                            >
+                                Expand sidebar (Ctrl+B)
+                            </TooltipContent>
+                        )}
                     </Tooltip>
                 </div>
 
