@@ -4,6 +4,7 @@ import { TeamDetailPage } from '@/features/teams/pages/TeamDetailPage';
 import { AppDetailPage } from '@/features/apps/pages/AppDetailPage';
 import { ConsumerDetailPage, ConsumersPage } from '@/features/consumers';
 import { EndpointsPage } from '@/features/endpoints';
+import { ResourcesPage } from '@/features/resources';
 
 export function RootComponent() {
     return <Outlet />;
@@ -44,6 +45,11 @@ export function ConsumerDetailRouteComponent() {
 export function EndpointsRouteComponent() {
     const { appId } = useSearch({ from: '/protected/endpoints' });
     return <EndpointsPage appId={appId} />;
+}
+
+export function ResourcesRouteComponent() {
+    const { appId } = useSearch({ from: '/protected/resources' });
+    return <ResourcesPage appId={appId} />;
 }
 
 export interface PlaceholderRouteComponentProps {

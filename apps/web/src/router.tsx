@@ -26,6 +26,7 @@ import {
     EndpointsRouteComponent,
     IndexComponent,
     PlaceholderRouteComponent,
+    ResourcesRouteComponent,
     RootComponent,
     TeamDetailRouteComponent,
 } from './routes/route-components';
@@ -200,6 +201,15 @@ const endpointsRoute = createRoute({
     component: EndpointsRouteComponent,
 });
 
+const resourcesRoute = createRoute({
+    getParentRoute: () => protectedRoute,
+    path: '/resources',
+    validateSearch: (search: Record<string, unknown>): { appId?: string } => ({
+        appId: typeof search.appId === 'string' ? search.appId : undefined,
+    }),
+    component: ResourcesRouteComponent,
+});
+
 const logsRoute = createChildRoute('/logs', RequestLogsPage);
 
 function createPlaceholderRoute<P extends string>(
@@ -240,12 +250,6 @@ const scaffoldRoutes = [
         '/performance',
         'Performance',
         'Response time percentiles and slowest endpoints.',
-        'Phase 4',
-    ),
-    createPlaceholderRoute(
-        '/resources',
-        'Resources',
-        'CPU, memory and runtime metrics reported by the SDK.',
         'Phase 4',
     ),
     createPlaceholderRoute(
@@ -310,6 +314,7 @@ const routeTree = rootRoute.addChildren([
         consumerDetailRoute,
         consumerGroupsRoute,
         endpointsRoute,
+        resourcesRoute,
         logsRoute,
         ...scaffoldRoutes,
     ]),
