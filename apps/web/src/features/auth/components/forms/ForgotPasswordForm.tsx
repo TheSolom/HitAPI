@@ -17,7 +17,7 @@ import {
 import { useRequestPasswordResetMutation } from '../../hooks';
 
 interface ForgotPasswordFormProps {
-    onSuccess?: () => void;
+    readonly onSuccess?: () => void;
 }
 
 export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {

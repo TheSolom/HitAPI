@@ -8,7 +8,7 @@ let globalLogsContext: AsyncLocalStorage<LogRecord[]> | undefined;
 
 interface WinstonLogger {
     prototype: {
-        write?: ((info: Record<string, unknown>) => unknown) | undefined;
+        write?: (info: Record<string, unknown>) => unknown;
     };
 }
 
@@ -23,7 +23,7 @@ export async function patchWinston(
         const loggerModule = (await import(
             // @ts-expect-error - file is not typed
             'winston/lib/winston/logger.js'
-        )) as { default?: WinstonLogger | undefined } | undefined;
+        )) as { default?: WinstonLogger } | undefined;
         const Logger = loggerModule?.default;
 
         if (Logger?.prototype.write) {

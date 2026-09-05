@@ -33,6 +33,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T> {
         );
     }
 
+    // eslint-disable-next-line sonarjs/function-return-type
     private formatResponse(res: T): CustomResponse<T> | T {
         if (this.isAlreadyFormatted(res)) {
             return res;

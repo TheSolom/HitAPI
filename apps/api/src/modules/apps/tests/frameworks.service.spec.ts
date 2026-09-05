@@ -42,12 +42,12 @@ describe('FrameworksService', () => {
         repository = module.get(getRepositoryToken(Framework));
     });
 
-    it('should be defined', () => {
-        expect(service).toBeDefined();
-    });
-
     afterEach(() => {
         jest.clearAllMocks();
+    });
+
+    it('should be defined', () => {
+        expect(service).toBeDefined();
     });
 
     describe('findAll', () => {

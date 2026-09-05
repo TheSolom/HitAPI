@@ -42,7 +42,7 @@ describe('AdminGuard', () => {
     });
 
     it('should throw UnauthorizedException if no user is present', () => {
-        const context = createMockExecutionContext(undefined);
+        const context = createMockExecutionContext();
 
         expect(() => guard.canActivate(context)).toThrow(UnauthorizedException);
     });

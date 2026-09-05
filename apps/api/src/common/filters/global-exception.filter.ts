@@ -98,7 +98,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
                 return;
             }
             this.logger.debug('Client error: ' + logMessage, logMeta);
-            return;
         }
     }
 

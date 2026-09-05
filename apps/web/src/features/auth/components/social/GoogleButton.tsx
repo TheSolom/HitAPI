@@ -11,7 +11,9 @@ export function GoogleButton({
     className,
 }: GoogleButtonProps) {
     const handleGoogleLogin = () => {
-        const base = API_BASE_URL.replace(/\/+$/, '');
+        const base = API_BASE_URL.endsWith('/')
+            ? API_BASE_URL.slice(0, -1)
+            : API_BASE_URL;
         window.location.assign(`${base}/auth/google/login`);
     };
 

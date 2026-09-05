@@ -54,6 +54,7 @@ export class MailerService implements IMailerService, OnModuleInit {
         try {
             this.transporter = nodemailer.createTransport({
                 service: 'gmail',
+                secure: true,
                 auth: {
                     type: 'OAuth2',
                     user: this.configService.getOrThrow<string>('MAILER_USER'),
