@@ -46,13 +46,13 @@ export class ResourcesRepository implements IResourcesRepository {
     }: GetCpuMemoryChartOptionsDto): Promise<ICpuMemoryChartData[]> {
         const qb = this.resourcesRepository
             .createQueryBuilder('r')
-            .select('r.timeWindow', '"timeWindow"')
-            .addSelect('AVG(r.cpuPercent)', '"cpuPercentAvg"')
-            .addSelect('MIN(r.cpuPercent)', '"cpuPercentMin"')
-            .addSelect('MAX(r.cpuPercent)', '"cpuPercentMax"')
-            .addSelect('AVG(r.memoryRss)', '"memoryRssAvg"')
-            .addSelect('MIN(r.memoryRss)', '"memoryRssMin"')
-            .addSelect('MAX(r.memoryRss)', '"memoryRssMax"')
+            .select('r.timeWindow', 'timeWindow')
+            .addSelect('AVG(r.cpuPercent)', 'cpuPercentAvg')
+            .addSelect('MIN(r.cpuPercent)', 'cpuPercentMin')
+            .addSelect('MAX(r.cpuPercent)', 'cpuPercentMax')
+            .addSelect('AVG(r.memoryRss)', 'memoryRssAvg')
+            .addSelect('MIN(r.memoryRss)', 'memoryRssMin')
+            .addSelect('MAX(r.memoryRss)', 'memoryRssMax')
             .where({ app: { id: appId } })
             .groupBy('r.timeWindow')
             .orderBy('r.timeWindow', 'ASC');
@@ -65,12 +65,12 @@ export class ResourcesRepository implements IResourcesRepository {
     async getResourcesMetrics(appId: string): Promise<IResourceMetricsData> {
         const result = await this.resourcesRepository
             .createQueryBuilder('r')
-            .select('AVG(r.cpuPercent)', '"cpuPercentAvg"')
-            .addSelect('MIN(r.cpuPercent)', '"cpuPercentMin"')
-            .addSelect('MAX(r.cpuPercent)', '"cpuPercentMax"')
-            .addSelect('AVG(r.memoryRss)', '"memoryRssAvg"')
-            .addSelect('MIN(r.memoryRss)', '"memoryRssMin"')
-            .addSelect('MAX(r.memoryRss)', '"memoryRssMax"')
+            .select('AVG(r.cpuPercent)', 'cpuPercentAvg')
+            .addSelect('MIN(r.cpuPercent)', 'cpuPercentMin')
+            .addSelect('MAX(r.cpuPercent)', 'cpuPercentMax')
+            .addSelect('AVG(r.memoryRss)', 'memoryRssAvg')
+            .addSelect('MIN(r.memoryRss)', 'memoryRssMin')
+            .addSelect('MAX(r.memoryRss)', 'memoryRssMax')
             .where({ app: { id: appId } })
             .getRawOne<IResourceMetricsData>();
 
