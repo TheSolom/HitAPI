@@ -51,6 +51,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { LoadingRows } from '@/components/states/LoadingState';
+import { ConsumerAvatar } from '../avatar';
 import { EditConsumerDialog } from '../dialogs/EditConsumerDialog';
 import { useConsumersTableQuery } from '../../hooks';
 
@@ -83,48 +84,6 @@ interface ConsumersTableProps {
     readonly period?: Period;
     readonly groups?: ConsumerGroupResponseDto[];
     readonly initialGroupId?: string;
-}
-
-const AVATAR_PALETTES = [
-    {
-        bg: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25',
-    },
-    {
-        bg: 'bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/25',
-    },
-    {
-        bg: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/25',
-    },
-    {
-        bg: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/25',
-    },
-    {
-        bg: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/25',
-    },
-    {
-        bg: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/25',
-    },
-    {
-        bg: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/25',
-    },
-] as const;
-
-function getAvatarPalette(str: string) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const index = Math.abs(hash) % AVATAR_PALETTES.length;
-    return AVATAR_PALETTES[index];
-}
-
-function getInitials(name?: string | null, identifier?: string): string {
-    const raw = name || identifier || '?';
-    const parts = raw.split(/[\s_-]+/).filter(Boolean);
-    if (parts.length >= 2) {
-        return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    }
-    return raw.slice(0, 2).toUpperCase();
 }
 
 function formatRelativeTime(dateString: string): string {
@@ -310,9 +269,9 @@ export function ConsumersTable({
             </div>
 
             {/* Table or States */}
-            {tableQuery.isLoading && consumers.length === 0 ? (
-                <LoadingRows />
-            ) : consumers.length === 0 ? (
+            {tableQuery.isLoading && consumers.length === 0 && <LoadingRows />}
+
+            {!tableQuery.isLoading && consumers.length === 0 && (
                 <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-12 text-center">
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
                         <User className="h-6 w-6 text-muted-foreground" />
@@ -337,7 +296,9 @@ export function ConsumersTable({
                         </Button>
                     )}
                 </div>
-            ) : (
+            )}
+
+            {consumers.length > 0 && (
                 <div className="rounded-xl border bg-card shadow-xs overflow-hidden">
                     <Table>
                         <caption className="sr-only">
@@ -465,13 +426,6 @@ export function ConsumersTable({
                             {consumers.map((consumer) => {
                                 const displayName =
                                     consumer.name || consumer.identifier;
-                                const initials = getInitials(
-                                    consumer.name,
-                                    consumer.identifier,
-                                );
-                                const palette = getAvatarPalette(
-                                    consumer.identifier,
-                                );
                                 const isCopied =
                                     copiedIdentifier === consumer.identifier;
                                 const hasDistinctName =
@@ -485,11 +439,12 @@ export function ConsumersTable({
                                     >
                                         <TableCell className="pl-4">
                                             <div className="flex items-center gap-3">
-                                                <div
-                                                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-xs font-bold shadow-2xs ${palette.bg}`}
-                                                >
-                                                    {initials}
-                                                </div>
+                                                <ConsumerAvatar
+                                                    name={consumer.name}
+                                                    identifier={
+                                                        consumer.identifier
+                                                    }
+                                                />
                                                 <div className="min-w-0">
                                                     <div className="flex items-center gap-1.5">
                                                         <Link

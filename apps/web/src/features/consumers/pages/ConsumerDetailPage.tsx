@@ -36,48 +36,6 @@ interface ConsumerDetailPageProps {
     readonly consumerId: number;
 }
 
-const AVATAR_PALETTES = [
-    {
-        bg: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25',
-    },
-    {
-        bg: 'bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/25',
-    },
-    {
-        bg: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/25',
-    },
-    {
-        bg: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/25',
-    },
-    {
-        bg: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/25',
-    },
-    {
-        bg: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/25',
-    },
-    {
-        bg: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/25',
-    },
-] as const;
-
-function getAvatarPalette(str: string) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        hash = (str.codePointAt(i) ?? 0) + ((hash << 5) - hash);
-    }
-    const index = Math.abs(hash) % AVATAR_PALETTES.length;
-    return AVATAR_PALETTES[index];
-}
-
-function getInitials(name?: string | null, identifier?: string): string {
-    const raw = name || identifier || '?';
-    const parts = raw.split(/[\s_-]+/).filter(Boolean);
-    if (parts.length >= 2) {
-        return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    }
-    return raw.slice(0, 2).toUpperCase();
-}
-
 export function ConsumerDetailPage({ consumerId }: ConsumerDetailPageProps) {
     const activeAppId = useUiStore((s) => s.activeAppId) ?? '';
     const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -117,8 +75,6 @@ export function ConsumerDetailPage({ consumerId }: ConsumerDetailPageProps) {
     }
 
     const displayName = consumer.name || consumer.identifier;
-    const initials = getInitials(consumer.name, consumer.identifier);
-    const palette = getAvatarPalette(consumer.identifier);
     const hasDistinctName =
         Boolean(consumer.name) && consumer.name !== consumer.identifier;
 
@@ -146,11 +102,6 @@ export function ConsumerDetailPage({ consumerId }: ConsumerDetailPageProps) {
             <PageHeader
                 title={
                     <div className="flex items-center gap-3.5">
-                        <div
-                            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border text-sm font-bold shadow-xs ${palette.bg}`}
-                        >
-                            {initials}
-                        </div>
                         <ConsumerAvatar
                             name={consumer.name}
                             identifier={consumer.identifier}
@@ -226,9 +177,9 @@ export function ConsumerDetailPage({ consumerId }: ConsumerDetailPageProps) {
                                 title="Copy identifier"
                             >
                                 {copied ? (
-                                    <Check className="h-3 w-3 text-emerald-500" />
+                                    <Check className="h-3.5 w-3.5 text-emerald-500" />
                                 ) : (
-                                    <Copy className="h-3 w-3" />
+                                    <Copy className="h-3.5 w-3.5" />
                                 )}
                             </Button>
                         </CardDescription>
