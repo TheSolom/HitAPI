@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type { CpuMemoryChartResponseDto as ICpuMemoryChartResponseDto } from '@hitapi/types';
 
-export class CpuMemoryChartResponseDto {
+export class CpuMemoryChartResponseDto implements ICpuMemoryChartResponseDto {
     @ApiProperty({ type: 'string', isArray: true })
     timeWindows: string[];
 

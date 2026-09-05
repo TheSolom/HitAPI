@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type { ResourceMetricsResponseDto as IResourceMetricsResponseDto } from '@hitapi/types';
 
-export class ResourceMetricsResponseDto {
+export class ResourceMetricsResponseDto implements IResourceMetricsResponseDto {
     @ApiProperty({ type: 'number', minimum: 0 })
     cpuPercentAvg: number;
 

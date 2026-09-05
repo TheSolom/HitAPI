@@ -13,6 +13,7 @@ export * from './auth.js';
 export * from './app.js';
 export * from './endpoint.js';
 export * from './team.js';
+export * from './resources.js';
 
 
 
