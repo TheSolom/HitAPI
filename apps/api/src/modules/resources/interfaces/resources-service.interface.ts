@@ -1,6 +1,7 @@
 import type { QueryRunner } from 'typeorm';
 import type { GetCpuMemoryChartOptionsDto } from '../dto/get-cpu-memory-chart-options.dto.js';
 import type { CpuMemoryChartResponseDto } from '../dto/cpu-memory-chart-response.dto.js';
+import type { ResourceMetricsResponseDto } from '../dto/resource-metrics-response.dto.js';
 import type { ResourcesDto } from '../dto/resources.dto.js';
 
 export interface IResourcesService {
@@ -15,9 +16,9 @@ export interface IResourcesService {
     /**
      * Get resources metrics
      * @param appId App id
-     * @returns {Promise<ResourcesDto[]>}
+     * @returns {Promise<ResourceMetricsResponseDto>}
      */
-    getResourcesMetrics(appId: string): Promise<ResourcesDto[]>;
+    getResourcesMetrics(appId: string): Promise<ResourceMetricsResponseDto>;
     /**
      * Upsert resource
      * @param appId App id

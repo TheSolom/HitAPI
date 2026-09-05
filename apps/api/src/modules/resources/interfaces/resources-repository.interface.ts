@@ -1,7 +1,6 @@
 import type { QueryRunner } from 'typeorm';
 import type { GetCpuMemoryChartOptionsDto } from '../dto/get-cpu-memory-chart-options.dto.js';
 import type { ResourcesDto } from '../dto/resources.dto.js';
-import type { Resource } from '../entities/resource.entity.js';
 
 export interface ICpuMemoryChartData {
     timeWindow: Date;
@@ -11,6 +10,15 @@ export interface ICpuMemoryChartData {
     memoryRssAvg: string;
     memoryRssMin: string;
     memoryRssMax: string;
+}
+
+export interface IResourceMetricsData {
+    cpuPercentAvg: string | null;
+    cpuPercentMin: string | null;
+    cpuPercentMax: string | null;
+    memoryRssAvg: string | null;
+    memoryRssMin: string | null;
+    memoryRssMax: string | null;
 }
 
 export interface IResourcesRepository {
@@ -25,9 +33,9 @@ export interface IResourcesRepository {
     /**
      * Get resources metrics
      * @param appId App id
-     * @returns {Promise<Resource[]>}
+     * @returns {Promise<IResourceMetricsData>}
      */
-    getResourcesMetrics(appId: string): Promise<Resource[]>;
+    getResourcesMetrics(appId: string): Promise<IResourceMetricsData>;
     /**
      * Upsert resource
      * @param appId App id

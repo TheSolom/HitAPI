@@ -6,15 +6,16 @@ import {
     type SelectQueryBuilder,
     type QueryRunner,
 } from 'typeorm';
+import type { ParsedPeriod } from '@hitapi/types';
 import type {
     IResourcesRepository,
     ICpuMemoryChartData,
+    IResourceMetricsData,
 } from '../interfaces/resources-repository.interface.js';
 import { Resource } from '../entities/resource.entity.js';
 import type { GetCpuMemoryChartOptionsDto } from '../dto/get-cpu-memory-chart-options.dto.js';
 import type { ResourcesDto } from '../dto/resources.dto.js';
 import { parsePeriod } from '../../../common/utils/period.util.js';
-import type { ParsedPeriod } from '@hitapi/types';
 
 @Injectable()
 export class ResourcesRepository implements IResourcesRepository {
@@ -61,11 +62,28 @@ export class ResourcesRepository implements IResourcesRepository {
         return qb.getRawMany<ICpuMemoryChartData>();
     }
 
-    async getResourcesMetrics(appId: string): Promise<Resource[]> {
-        return this.resourcesRepository.find({
-            where: { app: { id: appId } },
-            order: { timeWindow: 'DESC' },
-        });
+    async getResourcesMetrics(appId: string): Promise<IResourceMetricsData> {
+        const result = await this.resourcesRepository
+            .createQueryBuilder('r')
+            .select('AVG(r.cpuPercent)', '"cpuPercentAvg"')
+            .addSelect('MIN(r.cpuPercent)', '"cpuPercentMin"')
+            .addSelect('MAX(r.cpuPercent)', '"cpuPercentMax"')
+            .addSelect('AVG(r.memoryRss)', '"memoryRssAvg"')
+            .addSelect('MIN(r.memoryRss)', '"memoryRssMin"')
+            .addSelect('MAX(r.memoryRss)', '"memoryRssMax"')
+            .where({ app: { id: appId } })
+            .getRawOne<IResourceMetricsData>();
+
+        return (
+            result ?? {
+                cpuPercentAvg: null,
+                cpuPercentMin: null,
+                cpuPercentMax: null,
+                memoryRssAvg: null,
+                memoryRssMin: null,
+                memoryRssMax: null,
+            }
+        );
     }
 
     async upsertResource(

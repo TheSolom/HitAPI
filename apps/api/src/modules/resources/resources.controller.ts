@@ -21,7 +21,7 @@ import type { IResourcesService } from './interfaces/resources-service.interface
 import { createCustomResponse } from '../../common/utils/create-custom-response.util.js';
 import { GetCpuMemoryChartOptionsDto } from './dto/get-cpu-memory-chart-options.dto.js';
 import { CpuMemoryChartResponseDto } from './dto/cpu-memory-chart-response.dto.js';
-import { ResourcesDto } from './dto/resources.dto.js';
+import { ResourceMetricsResponseDto } from './dto/resource-metrics-response.dto.js';
 
 @ApiTags('Resources')
 @ApiBearerAuth('JWT')
@@ -48,11 +48,11 @@ export class ResourcesController {
 
     @Get('metrics')
     @ApiOkResponse({
-        type: createCustomResponse(ResourcesDto, true),
+        type: createCustomResponse(ResourceMetricsResponseDto),
     })
     async getResourcesMetrics(
         @Query('appId', ParseUUIDPipe) appId: string,
-    ): Promise<ResourcesDto[]> {
+    ): Promise<ResourceMetricsResponseDto> {
         return this.resourcesService.getResourcesMetrics(appId);
     }
 }

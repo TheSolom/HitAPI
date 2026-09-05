@@ -4,10 +4,12 @@ import type { QueryRunner } from 'typeorm';
 import { ResourcesService } from '../resources.service.js';
 import type { IResourcesService } from '../interfaces/resources-service.interface.js';
 import { Repositories } from '../../../common/constants/repositories.constant.js';
-import type { IResourcesRepository } from '../interfaces/resources-repository.interface.js';
+import type {
+    IResourcesRepository,
+    IResourceMetricsData,
+} from '../interfaces/resources-repository.interface.js';
 import type { GetCpuMemoryChartOptionsDto } from '../dto/get-cpu-memory-chart-options.dto.js';
 import type { ResourcesDto } from '../dto/resources.dto.js';
-import type { Resource } from '../entities/resource.entity.js';
 
 describe('ResourcesService', () => {
     let service: IResourcesService;
@@ -112,18 +114,15 @@ describe('ResourcesService', () => {
     });
 
     describe('getResourcesMetrics', () => {
-        it('should map resource metrics properly', async () => {
-            const date = new Date();
-            const mockData = [
-                {
-                    id: 1n,
-                    cpuPercent: 12.3,
-                    memoryRss: 1024,
-                    timeWindow: date,
-                    app: { id: 'test-app' },
-                    createdAt: date,
-                },
-            ] as Resource[];
+        it('should map resource metrics properly when data is returned', async () => {
+            const mockData: IResourceMetricsData = {
+                cpuPercentAvg: '12.345',
+                cpuPercentMin: '5.2',
+                cpuPercentMax: '15.8',
+                memoryRssAvg: '1024.6',
+                memoryRssMin: '512',
+                memoryRssMax: '2048',
+            };
 
             const getResourcesMetricsSpy = jest
                 .spyOn(mockResourcesRepository, 'getResourcesMetrics')
@@ -132,13 +131,41 @@ describe('ResourcesService', () => {
             const result = await service.getResourcesMetrics('test-app');
 
             expect(getResourcesMetricsSpy).toHaveBeenCalledWith('test-app');
-            expect(result).toEqual([
-                {
-                    cpuPercent: 12.3,
-                    memoryRss: 1024,
-                    timeWindow: date,
-                },
-            ]);
+            expect(result).toEqual({
+                cpuPercentAvg: 12.35,
+                cpuPercentMin: 5.2,
+                cpuPercentMax: 15.8,
+                memoryRssAvg: 1025,
+                memoryRssMin: 512,
+                memoryRssMax: 2048,
+            });
+        });
+
+        it('should return 0 for all metrics when data contains nulls', async () => {
+            const mockData: IResourceMetricsData = {
+                cpuPercentAvg: null,
+                cpuPercentMin: null,
+                cpuPercentMax: null,
+                memoryRssAvg: null,
+                memoryRssMin: null,
+                memoryRssMax: null,
+            };
+
+            const getResourcesMetricsSpy = jest
+                .spyOn(mockResourcesRepository, 'getResourcesMetrics')
+                .mockResolvedValue(mockData);
+
+            const result = await service.getResourcesMetrics('test-app');
+
+            expect(getResourcesMetricsSpy).toHaveBeenCalledWith('test-app');
+            expect(result).toEqual({
+                cpuPercentAvg: 0,
+                cpuPercentMin: 0,
+                cpuPercentMax: 0,
+                memoryRssAvg: 0,
+                memoryRssMin: 0,
+                memoryRssMax: 0,
+            });
         });
     });
 

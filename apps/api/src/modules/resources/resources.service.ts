@@ -1,10 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { QueryRunner } from 'typeorm';
+import { stringToInt, stringToFloat } from '@hitapi/shared/utils';
 import type { IResourcesService } from './interfaces/resources-service.interface.js';
 import { Repositories } from '../../common/constants/repositories.constant.js';
 import type { IResourcesRepository } from './interfaces/resources-repository.interface.js';
 import type { GetCpuMemoryChartOptionsDto } from './dto/get-cpu-memory-chart-options.dto.js';
 import type { CpuMemoryChartResponseDto } from './dto/cpu-memory-chart-response.dto.js';
+import type { ResourceMetricsResponseDto } from './dto/resource-metrics-response.dto.js';
 import type { ResourcesDto } from './dto/resources.dto.js';
 
 @Injectable()
@@ -50,15 +52,22 @@ export class ResourcesService implements IResourcesService {
         };
     }
 
-    async getResourcesMetrics(appId: string): Promise<ResourcesDto[]> {
-        const resources =
-            await this.resourcesRepository.getResourcesMetrics(appId);
+    async getResourcesMetrics(
+        appId: string,
+    ): Promise<ResourceMetricsResponseDto> {
+        const data = await this.resourcesRepository.getResourcesMetrics(appId);
 
-        return resources.map((resource) => ({
-            cpuPercent: resource.cpuPercent,
-            memoryRss: resource.memoryRss,
-            timeWindow: resource.timeWindow,
-        }));
+        return {
+            cpuPercentAvg:
+                Math.round(stringToFloat(data.cpuPercentAvg) * 100) / 100,
+            cpuPercentMin:
+                Math.round(stringToFloat(data.cpuPercentMin) * 100) / 100,
+            cpuPercentMax:
+                Math.round(stringToFloat(data.cpuPercentMax) * 100) / 100,
+            memoryRssAvg: Math.round(stringToFloat(data.memoryRssAvg)),
+            memoryRssMin: stringToInt(data.memoryRssMin),
+            memoryRssMax: stringToInt(data.memoryRssMax),
+        };
     }
 
     async upsertResource(
