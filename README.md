@@ -196,7 +196,7 @@ You can start both the API backend and Web Dashboard concurrently in separate te
 # Terminal 1: Start NestJS Backend API (watch mode on port 3001)
 npm run start:dev:api
 
-# Terminal 2: Start React Web Dashboard (Vite on port 5173)
+# Terminal 2: Start React Web Dashboard (Vite on port 4000)
 npm run start:dev:web
 ```
 
@@ -204,7 +204,7 @@ npm run start:dev:web
 
 | Service                   | URL                                                              | Description                       |
 | ------------------------- | ---------------------------------------------------------------- | --------------------------------- |
-| **Web Dashboard**         | [http://localhost:5173](http://localhost:5173)                   | HitAPI frontend console           |
+| **Web Dashboard**         | [http://localhost:4000](http://localhost:4000)                   | HitAPI frontend console           |
 | **REST API Base**         | [http://localhost:3001/api/v1](http://localhost:3001/api/v1)     | Backend API endpoint              |
 | **Swagger Documentation** | [http://localhost:3001/api/docs](http://localhost:3001/api/docs) | Interactive OpenAPI documentation |
 | **BullMQ Dashboard**      | [http://localhost:3001/queues](http://localhost:3001/queues)     | Bull Board queue monitoring UI    |
