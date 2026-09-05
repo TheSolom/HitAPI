@@ -8,6 +8,7 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import sonarjs from 'eslint-plugin-sonarjs';
 import tseslint from 'typescript-eslint';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -35,6 +36,10 @@ const sharedTsRules: Linter.RulesRecord = {
     ],
 
     '@typescript-eslint/require-await': 'warn',
+
+    // SonarJS shared rule adjustments
+    'sonarjs/redundant-type-aliases': 'off',
+    'sonarjs/cognitive-complexity': ['error', 35],
 };
 
 
@@ -65,6 +70,8 @@ export default defineConfig([
     },
 
     eslint.configs.recommended,
+
+    sonarjs.configs.recommended,
 
     ...tseslint.configs.strictTypeChecked,
 
@@ -153,6 +160,10 @@ export default defineConfig([
             'react-refresh/only-export-components': 'off',
             'react-hooks/purity': 'off',
             'react-hooks/set-state-in-effect': 'off',
+            'sonarjs/deprecation': 'off',
+            'sonarjs/prefer-read-only-props': 'off',
+            'sonarjs/no-redundant-optional': 'off',
+            'sonarjs/pseudo-random': 'off',
         },
     },
 
@@ -178,6 +189,24 @@ export default defineConfig([
             '@typescript-eslint/no-unsafe-return': 'off',
             '@typescript-eslint/no-extraneous-class': 'off',
             '@typescript-eslint/require-await': 'off',
+            'sonarjs/no-hardcoded-passwords': 'off',
+            'sonarjs/no-hardcoded-ip': 'off',
+            'sonarjs/function-return-type': 'off',
+        },
+    },
+
+    //
+    // SDK Overrides (non-security internal hashing and parsing utils)
+    //
+    {
+        files: ['packages/sdk/js/**/*.{ts,mts,cts}'],
+        rules: {
+            'sonarjs/hashing': 'off',
+            'sonarjs/pseudo-random': 'off',
+            'sonarjs/regex-complexity': 'off',
+            'sonarjs/super-linear-regex': 'off',
+            'sonarjs/public-static-readonly': 'off',
+            'sonarjs/function-return-type': 'off',
         },
     },
 
