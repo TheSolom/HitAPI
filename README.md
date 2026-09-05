@@ -321,10 +321,10 @@ All commands can be executed from the root workspace using standard `npm run` sc
 
 ### 🔄 In Active Development _(Phase 4: Telemetry & Analytics)_
 
+- [x] **Host Resource Metrics**: CPU and memory utilization reported by connected SDKs.
 - [ ] **Traffic & Throughput Dashboards**: Request volume graphs, requests-per-second (RPS) metrics, and status code distributions.
 - [ ] **Performance & Latency Insights**: Visual response time distributions, percentiles (p50, p95), and slowest endpoint rankings.
 - [ ] **Error Tracking**: Categorized 4xx client and 5xx server error counts with captured error messages and stack traces.
-- [ ] **Host Resource Metrics**: CPU and memory utilization reported by connected SDKs.
 
 ### 🌐 Phase 5: SDK & Framework Expansion
 
