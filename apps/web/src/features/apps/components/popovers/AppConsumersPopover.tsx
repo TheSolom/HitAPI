@@ -155,7 +155,7 @@ export function AppConsumersPopover({
                                             className="text-[10px] px-1.5 py-0.5 h-5 gap-1 bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20 font-medium"
                                         >
                                             <Layers className="h-2.5 w-2.5" />
-                                            <span className="truncate max-w-[80px]">
+                                            <span className="truncate max-w-20">
                                                 {consumer.group.name}
                                             </span>
                                         </Badge>
