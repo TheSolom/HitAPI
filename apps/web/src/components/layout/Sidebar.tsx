@@ -121,17 +121,20 @@ export function Sidebar() {
             >
                 <div
                     className={cn(
-                        'relative flex overflow-hidden border-b border-sidebar-border transition-[height,padding] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
-                        collapsed
-                            ? 'h-24 flex-col items-center justify-center gap-2 px-2 py-3'
-                            : 'h-14 flex-row items-center justify-between px-3',
+                        'relative overflow-hidden border-b border-sidebar-border transition-[height] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
+                        collapsed ? 'h-24' : 'h-14',
                     )}
                 >
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Link
                                 to="/"
-                                className="group/logo flex items-center overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                className={cn(
+                                    'group/logo absolute top-3 flex items-center overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring transition-[left] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
+                                    collapsed
+                                        ? 'left-[calc(50%-16px)]'
+                                        : 'left-3',
+                                )}
                                 aria-label="HitAPI home"
                             >
                                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-xs transition-transform duration-200 group-hover/logo:scale-105">
@@ -168,7 +171,12 @@ export function Sidebar() {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent"
+                                className={cn(
+                                    'absolute h-8 w-8 shrink-0 text-sidebar-foreground hover:bg-sidebar-accent transition-[top,left,background-color] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none',
+                                    collapsed
+                                        ? 'top-13 left-[calc(50%-16px)]'
+                                        : 'top-3 left-[calc(100%-44px)]',
+                                )}
                                 onClick={toggleSidebar}
                                 aria-label={toggleLabel}
                             >
