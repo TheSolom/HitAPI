@@ -42,16 +42,18 @@ VITE_API_BASE_URL=http://localhost:3001/api/v1
 
 ## 🧭 Routes Overview
 
-| Path                                   | Access    | Description                                     |
-| -------------------------------------- | --------- | ----------------------------------------------- |
-| `/login`, `/register`                  | Public    | Authentication and user onboarding              |
-| `/forgot-password`, `/reset-password`  | Public    | Password recovery and reset                     |
-| `/apps`, `/apps/$appId`                | Protected | Application registry, credentials, and API keys |
-| `/logs`                                | Protected | Live request logs explorer with filter drawer   |
-| `/endpoints`                           | Protected | Discovered API endpoints and HTTP methods       |
-| `/consumers`, `/consumers/$consumerId` | Protected | API consumer profiles, groups, and usage        |
-| `/teams`, `/teams/$teamId`             | Protected | Workspaces, team members, and role management   |
-| `/profile`                             | Protected | Account settings and security                   |
+| Path                                   | Access    | Description                                                     |
+| -------------------------------------- | --------- | --------------------------------------------------------------- |
+| `/login`, `/register`                  | Public    | Authentication and user onboarding                              |
+| `/forgot-password`, `/reset-password`  | Public    | Password recovery and reset                                     |
+| `/apps`, `/apps/$appId`                | Protected | Application registry, credentials, and API keys                 |
+| `/logs`                                | Protected | Live request logs explorer with filter drawer                   |
+| `/endpoints`                           | Protected | Discovered API endpoints and HTTP methods                       |
+| `/consumers`, `/consumers/$consumerId` | Protected | API consumer profiles, groups, and usage                        |
+| `/errors`                              | Protected | HTTP error analytics, validation failures, and exception traces |
+| `/resources`                           | Protected | Host server and runtime resource utilization (CPU and memory)   |
+| `/teams`, `/teams/$teamId`             | Protected | Workspaces, team members, and role management                   |
+| `/profile`                             | Protected | Account settings and security                                   |
 
 ---
 
