@@ -18,7 +18,7 @@ cp .env.example .env
 npm run start:dev
 ```
 
-The application will be accessible at **[http://localhost:5173](http://localhost:5173)**.
+The application will be accessible at **[http://localhost:4000](http://localhost:4000)**.
 
 ---
 
