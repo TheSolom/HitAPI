@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import type { ErrorMetricsResponseDto as IErrorMetricsResponseDto } from '@hitapi/types';
 
-export class ErrorMetricsResponseDto {
+export class ErrorMetricsResponseDto implements IErrorMetricsResponseDto {
     @ApiProperty({ type: 'integer', minimum: 0 })
     @Expose()
     totalRequestCount: number;

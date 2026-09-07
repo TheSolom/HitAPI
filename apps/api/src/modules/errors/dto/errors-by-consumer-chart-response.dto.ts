@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import type { ErrorsByConsumerChartResponseDto as IErrorsByConsumerChartResponseDto } from '@hitapi/types';
 
-export class ErrorsByConsumerChartResponseDto {
+export class ErrorsByConsumerChartResponseDto implements IErrorsByConsumerChartResponseDto {
     @ApiProperty({ type: 'integer', isArray: true })
     @Expose()
     consumerIds: number[];

@@ -1,8 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ErrorType } from '../enums/error-type.enum.js';
 import { Expose } from 'class-transformer';
+import {
+    type ErrorsChartResponseDto as IErrorsChartResponseDto,
+    ErrorType,
+} from '@hitapi/types';
 
-export class ErrorsChartResponseDto {
+export class ErrorsChartResponseDto implements IErrorsChartResponseDto {
     @ApiProperty({ enum: ErrorType })
     @Expose()
     errorType: ErrorType;

@@ -7,8 +7,9 @@ import {
     IsString,
     IsArray,
 } from 'class-validator';
+import type { AddValidationErrorPayload as IAddValidationErrorPayload } from '@hitapi/types';
 
-export class AddValidationErrorDto {
+export class AddValidationErrorDto implements IAddValidationErrorPayload {
     @ApiProperty({ type: 'string' })
     @IsString()
     msg: string;

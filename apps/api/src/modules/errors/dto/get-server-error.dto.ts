@@ -1,8 +1,9 @@
 import { IsInt, IsOptional, IsString, IsUUID, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import type { GetServerErrorOptions as IGetServerErrorOptions } from '@hitapi/types';
 
-export class GetServerErrorDto {
+export class GetServerErrorDto implements IGetServerErrorOptions {
     @ApiPropertyOptional({ format: 'bigint' })
     @Transform(({ value }) =>
         BigInt(value as string | number | bigint | boolean),

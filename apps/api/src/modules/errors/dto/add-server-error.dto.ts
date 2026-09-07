@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsUUID, IsInt, Min, IsOptional, IsString } from 'class-validator';
+import type { AddServerErrorPayload as IAddServerErrorPayload } from '@hitapi/types';
 
-export class AddServerErrorDto {
+export class AddServerErrorDto implements IAddServerErrorPayload {
     @ApiProperty({ type: 'string' })
     @IsString()
     msg: string;

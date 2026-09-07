@@ -12,10 +12,13 @@ import {
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RestfulMethod } from '@hitapi/shared/enums';
+import type {
+    Period,
+    GetValidationAndServerErrorOptions as IGetValidationAndServerErrorOptions,
+} from '@hitapi/types';
 import { IsPeriod } from '../../../common/validators/is-period.validator.js';
-import type { Period } from '@hitapi/types';
 
-export class GetValidationAndServerErrorOptionsDto {
+export class GetValidationAndServerErrorOptionsDto implements IGetValidationAndServerErrorOptions {
     @ApiProperty({ format: 'uuid' })
     @IsUUID()
     @IsNotEmpty()

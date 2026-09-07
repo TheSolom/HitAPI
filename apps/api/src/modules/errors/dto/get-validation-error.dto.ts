@@ -8,8 +8,9 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import type { GetValidationErrorOptions as IGetValidationErrorOptions } from '@hitapi/types';
 
-export class GetValidationErrorDto {
+export class GetValidationErrorDto implements IGetValidationErrorOptions {
     @ApiPropertyOptional({ format: 'bigint' })
     @Transform(({ value }) =>
         BigInt(value as string | number | bigint | boolean),
