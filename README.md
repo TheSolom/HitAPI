@@ -348,13 +348,13 @@ All commands can be executed from the root workspace using standard `npm run` sc
 
 Contributions are what make the open-source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
+Please review our [**Contributing Guidelines**](CONTRIBUTING.md) for details on our code of conduct, branch & commit conventions, development setup, and code quality checks before submitting.
+
 1. **Fork the Project**
 2. **Create your Feature Branch** (`git checkout -b feat/amazing-feature`)
 3. **Commit your Changes** (`git commit -m 'feat(web): add endpoint traffic visualization'`)
 4. **Push to the Branch** (`git push origin feat/amazing-feature`)
 5. **Open a Pull Request**
-
-Please ensure all tests pass (`npm test`), code is formatted (`npm run format:check`), and there are no lint errors (`npm run lint`) before submitting.
 
 ---
 
