@@ -31,15 +31,12 @@
 
 ## ✨ Key Features
 
-- ⚡ **Real-Time API Observability**: Track throughput, response time percentiles (p50, p95, p99), error rates, and request volume in real time.
-- 🖥️ **Modern Web Dashboard (`apps/web`)**: Intuitive single-page application built with React 19, TanStack Router, TanStack Query, and Tailwind CSS for inspecting API traffic, endpoints, teams, and request logs.
-- 🔎 **Deep Request Logging & Tracing**: Ingest and explore granular request/response logs, including headers, query parameters, payloads, execution timing, and GeoIP client attribution.
-- 👥 **API Consumer Intelligence**: Track API consumption by client, tenant, or API key. Group consumers into tiers and monitor usage patterns and quotas.
-- 🛡️ **Privacy & Data Masking**: Built-in regex masking for sensitive headers (e.g., `Authorization`, cookies), query parameters (tokens, keys), and JSON body fields before ingestion.
-- 📬 **Asynchronous Queue-Backed Ingestion**: High-throughput background ingestion powered by **BullMQ** and **Redis**, ensuring zero latency impact on monitored applications.
-- 🏢 **Multi-Tenant Teams & Applications**: Organize APIs into distinct applications under collaborative teams with role-based member management.
-- 🔒 **Comprehensive Security & Auth**: JWT tokens, Google OAuth 2.0, Argon2 password hashing, rate limiting, and Helmet security headers.
-- 📦 **Plug-and-Play Node.js SDK (`packages/sdk/js`)**: Lightweight, non-blocking middleware for Express (NestJS support in progress) with batch processing.
+- ⚡ **Real-Time API Observability**: Track throughput, error rates (4xx/5xx), and response time percentiles (p50, p95, p99) live across all endpoints.
+- 🔎 **Deep Request Tracing & Analytics**: Inspect granular request/response logs, headers, query parameters, timing breakdowns, and GeoIP client attribution.
+- 👥 **API Consumer Intelligence**: Identify and monitor API consumers by tenant or API key. Group clients into tiers to track usage quotas and traffic patterns.
+- 🛡️ **Zero-Exposure Data Privacy**: Built-in client-side regex masking automatically redacts authorization tokens, cookies, and sensitive JSON payload fields before transmission.
+- 🚀 **Zero-Overhead Ingestion**: Asynchronous, background batching via Redis and BullMQ ensures telemetry collection never blocks or degrades your API response times.
+- 🏢 **Multi-Tenant Team Workspaces**: Organize APIs into dedicated projects with role-based team access control (Owner, Admin, Member).
 
 ---
 
