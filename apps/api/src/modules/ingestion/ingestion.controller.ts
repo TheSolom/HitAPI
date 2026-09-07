@@ -26,10 +26,14 @@ import { Routes } from '../../common/constants/routes.constant.js';
 import { ClientAuthGuard } from '../auth/guards/client-auth.guard.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type { IIngestionService } from './interfaces/ingestion-service.interface.js';
-import type { IRateLimitService } from '../rate-limit/interfaces/rate-limit-service.interface.js';
 import { RequestLogItemDto } from './dto/request-log-item.dto.js';
 import { UserApp } from './decorators/user-app.decorator.js';
-import { RateLimitType } from '../rate-limit/enums/rate-limit.enum.js';
+import { RateLimitGuard } from '../rate-limit/guards/rate-limit.guard.js';
+import { RateLimit } from '../rate-limit/decorators/rate-limit.decorator.js';
+import {
+    RateLimitTracker,
+    RateLimitType,
+} from '../rate-limit/enums/rate-limit.enum.js';
 import { StartupPayloadDto } from './dto/startup-payload.dto.js';
 import { SyncPayloadDto } from './dto/sync-payload.dto.js';
 
@@ -37,14 +41,13 @@ import { SyncPayloadDto } from './dto/sync-payload.dto.js';
 @ApiUnauthorizedResponse({ description: 'Unauthorized' })
 @ApiTooManyRequestsResponse({ description: 'Too Many Requests' })
 @ApiHeader({ name: 'X-Client-ID' })
-@UseGuards(ClientAuthGuard)
+@UseGuards(ClientAuthGuard, RateLimitGuard)
+@RateLimit({ type: RateLimitType.API_CALL, tracker: RateLimitTracker.APP })
 @Controller(Routes.INGESTION)
 export class IngestionController {
     constructor(
         @Inject(Services.INGESTION)
         private readonly ingestionService: IIngestionService,
-        @Inject(Services.RATE_LIMIT)
-        private readonly rateLimitService: IRateLimitService,
     ) {}
 
     @Post('logs')
@@ -59,11 +62,6 @@ export class IngestionController {
         @Body() requestLogItems: RequestLogItemDto[],
         @UserApp() app: UserAppType,
     ) {
-        await this.rateLimitService.checkRateLimit(
-            app.id,
-            RateLimitType.API_CALL,
-        );
-
         await this.ingestionService.ingestRequestLogs(
             app,
             fileUuid,
@@ -85,11 +83,6 @@ export class IngestionController {
         @Body() startupPayload: StartupPayloadDto,
         @UserApp() app: UserAppType,
     ) {
-        await this.rateLimitService.checkRateLimit(
-            app.id,
-            RateLimitType.API_CALL,
-        );
-
         await this.ingestionService.ingestStartupData(app, startupPayload);
     }
 
@@ -102,11 +95,6 @@ export class IngestionController {
         @Body() syncPayload: SyncPayloadDto,
         @UserApp() app: UserAppType,
     ) {
-        await this.rateLimitService.checkRateLimit(
-            app.id,
-            RateLimitType.API_CALL,
-        );
-
         await this.ingestionService.ingestSyncData(app, syncPayload);
 
         return {

@@ -4,3 +4,10 @@ export enum RateLimitType {
     LOGIN_ATTEMPT = 'LOGIN_ATTEMPT',
     API_CALL = 'API_CALL',
 }
+
+export enum RateLimitTracker {
+    IP = 'IP',
+    APP = 'APP',
+    USER = 'USER',
+    CUSTOM = 'CUSTOM',
+}
