@@ -7,6 +7,7 @@ import {
     ApiTooManyRequestsResponse,
     ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { plainToInstance } from 'class-transformer';
 import { Routes } from '../../common/constants/routes.constant.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { Services } from '../../common/constants/services.constant.js';
@@ -47,7 +48,10 @@ export class ErrorsController {
     async getErrorsMetrics(
         @Query() getErrorOptionsDto: GetErrorOptionsDto,
     ): Promise<ErrorMetricsResponseDto> {
-        return this.errorsService.getErrorMetrics(getErrorOptionsDto);
+        const metrics =
+            await this.errorsService.getErrorMetrics(getErrorOptionsDto);
+
+        return plainToInstance(ErrorMetricsResponseDto, metrics);
     }
 
     @Get('chart')
@@ -55,7 +59,10 @@ export class ErrorsController {
     async getErrorsChart(
         @Query() getErrorOptionsDto: GetErrorOptionsDto,
     ): Promise<ErrorsChartResponseDto[]> {
-        return this.errorsService.getErrorsChart(getErrorOptionsDto);
+        const charts =
+            await this.errorsService.getErrorsChart(getErrorOptionsDto);
+
+        return plainToInstance(ErrorsChartResponseDto, charts);
     }
 
     @Get('by-consumer-chart')
@@ -65,29 +72,49 @@ export class ErrorsController {
     async getErrorsByConsumerChart(
         @Query() getErrorOptionsDto: GetErrorOptionsDto,
     ): Promise<ErrorsByConsumerChartResponseDto> {
-        return this.errorsService.getErrorsByConsumerChart(getErrorOptionsDto);
+        const chart =
+            await this.errorsService.getErrorsByConsumerChart(
+                getErrorOptionsDto,
+            );
+
+        return plainToInstance(ErrorsByConsumerChartResponseDto, chart);
     }
 
     @Get('error-rates-chart')
     @ApiOkResponse({
         type: createCustomResponse(ErrorRatesChartResponseDto, true),
     })
-    async getErrorRatesChart(@Query() getErrorOptionsDto: GetErrorOptionsDto) {
-        return this.errorsService.getErrorRatesChart(getErrorOptionsDto);
+    async getErrorRatesChart(
+        @Query() getErrorOptionsDto: GetErrorOptionsDto,
+    ): Promise<ErrorRatesChartResponseDto[]> {
+        const rates =
+            await this.errorsService.getErrorRatesChart(getErrorOptionsDto);
+
+        return plainToInstance(ErrorRatesChartResponseDto, rates);
     }
 
     @Get('table')
     @ApiOkResponse({
         type: createCustomResponse(ErrorsTableResponseDto, true),
     })
-    async getErrorsTable(@Query() getErrorOptionsDto: GetErrorOptionsDto) {
-        return this.errorsService.getErrorsTable(getErrorOptionsDto);
+    async getErrorsTable(
+        @Query() getErrorOptionsDto: GetErrorOptionsDto,
+    ): Promise<ErrorsTableResponseDto[]> {
+        const table =
+            await this.errorsService.getErrorsTable(getErrorOptionsDto);
+
+        return plainToInstance(ErrorsTableResponseDto, table);
     }
 
     @Get('details')
     @ApiOkResponse({ type: createCustomResponse(ErrorDetailsResponseDto) })
-    async getErrorDetails(@Query() getErrorOptionsDto: GetErrorOptionsDto) {
-        return this.errorsService.getErrorDetails(getErrorOptionsDto);
+    async getErrorDetails(
+        @Query() getErrorOptionsDto: GetErrorOptionsDto,
+    ): Promise<ErrorDetailsResponseDto> {
+        const details =
+            await this.errorsService.getErrorDetails(getErrorOptionsDto);
+
+        return plainToInstance(ErrorDetailsResponseDto, details);
     }
 
     @Get('validation-errors-table')
@@ -96,10 +123,13 @@ export class ErrorsController {
     })
     async getValidationErrorsTable(
         @Query() getErrorOptionsDto: GetValidationAndServerErrorOptionsDto,
-    ) {
-        return this.validationErrorsService.getValidationErrorsTable(
-            getErrorOptionsDto,
-        );
+    ): Promise<ValidationErrorsTableResponseDto[]> {
+        const table =
+            await this.validationErrorsService.getValidationErrorsTable(
+                getErrorOptionsDto,
+            );
+
+        return plainToInstance(ValidationErrorsTableResponseDto, table);
     }
 
     @Get('server-errors-table')
@@ -108,9 +138,12 @@ export class ErrorsController {
     })
     async getServerErrorsTable(
         @Query() getErrorOptionsDto: GetValidationAndServerErrorOptionsDto,
-    ) {
-        return this.serverErrorsService.getServerErrorsTable(
-            getErrorOptionsDto,
-        );
+    ): Promise<ServerErrorsTableResponseDto[]> {
+        const table =
+            await this.serverErrorsService.getServerErrorsTable(
+                getErrorOptionsDto,
+            );
+
+        return plainToInstance(ServerErrorsTableResponseDto, table);
     }
 }
