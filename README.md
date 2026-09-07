@@ -42,33 +42,35 @@
 
 ## 🏗️ Architecture & Monorepo
 
-HitAPI is structured as an npm workspaces monorepo separating the user interface, backend ingestion engine, shared libraries, and client SDKs.
+HitAPI is structured as an npm workspaces monorepo separating the dashboard, backend API, shared packages, and client SDKs.
 
 ### Monorepo Structure
 
 ```text
 HitAPI/
 ├── apps/
-│   ├── api/                   # NestJS 11 Backend API & Ingestion Engine
-│   │   ├── src/bootstrap/     # Application initialization & middleware
-│   │   ├── src/config/        # Database, Redis, Queues, & Auth config
-│   │   └── src/modules/       # Domain modules (auth, apps, teams, logs, etc.)
-│   └── web/                   # React 19 + Vite Dashboard Application
-│       ├── src/components/    # Reusable UI components (Radix primitives)
-│       ├── src/features/      # Domain-driven features (apps, consumers, logs)
-│       ├── src/routes/        # TanStack Router type-safe route tree
-│       └── src/stores/        # Zustand client-side state stores
+│   ├── api/                   # NestJS backend API & ingestion engine
+│   │   ├── src/bootstrap/     # App bootstrap & middleware
+│   │   ├── src/common/        # Shared DTOs, helpers, & interceptors
+│   │   ├── src/config/        # Database, Cache, & Queue config
+│   │   └── src/modules/       # Domain modules
+│   └── web/                   # React dashboard application
+│       ├── src/components/    # Reusable UI components
+│       ├── src/features/      # Dashboard feature views
+│       ├── src/routes/        # File-based route tree
+│       └── src/stores/        # Client state stores
 ├── packages/
 │   ├── sdk/
-│   │   └── js/                # Official Node.js SDK (@hitapi/js)
-│   ├── shared/                # Shared utilities, schemas, and helpers
-│   └── types/                 # Shared TypeScript interfaces & DTO contracts
-├── .husky/                    # Git hooks (pre-commit linting & formatting)
-├── .github/                   # CI/CD workflows and actions
-├── docker-compose.dev.yml     # Local development services (PostgreSQL 18, Redis Stack)
-├── docker-compose.yml         # Production container definition
+│   │   └── js/                # Node.js SDK (@hitapi/js)
+│   ├── shared/                # Shared utilities & schemas (@hitapi/shared)
+│   └── types/                 # Shared TypeScript types (@hitapi/types)
+├── .github/                   # CI/CD workflows
+├── .husky/                    # Git hooks
+├── docker-compose.dev.yml     # Local dev services (Postgres, Redis)
+├── docker-compose.yml         # Production Docker compose
+├── CONTRIBUTING.md            # Contribution guide
 ├── LICENSE                    # MIT License
-└── package.json               # Monorepo root workspace configuration
+└── package.json               # Monorepo root config
 ```
 
 ### Technology Stack
