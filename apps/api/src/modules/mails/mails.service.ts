@@ -1,84 +1,51 @@
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
-import { Injectable, Inject } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Services } from '../../common/constants/services.constant.js';
-import type { IMailerService } from '../mailer/interfaces/mailer-service.interface.js';
+import { Injectable } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+import { ClsService } from 'nestjs-cls';
+import { QUEUES, JOBS } from '../../common/constants/queue.constant.js';
 import type { IMailsService } from './interfaces/mails-service.interface.js';
-import type { EnvironmentVariablesDto } from '../../config/env/dto/environment-variables.dto.js';
 import type { MailData } from './types/mails.type.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import type {
+    EmailConfirmationJobData,
+    PasswordResetJobData,
+    TeamInviteJobData,
+} from './types/mail-job-data.type.js';
 
 @Injectable()
 export class MailsService implements IMailsService {
     constructor(
-        @Inject(Services.MAILER) private readonly mailerService: IMailerService,
-        private readonly configService: ConfigService<
-            EnvironmentVariablesDto,
-            true
-        >,
+        @InjectQueue(QUEUES.MAILS)
+        private readonly mailsQueue: Queue,
+        private readonly cls: ClsService,
     ) {}
 
     async emailConfirmation(
         mailData: MailData<{ token: string; displayName: string }>,
     ): Promise<void> {
-        const frontendUrl =
-            this.configService.getOrThrow<string>('FRONTEND_URL');
-        const verificationLink = `${frontendUrl}/verify-email?token=${mailData.data.token}`;
-
-        await this.mailerService.sendMail({
+        await this.mailsQueue.add(JOBS.EMAIL_CONFIRMATION, {
             to: mailData.to,
-            subject: 'Email Confirmation',
-            text: verificationLink,
-            templatePath: path.join(
-                __dirname,
-                'templates',
-                'confirm-email.hbs',
-            ),
-            context: {
-                displayName: mailData.data.displayName,
-                confirmationLink: verificationLink,
-                AppName: this.configService.getOrThrow<string>('APP_NAME'),
-            },
-        });
+            token: mailData.data.token,
+            displayName: mailData.data.displayName,
+            traceId: this.cls.get('traceId'),
+        } satisfies EmailConfirmationJobData);
     }
 
     async passwordReset(
         mailData: MailData<{ token: string; displayName: string }>,
     ): Promise<void> {
-        const frontendUrl =
-            this.configService.getOrThrow<string>('FRONTEND_URL');
-        const resetLink = `${frontendUrl}/reset-password?token=${mailData.data.token}`;
-
-        await this.mailerService.sendMail({
+        await this.mailsQueue.add(JOBS.PASSWORD_RESET, {
             to: mailData.to,
-            subject: 'Password Reset',
-            text: resetLink,
-            templatePath: path.join(
-                __dirname,
-                'templates',
-                'reset-password.hbs',
-            ),
-            context: {
-                displayName: mailData.data.displayName,
-                resetLink,
-                AppName: this.configService.getOrThrow<string>('APP_NAME'),
-            },
-        });
+            token: mailData.data.token,
+            displayName: mailData.data.displayName,
+            traceId: this.cls.get('traceId'),
+        } satisfies PasswordResetJobData);
     }
 
     async teamInvite(mailData: MailData<{ token: string }>): Promise<void> {
-        await this.mailerService.sendMail({
+        await this.mailsQueue.add(JOBS.TEAM_INVITE, {
             to: mailData.to,
-            subject: 'Team Invite',
-            text: `${this.configService.getOrThrow<string>('FRONTEND_URL')}/team-invite/${mailData.data.token}`,
-            templatePath: path.join(__dirname, 'templates', 'team-invite.hbs'),
-            context: {
-                inviteLink: `${this.configService.getOrThrow<string>('FRONTEND_URL')}/team-invite/${mailData.data.token}`,
-                AppName: this.configService.getOrThrow<string>('APP_NAME'),
-            },
-        });
+            token: mailData.data.token,
+            traceId: this.cls.get('traceId'),
+        } satisfies TeamInviteJobData);
     }
 }

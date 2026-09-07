@@ -1,29 +1,28 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigService } from '@nestjs/config';
-import path from 'node:path';
+import { getQueueToken } from '@nestjs/bullmq';
+import { ClsService } from 'nestjs-cls';
 import { MailsService } from '../mails.service.js';
-import { Services } from '../../../common/constants/services.constant.js';
+import { QUEUES, JOBS } from '../../../common/constants/queue.constant.js';
 
 describe('MailsService', () => {
     let service: MailsService;
-    let mailerServiceMock: {
-        sendMail: jest.Mock<any>;
+    let mailsQueueMock: {
+        add: jest.Mock<any>;
     };
-    let configServiceMock: {
-        getOrThrow: jest.Mock<any>;
+    let clsMock: {
+        get: jest.Mock<any>;
     };
 
     beforeEach(async () => {
-        mailerServiceMock = {
-            sendMail: jest.fn(async () => {}),
+        mailsQueueMock = {
+            add: jest.fn(async () => {}),
         };
 
-        configServiceMock = {
-            getOrThrow: jest.fn((key: string) => {
-                if (key === 'FRONTEND_URL') return 'https://app.hitapi.com';
-                if (key === 'APP_NAME') return 'HitAPI';
-                return '';
+        clsMock = {
+            get: jest.fn((key: string) => {
+                if (key === 'traceId') return 'trace-123';
+                return undefined;
             }),
         };
 
@@ -31,12 +30,12 @@ describe('MailsService', () => {
             providers: [
                 MailsService,
                 {
-                    provide: Services.MAILER,
-                    useValue: mailerServiceMock,
+                    provide: getQueueToken(QUEUES.MAILS),
+                    useValue: mailsQueueMock,
                 },
                 {
-                    provide: ConfigService,
-                    useValue: configServiceMock,
+                    provide: ClsService,
+                    useValue: clsMock,
                 },
             ],
         }).compile();
@@ -49,7 +48,7 @@ describe('MailsService', () => {
     });
 
     describe('emailConfirmation', () => {
-        it('should send verification email with correct parameters and template', async () => {
+        it('should queue email confirmation job with correct parameters and traceId', async () => {
             await service.emailConfirmation({
                 to: 'user@example.com',
                 data: {
@@ -58,34 +57,20 @@ describe('MailsService', () => {
                 },
             });
 
-            expect(configServiceMock.getOrThrow).toHaveBeenCalledWith(
-                'FRONTEND_URL',
-            );
-            expect(configServiceMock.getOrThrow).toHaveBeenCalledWith(
-                'APP_NAME',
-            );
-
-            expect(mailerServiceMock.sendMail).toHaveBeenCalledWith(
-                expect.objectContaining({
+            expect(mailsQueueMock.add).toHaveBeenCalledWith(
+                JOBS.EMAIL_CONFIRMATION,
+                {
                     to: 'user@example.com',
-                    subject: 'Email Confirmation',
-                    text: 'https://app.hitapi.com/verify-email?token=verify-token-123',
-                    templatePath: expect.stringContaining(
-                        path.join('templates', 'confirm-email.hbs'),
-                    ),
-                    context: {
-                        displayName: 'John Doe',
-                        confirmationLink:
-                            'https://app.hitapi.com/verify-email?token=verify-token-123',
-                        AppName: 'HitAPI',
-                    },
-                }),
+                    token: 'verify-token-123',
+                    displayName: 'John Doe',
+                    traceId: 'trace-123',
+                },
             );
         });
     });
 
     describe('passwordReset', () => {
-        it('should send password reset email with correct parameters and template', async () => {
+        it('should queue password reset job with correct parameters and traceId', async () => {
             await service.passwordReset({
                 to: 'user@example.com',
                 data: {
@@ -94,27 +79,20 @@ describe('MailsService', () => {
                 },
             });
 
-            expect(mailerServiceMock.sendMail).toHaveBeenCalledWith(
-                expect.objectContaining({
+            expect(mailsQueueMock.add).toHaveBeenCalledWith(
+                JOBS.PASSWORD_RESET,
+                {
                     to: 'user@example.com',
-                    subject: 'Password Reset',
-                    text: 'https://app.hitapi.com/reset-password?token=reset-token-456',
-                    templatePath: expect.stringContaining(
-                        path.join('templates', 'reset-password.hbs'),
-                    ),
-                    context: {
-                        displayName: 'Jane Doe',
-                        resetLink:
-                            'https://app.hitapi.com/reset-password?token=reset-token-456',
-                        AppName: 'HitAPI',
-                    },
-                }),
+                    token: 'reset-token-456',
+                    displayName: 'Jane Doe',
+                    traceId: 'trace-123',
+                },
             );
         });
     });
 
     describe('teamInvite', () => {
-        it('should send team invite email with correct parameters and template', async () => {
+        it('should queue team invite job with correct parameters and traceId', async () => {
             await service.teamInvite({
                 to: 'invitee@example.com',
                 data: {
@@ -122,21 +100,11 @@ describe('MailsService', () => {
                 },
             });
 
-            expect(mailerServiceMock.sendMail).toHaveBeenCalledWith(
-                expect.objectContaining({
-                    to: 'invitee@example.com',
-                    subject: 'Team Invite',
-                    text: 'https://app.hitapi.com/team-invite/invite-token-789',
-                    templatePath: expect.stringContaining(
-                        path.join('templates', 'team-invite.hbs'),
-                    ),
-                    context: {
-                        inviteLink:
-                            'https://app.hitapi.com/team-invite/invite-token-789',
-                        AppName: 'HitAPI',
-                    },
-                }),
-            );
+            expect(mailsQueueMock.add).toHaveBeenCalledWith(JOBS.TEAM_INVITE, {
+                to: 'invitee@example.com',
+                token: 'invite-token-789',
+                traceId: 'trace-123',
+            });
         });
     });
 });
