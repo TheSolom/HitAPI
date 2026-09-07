@@ -322,9 +322,9 @@ All commands can be executed from the root workspace using standard `npm run` sc
 ### 🔄 In Active Development _(Phase 4: Telemetry & Analytics)_
 
 - [x] **Host Resource Metrics**: CPU and memory utilization reported by connected SDKs.
+- [x] **Error Tracking**: Categorized 4xx client and 5xx server error counts with captured error messages and stack traces.
 - [ ] **Traffic & Throughput Dashboards**: Request volume graphs, requests-per-second (RPS) metrics, and status code distributions.
 - [ ] **Performance & Latency Insights**: Visual response time distributions, percentiles (p50, p95), and slowest endpoint rankings.
-- [ ] **Error Tracking**: Categorized 4xx client and 5xx server error counts with captured error messages and stack traces.
 
 ### 🌐 Phase 5: SDK & Framework Expansion
 
@@ -367,4 +367,3 @@ Distributed under the MIT License. See [`LICENSE`](LICENSE) for more information
 ## 🙏 Acknowledgments
 
 - Inspired by the clean simplicity of [Apitally.io](https://apitally.io).
-- Built with [NestJS](https://nestjs.com/), [React](https://react.dev/), [Vite](https://vitejs.dev/), and [Tailwind CSS](https://tailwindcss.com/).
