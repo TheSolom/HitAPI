@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import fs from 'node:fs/promises';
 import nodemailer from 'nodemailer';
-import { OAuth2Client } from 'google-auth-library';
 import { MailerService } from '../mailer.service.js';
 import { AppLoggerService } from '../../logger/logger.service.js';
 
@@ -51,13 +50,6 @@ describe('MailerService', () => {
         };
 
         sendMailMock = jest.fn(async () => ({}));
-        jest.spyOn(OAuth2Client.prototype, 'getAccessToken').mockResolvedValue({
-            token: 'mock-access-token',
-            res: null,
-        } as never);
-        jest.spyOn(OAuth2Client.prototype, 'setCredentials').mockImplementation(
-            () => {},
-        );
 
         jest.spyOn(nodemailer, 'createTransport').mockReturnValue({
             sendMail: sendMailMock,
@@ -90,32 +82,30 @@ describe('MailerService', () => {
 
     describe('onModuleInit', () => {
         it('should initialize the nodemailer transporter', async () => {
-            await service.onModuleInit();
+            service.onModuleInit();
             expect(nodemailer.createTransport).toHaveBeenCalledWith(
                 expect.objectContaining({
                     service: 'gmail',
+                    secure: true,
                     auth: expect.objectContaining({
                         type: 'OAuth2',
                         user: 'test@example.com',
                         clientId: 'mock-google-client-id',
                         clientSecret: 'mock-google-client-secret',
                         refreshToken: 'mock-refresh-token',
-                        accessToken: 'mock-access-token',
                     }),
                 }),
             );
         });
 
         it('should log error when transporter initialization fails', async () => {
-            jest.spyOn(
-                OAuth2Client.prototype,
-                'getAccessToken',
-            ).mockResolvedValueOnce({
-                token: null,
-                res: null,
-            } as never);
+            jest.spyOn(nodemailer, 'createTransport').mockImplementationOnce(
+                () => {
+                    throw new Error('Transporter init error');
+                },
+            );
 
-            await service.onModuleInit();
+            service.onModuleInit();
             expect(loggerMock.error).toHaveBeenCalledWith(
                 'Failed to initialize mailer transporter',
                 expect.any(Object),
@@ -134,7 +124,7 @@ describe('MailerService', () => {
         });
 
         it('should send email without template correctly', async () => {
-            await service.onModuleInit();
+            service.onModuleInit();
 
             await service.sendMail({
                 to: 'recipient@example.com',
@@ -153,7 +143,7 @@ describe('MailerService', () => {
         });
 
         it('should render template and cache it when templatePath is provided', async () => {
-            await service.onModuleInit();
+            service.onModuleInit();
 
             jest.spyOn(fs, 'readFile').mockResolvedValue(
                 '<h1>Hello {{name}}! Welcome to {{AppName}}</h1>',
@@ -190,6 +180,30 @@ describe('MailerService', () => {
                 expect.objectContaining({
                     to: 'recipient2@example.com',
                     html: '<h1>Hello Bob! Welcome to HitAPI</h1>',
+                }),
+            );
+        });
+
+        it('should log and rethrow error when transporter.sendMail fails', async () => {
+            service.onModuleInit();
+
+            sendMailMock.mockRejectedValueOnce(
+                new Error('SMTP connection failed'),
+            );
+
+            await expect(
+                service.sendMail({
+                    to: 'recipient@example.com',
+                    subject: 'Test Subject',
+                    html: '<p>Hello World</p>',
+                }),
+            ).rejects.toThrow('SMTP connection failed');
+
+            expect(loggerMock.error).toHaveBeenCalledWith(
+                'Failed to send email',
+                expect.objectContaining({
+                    to: 'recipient@example.com',
+                    subject: 'Test Subject',
                 }),
             );
         });

@@ -2,7 +2,6 @@ import fs from 'node:fs/promises';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import nodemailer, { Transporter, SendMailOptions } from 'nodemailer';
-import { OAuth2Client } from 'google-auth-library';
 import Handlebars from 'handlebars';
 import type { IMailerService } from './interfaces/mailer-service.interface.js';
 import { AppLoggerService } from '../logger/logger.service.js';
@@ -11,7 +10,6 @@ import type { EnvironmentVariablesDto } from '../../config/env/dto/environment-v
 @Injectable()
 export class MailerService implements IMailerService, OnModuleInit {
     private transporter?: Transporter;
-    private readonly googleOAuth2: OAuth2Client;
     private readonly templateCache = new Map<
         string,
         Handlebars.TemplateDelegate
@@ -25,32 +23,13 @@ export class MailerService implements IMailerService, OnModuleInit {
         >,
     ) {
         this.logger.setContext(MailerService.name);
-
-        this.googleOAuth2 = new OAuth2Client(
-            this.configService.getOrThrow<string>('GOOGLE_CLIENT_ID'),
-            this.configService.getOrThrow<string>('GOOGLE_CLIENT_SECRET'),
-            this.configService.getOrThrow<string>('GOOGLE_REDIRECT_URI'),
-        );
-
-        this.googleOAuth2.setCredentials({
-            refresh_token: this.configService.getOrThrow<string>(
-                'MAILER_REFRESH_TOKEN',
-            ),
-        });
     }
 
-    async onModuleInit(): Promise<void> {
-        await this.initTransporter();
+    onModuleInit(): void {
+        this.initTransporter();
     }
 
-    private async getAccessToken(): Promise<string> {
-        const { token } = await this.googleOAuth2.getAccessToken();
-        if (!token) throw new Error('Failed to retrieve Google access token.');
-
-        return token;
-    }
-
-    private async initTransporter(): Promise<void> {
+    private initTransporter(): void {
         try {
             this.transporter = nodemailer.createTransport({
                 service: 'gmail',
@@ -68,7 +47,6 @@ export class MailerService implements IMailerService, OnModuleInit {
                     refreshToken: this.configService.getOrThrow<string>(
                         'MAILER_REFRESH_TOKEN',
                     ),
-                    accessToken: await this.getAccessToken(),
                 },
             });
         } catch (error) {
@@ -114,12 +92,24 @@ export class MailerService implements IMailerService, OnModuleInit {
             );
         }
 
-        await this.transporter.sendMail({
-            ...options,
-            from:
-                options.from ??
-                `${this.configService.get<string>('MAILER_DEFAULT_NAME', '')} <${this.configService.getOrThrow<string>('MAILER_DEFAULT_EMAIL')}>`,
-            html,
-        });
+        try {
+            await this.transporter.sendMail({
+                ...options,
+                from:
+                    options.from ??
+                    `${this.configService.get<string>('MAILER_DEFAULT_NAME', '')} <${this.configService.getOrThrow<string>('MAILER_DEFAULT_EMAIL')}>`,
+                html,
+            });
+        } catch (error) {
+            this.logger.error('Failed to send email', {
+                to: options.to,
+                subject: options.subject,
+                error:
+                    error instanceof Error
+                        ? error.stack
+                        : JSON.stringify(error),
+            });
+            throw error;
+        }
     }
 }
