@@ -1,20 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, type QueryRunner } from 'typeorm';
+import type { NullableType } from '@hitapi/types';
 import { Repositories } from '../../common/constants/repositories.constant.js';
 import { ServerError } from './entities/server-error.entity.js';
-import type { IErrorsRepository } from './interfaces/errors-repository.interface.js';
+import type { IServerErrorsRepository } from './interfaces/server-errors-repository.interface.js';
+import type { IServerErrorsService } from './interfaces/server-errors-service.interface.js';
 import type { GetValidationAndServerErrorOptionsDto } from './dto/get-validation-and-server-error-options.dto.js';
 import type { ServerErrorsTableResponseDto } from './dto/server-errors-table-response.dto.js';
 import type { GetServerErrorDto } from './dto/get-server-error.dto.js';
 import type { AddServerErrorDto } from './dto/add-server-error.dto.js';
-import type { NullableType } from '@hitapi/types';
 
 @Injectable()
-export class ServerErrorsService {
+export class ServerErrorsService implements IServerErrorsService {
     constructor(
-        @Inject(Repositories.ERRORS)
-        private readonly errorsRepository: IErrorsRepository,
+        @Inject(Repositories.SERVER_ERRORS)
+        private readonly serverErrorsCustomRepository: IServerErrorsRepository,
         @InjectRepository(ServerError)
         private readonly serverErrorsRepository: Repository<ServerError>,
     ) {}
@@ -22,7 +23,9 @@ export class ServerErrorsService {
     async getServerErrorsTable(
         getErrorOptionsDto: GetValidationAndServerErrorOptionsDto,
     ): Promise<ServerErrorsTableResponseDto[]> {
-        return this.errorsRepository.getServerErrorsTable(getErrorOptionsDto);
+        return this.serverErrorsCustomRepository.getServerErrorsTable(
+            getErrorOptionsDto,
+        );
     }
 
     async getServerError(

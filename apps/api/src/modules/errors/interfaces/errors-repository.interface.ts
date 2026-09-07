@@ -1,8 +1,6 @@
 import type { RestfulMethod } from '@hitapi/shared/enums';
 import type { MaybeType } from '@hitapi/types';
 import type { GetErrorOptionsDto } from '../dto/get-error-options.dto.js';
-import type { ServerErrorsTableResponseDto } from '../dto/server-errors-table-response.dto.js';
-import type { ValidationErrorsTableResponseDto } from '../dto/validation-errors-table-response.dto.js';
 
 export interface IErrorMetric {
     totalRequestCount: string;
@@ -100,20 +98,4 @@ export interface IErrorsRepository {
     getErrorDetails(
         criteria: GetErrorOptionsDto,
     ): Promise<MaybeType<IErrorDetails>>;
-    /**
-     * Get validation errors table
-     * @param criteria
-     * @returns {Promise<MaybeType<IValidationError[]>>}
-     */
-    getValidationErrorsTable(
-        criteria: GetErrorOptionsDto,
-    ): Promise<ValidationErrorsTableResponseDto[]>;
-    /**
-     * Get server errors table
-     * @param criteria
-     * @returns {Promise<MaybeType<IServerError[]>>}
-     */
-    getServerErrorsTable(
-        criteria: GetErrorOptionsDto,
-    ): Promise<ServerErrorsTableResponseDto[]>;
 }

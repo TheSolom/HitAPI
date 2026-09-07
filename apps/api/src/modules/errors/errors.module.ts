@@ -9,6 +9,8 @@ import { RequestLogsModule } from '../request-logs/request-logs.module.js';
 import { ErrorsController } from './errors.controller.js';
 import { Repositories } from '../../common/constants/repositories.constant.js';
 import { ErrorsRepository } from './repositories/errors.repository.js';
+import { ValidationErrorsRepository } from './repositories/validation-errors.repository.js';
+import { ServerErrorsRepository } from './repositories/server-errors.repository.js';
 import { Services } from '../../common/constants/services.constant.js';
 import { ErrorsService } from './errors.service.js';
 import { ValidationErrorsService } from './validation-errors.service.js';
@@ -28,6 +30,14 @@ import { ServerErrorsService } from './server-errors.service.js';
             useClass: ErrorsRepository,
         },
         {
+            provide: Repositories.VALIDATION_ERRORS,
+            useClass: ValidationErrorsRepository,
+        },
+        {
+            provide: Repositories.SERVER_ERRORS,
+            useClass: ServerErrorsRepository,
+        },
+        {
             provide: Services.ERRORS,
             useClass: ErrorsService,
         },
@@ -42,6 +52,8 @@ import { ServerErrorsService } from './server-errors.service.js';
     ],
     exports: [
         Repositories.ERRORS,
+        Repositories.VALIDATION_ERRORS,
+        Repositories.SERVER_ERRORS,
         Services.VALIDATION_ERRORS,
         Services.SERVER_ERRORS,
     ],

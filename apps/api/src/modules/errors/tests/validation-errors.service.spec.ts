@@ -10,7 +10,7 @@ import type { AddValidationErrorDto } from '../dto/add-validation-error.dto.js';
 
 describe('ValidationErrorsService', () => {
     let service: ValidationErrorsService;
-    let errorsRepositoryMock: {
+    let validationErrorsCustomRepositoryMock: {
         getValidationErrorsTable: jest.Mock<any>;
     };
     let validationErrorsRepositoryMock: {
@@ -21,7 +21,7 @@ describe('ValidationErrorsService', () => {
     };
 
     beforeEach(async () => {
-        errorsRepositoryMock = {
+        validationErrorsCustomRepositoryMock = {
             getValidationErrorsTable: jest.fn(),
         };
 
@@ -36,8 +36,8 @@ describe('ValidationErrorsService', () => {
             providers: [
                 ValidationErrorsService,
                 {
-                    provide: Repositories.ERRORS,
-                    useValue: errorsRepositoryMock,
+                    provide: Repositories.VALIDATION_ERRORS,
+                    useValue: validationErrorsCustomRepositoryMock,
                 },
                 {
                     provide: getRepositoryToken(ValidationError),
@@ -54,19 +54,19 @@ describe('ValidationErrorsService', () => {
     });
 
     describe('getValidationErrorsTable', () => {
-        it('should delegate to errors repository', async () => {
+        it('should delegate to validation errors repository', async () => {
             const dto: GetValidationAndServerErrorOptionsDto = {
                 appId: 'app-uuid-1',
             } as GetValidationAndServerErrorOptionsDto;
 
-            errorsRepositoryMock.getValidationErrorsTable.mockResolvedValue([
-                { id: '1', field: 'email', message: 'Invalid email' },
-            ]);
+            validationErrorsCustomRepositoryMock.getValidationErrorsTable.mockResolvedValue(
+                [{ id: '1', field: 'email', message: 'Invalid email' }],
+            );
 
             const result = await service.getValidationErrorsTable(dto);
 
             expect(
-                errorsRepositoryMock.getValidationErrorsTable,
+                validationErrorsCustomRepositoryMock.getValidationErrorsTable,
             ).toHaveBeenCalledWith(dto);
             expect(result).toEqual([
                 { id: '1', field: 'email', message: 'Invalid email' },

@@ -10,7 +10,7 @@ import type { AddServerErrorDto } from '../dto/add-server-error.dto.js';
 
 describe('ServerErrorsService', () => {
     let service: ServerErrorsService;
-    let errorsRepositoryMock: {
+    let serverErrorsCustomRepositoryMock: {
         getServerErrorsTable: jest.Mock<any>;
     };
     let serverErrorsRepositoryMock: {
@@ -21,7 +21,7 @@ describe('ServerErrorsService', () => {
     };
 
     beforeEach(async () => {
-        errorsRepositoryMock = {
+        serverErrorsCustomRepositoryMock = {
             getServerErrorsTable: jest.fn(),
         };
 
@@ -36,8 +36,8 @@ describe('ServerErrorsService', () => {
             providers: [
                 ServerErrorsService,
                 {
-                    provide: Repositories.ERRORS,
-                    useValue: errorsRepositoryMock,
+                    provide: Repositories.SERVER_ERRORS,
+                    useValue: serverErrorsCustomRepositoryMock,
                 },
                 {
                     provide: getRepositoryToken(ServerError),
@@ -54,19 +54,19 @@ describe('ServerErrorsService', () => {
     });
 
     describe('getServerErrorsTable', () => {
-        it('should delegate to errors repository', async () => {
+        it('should delegate to server errors repository', async () => {
             const dto: GetValidationAndServerErrorOptionsDto = {
                 appId: 'app-uuid-1',
             } as GetValidationAndServerErrorOptionsDto;
 
-            errorsRepositoryMock.getServerErrorsTable.mockResolvedValue([
-                { id: '1', message: 'Internal Error' },
-            ]);
+            serverErrorsCustomRepositoryMock.getServerErrorsTable.mockResolvedValue(
+                [{ id: '1', message: 'Internal Error' }],
+            );
 
             const result = await service.getServerErrorsTable(dto);
 
             expect(
-                errorsRepositoryMock.getServerErrorsTable,
+                serverErrorsCustomRepositoryMock.getServerErrorsTable,
             ).toHaveBeenCalledWith(dto);
             expect(result).toEqual([{ id: '1', message: 'Internal Error' }]);
         });

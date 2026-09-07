@@ -1,9 +1,9 @@
 import { jest } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ErrorType } from '@hitapi/types';
 import { ErrorsService } from '../errors.service.js';
 import { Repositories } from '../../../common/constants/repositories.constant.js';
 import { Services } from '../../../common/constants/services.constant.js';
-import { ErrorType } from '../enums/error-type.enum.js';
 import type { GetErrorOptionsDto } from '../dto/get-error-options.dto.js';
 
 describe('ErrorsService', () => {

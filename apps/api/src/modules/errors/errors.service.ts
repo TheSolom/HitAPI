@@ -1,6 +1,7 @@
 import { STATUS_CODES } from 'node:http';
 import { Inject, Injectable } from '@nestjs/common';
 import { stringToInt } from '@hitapi/shared/utils';
+import { ErrorType } from '@hitapi/types';
 import { Repositories } from '../../common/constants/repositories.constant.js';
 import { Services } from '../../common/constants/services.constant.js';
 import type {
@@ -14,7 +15,6 @@ import type { GetErrorOptionsDto } from './dto/get-error-options.dto.js';
 import type { ErrorMetricsResponseDto } from './dto/error-metrics-response.dto.js';
 import { calculateRate } from '../../common/utils/rates.util.js';
 import type { ErrorsChartResponseDto } from './dto/errors-chart-response.dto.js';
-import { ErrorType } from './enums/error-type.enum.js';
 import type { ErrorsByConsumerChartResponseDto } from './dto/errors-by-consumer-chart-response.dto.js';
 import type { ErrorRatesChartResponseDto } from './dto/error-rates-chart-response.dto.js';
 import type { ErrorsTableResponseDto } from './dto/errors-table-response.dto.js';

@@ -1,20 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, type QueryRunner } from 'typeorm';
+import type { NullableType } from '@hitapi/types';
 import { Repositories } from '../../common/constants/repositories.constant.js';
-import type { IErrorsRepository } from './interfaces/errors-repository.interface.js';
+import type { IValidationErrorsRepository } from './interfaces/validation-errors-repository.interface.js';
+import type { IValidationErrorsService } from './interfaces/validation-errors-service.interface.js';
 import { ValidationError } from './entities/validation-error.entity.js';
 import type { GetValidationAndServerErrorOptionsDto } from './dto/get-validation-and-server-error-options.dto.js';
 import type { ValidationErrorsTableResponseDto } from './dto/validation-errors-table-response.dto.js';
 import type { GetValidationErrorDto } from './dto/get-validation-error.dto.js';
 import type { AddValidationErrorDto } from './dto/add-validation-error.dto.js';
-import type { NullableType } from '@hitapi/types';
 
 @Injectable()
-export class ValidationErrorsService {
+export class ValidationErrorsService implements IValidationErrorsService {
     constructor(
-        @Inject(Repositories.ERRORS)
-        private readonly errorsRepository: IErrorsRepository,
+        @Inject(Repositories.VALIDATION_ERRORS)
+        private readonly validationErrorsCustomRepository: IValidationErrorsRepository,
         @InjectRepository(ValidationError)
         private readonly validationErrorsRepository: Repository<ValidationError>,
     ) {}
@@ -22,7 +23,7 @@ export class ValidationErrorsService {
     async getValidationErrorsTable(
         getErrorOptionsDto: GetValidationAndServerErrorOptionsDto,
     ): Promise<ValidationErrorsTableResponseDto[]> {
-        return this.errorsRepository.getValidationErrorsTable(
+        return this.validationErrorsCustomRepository.getValidationErrorsTable(
             getErrorOptionsDto,
         );
     }

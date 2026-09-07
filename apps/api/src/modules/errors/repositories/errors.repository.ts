@@ -15,8 +15,6 @@ import type {
     IErrorDetails,
 } from '../interfaces/errors-repository.interface.js';
 import { ErrorMetric } from '../entities/error-metric.entity.js';
-import { ValidationError } from '../entities/validation-error.entity.js';
-import { ServerError } from '../entities/server-error.entity.js';
 import { Repositories } from '../../../common/constants/repositories.constant.js';
 import type { RequestLogsRepository } from '../../request-logs/repositories/request-logs.repository.js';
 import { RequestLog } from '../../request-logs/entities/request-log.entity.js';
@@ -26,19 +24,12 @@ import {
 } from '../../../common/utils/period.util.js';
 import type { MaybeType } from '@hitapi/types';
 import type { GetErrorOptionsDto } from '../dto/get-error-options.dto.js';
-import type { GetValidationAndServerErrorOptionsDto } from '../dto/get-validation-and-server-error-options.dto.js';
-import type { ValidationErrorsTableResponseDto } from '../dto/validation-errors-table-response.dto.js';
-import type { ServerErrorsTableResponseDto } from '../dto/server-errors-table-response.dto.js';
 
 @Injectable()
 export class ErrorsRepository implements IErrorsRepository {
     constructor(
         @InjectRepository(ErrorMetric)
         private readonly errorMetricsRepository: Repository<ErrorMetric>,
-        @InjectRepository(ValidationError)
-        private readonly validationErrorsRepository: Repository<ValidationError>,
-        @InjectRepository(ServerError)
-        private readonly serverErrorsRepository: Repository<ServerError>,
         @Inject(Repositories.REQUEST_LOGS)
         private readonly requestLogsRepository: RequestLogsRepository,
     ) {}
@@ -319,55 +310,5 @@ export class ErrorsRepository implements IErrorsRepository {
         );
 
         return qb.getRawOne<IErrorDetails>();
-    }
-
-    async getValidationErrorsTable(
-        criteria: GetValidationAndServerErrorOptionsDto,
-    ): Promise<ValidationErrorsTableResponseDto[]> {
-        const qb = this.validationErrorsRepository
-            .createQueryBuilder('ve')
-            .select([
-                've.msg AS "msg"',
-                've.type AS "type"',
-                've.loc AS "loc"',
-                've.errorCount AS "errorCount"',
-            ])
-            .orderBy('ve.errorCount', 'DESC')
-            .limit(criteria.limit);
-
-        this.applyFilters<ValidationError>(qb, criteria);
-        applyPeriodFilter<ValidationError>(
-            qb,
-            parsePeriod(criteria.period),
-            've',
-            'timestamp',
-        );
-
-        return qb.getMany();
-    }
-
-    async getServerErrorsTable(
-        criteria: GetValidationAndServerErrorOptionsDto,
-    ): Promise<ServerErrorsTableResponseDto[]> {
-        const qb = this.serverErrorsRepository
-            .createQueryBuilder('se')
-            .select([
-                'se.msg AS "msg"',
-                'se.type AS "type"',
-                'se.traceback AS "traceback"',
-                'se.errorCount AS "errorCount"',
-            ])
-            .orderBy('se.errorCount', 'DESC')
-            .limit(criteria.limit);
-
-        this.applyFilters<ServerError>(qb, criteria);
-        applyPeriodFilter<ServerError>(
-            qb,
-            parsePeriod(criteria.period),
-            'se',
-            'timestamp',
-        );
-
-        return qb.getMany();
     }
 }
