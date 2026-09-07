@@ -5,6 +5,7 @@ import { AppDetailPage } from '@/features/apps/pages/AppDetailPage';
 import { ConsumerDetailPage, ConsumersPage } from '@/features/consumers';
 import { EndpointsPage } from '@/features/endpoints';
 import { ResourcesPage } from '@/features/resources';
+import { ErrorsPage } from '@/features/errors';
 
 export function RootComponent() {
     return <Outlet />;
@@ -50,6 +51,11 @@ export function EndpointsRouteComponent() {
 export function ResourcesRouteComponent() {
     const { appId } = useSearch({ from: '/protected/resources' });
     return <ResourcesPage appId={appId} />;
+}
+
+export function ErrorsRouteComponent() {
+    const search = useSearch({ from: '/protected/errors' });
+    return <ErrorsPage {...search} />;
 }
 
 export interface PlaceholderRouteComponentProps {

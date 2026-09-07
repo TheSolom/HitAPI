@@ -5,6 +5,8 @@ import {
     createRouter,
     redirect,
 } from '@tanstack/react-router';
+import type { Period } from '@hitapi/types';
+import type { RestfulMethod } from '@hitapi/shared/enums';
 import { AppShell } from '@/components/layout/AppShell';
 import { useAuthStore } from '@/stores/auth-store';
 import {
@@ -19,11 +21,13 @@ import {
 import { TeamsPage } from '@/features/teams';
 import { AppsPage } from '@/features/apps';
 import { RequestLogsPage } from '@/features/request-logs/pages/RequestLogsPage';
+import type { ErrorsTab } from '@/features/errors';
 import {
     AppDetailRouteComponent,
     ConsumerDetailRouteComponent,
     ConsumersRouteComponent,
     EndpointsRouteComponent,
+    ErrorsRouteComponent,
     IndexComponent,
     PlaceholderRouteComponent,
     ResourcesRouteComponent,
@@ -210,6 +214,64 @@ const resourcesRoute = createRoute({
     component: ResourcesRouteComponent,
 });
 
+function parseSearchNumber(val: unknown): number | undefined {
+    if (typeof val === 'number') {
+        return val;
+    }
+    if (typeof val === 'string') {
+        const parsed = Number.parseInt(val, 10);
+        return Number.isNaN(parsed) ? undefined : parsed;
+    }
+    return undefined;
+}
+
+function parseSearchString(val: unknown): string | undefined {
+    if (typeof val === 'string') {
+        return val;
+    }
+    if (typeof val === 'number') {
+        return String(val);
+    }
+    return undefined;
+}
+
+function parseErrorsTab(val: unknown): ErrorsTab {
+    if (val === 'validation' || val === 'server') {
+        return val;
+    }
+    return 'overview';
+}
+
+const errorsRoute = createRoute({
+    getParentRoute: () => protectedRoute,
+    path: '/errors',
+    validateSearch: (
+        search: Record<string, unknown>,
+    ): {
+        appId?: string;
+        period?: Period;
+        tab?: ErrorsTab;
+        consumerId?: number;
+        consumerGroupId?: number;
+        method?: RestfulMethod;
+        path?: string;
+        statusCode?: string;
+    } => ({
+        appId: typeof search.appId === 'string' ? search.appId : undefined,
+        period: typeof search.period === 'string' ? search.period : undefined,
+        tab: parseErrorsTab(search.tab),
+        consumerId: parseSearchNumber(search.consumerId),
+        consumerGroupId: parseSearchNumber(search.consumerGroupId),
+        method:
+            typeof search.method === 'string'
+                ? (search.method as RestfulMethod)
+                : undefined,
+        path: typeof search.path === 'string' ? search.path : undefined,
+        statusCode: parseSearchString(search.statusCode),
+    }),
+    component: ErrorsRouteComponent,
+});
+
 const logsRoute = createChildRoute('/logs', RequestLogsPage);
 
 function createPlaceholderRoute<P extends string>(
@@ -238,12 +300,6 @@ const scaffoldRoutes = [
         '/traffic',
         'Traffic',
         'Request volume, throughput and endpoint breakdowns.',
-        'Phase 4',
-    ),
-    createPlaceholderRoute(
-        '/errors',
-        'Errors',
-        'Failed requests, error rates and server exceptions.',
         'Phase 4',
     ),
     createPlaceholderRoute(
@@ -315,6 +371,7 @@ const routeTree = rootRoute.addChildren([
         consumerGroupsRoute,
         endpointsRoute,
         resourcesRoute,
+        errorsRoute,
         logsRoute,
         ...scaffoldRoutes,
     ]),
