@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import {
     ArrowRight,
@@ -117,7 +117,7 @@ export function AppConsumersPopover({
                         return (
                             <div
                                 key={consumer.id}
-                                className="group relative flex items-center justify-between gap-3 rounded-xl border bg-card p-3 transition-all duration-200 hover:border-primary/40 hover:bg-muted/30 hover:shadow-xs"
+                                className="group relative flex items-center justify-between gap-3 rounded-md border bg-card p-3 transition-colors duration-150 hover:bg-muted/30"
                             >
                                 <Link
                                     to="/consumers/$consumerId"
@@ -226,7 +226,7 @@ export function AppConsumersPopover({
                                 </DialogTitle>
                                 <DialogDescription className="text-xs text-muted-foreground">
                                     All registered API consumers and client
-                                    cohorts for this app
+                                    Groups for this app
                                 </DialogDescription>
                             </div>
                         </div>
