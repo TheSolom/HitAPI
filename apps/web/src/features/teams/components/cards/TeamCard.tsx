@@ -1,18 +1,6 @@
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import {
-    Users2,
-    Users,
-    Boxes,
-    ArrowRight,
-    MoreHorizontal,
-    Copy,
-    Check,
-    Lock,
-    Sparkles,
-    Calendar,
-    Mail,
-} from 'lucide-react';
+import { MoreHorizontal, Copy, Check, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import type { TeamResponseDto } from '@hitapi/types';
 import { Badge } from '@/components/ui/badge';
@@ -24,27 +12,15 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useUiStore } from '@/stores/ui-store';
 import { DeleteTeamDialog } from '../dialogs/DeleteTeamDialog';
 
 interface TeamCardProps {
     readonly team: TeamResponseDto;
 }
 
-function getInitials(name: string): string {
-    return name
-        .split(' ')
-        .map((part) => part[0])
-        .filter(Boolean)
-        .slice(0, 2)
-        .join('')
-        .toUpperCase();
-}
-
 export function TeamCard({ team }: TeamCardProps) {
     const [copied, setCopied] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const setActiveTeamId = useUiStore((s) => s.setActiveTeamId);
 
     const members = team.teamMembers ?? [];
     const memberCount = members.length;
@@ -60,43 +36,31 @@ export function TeamCard({ team }: TeamCardProps) {
         }, 2000);
     };
 
-    const handleSelectTeamForApps = () => {
-        setActiveTeamId(team.id);
-    };
-
     return (
         <>
-            <div className="group relative flex flex-col justify-between rounded-xl border bg-card p-5 shadow-xs transition-all duration-200 hover:border-primary/40 hover:shadow-md">
-                <div className="space-y-4">
+            <div className="group relative flex flex-col justify-between rounded-md border bg-card p-5 transition-colors duration-150 hover:border-border/80">
+                <div className="space-y-3">
                     {/* Top Header */}
                     <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-3 min-w-0">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border bg-muted/60 text-primary group-hover:border-primary/30 group-hover:bg-primary/5 font-bold text-sm transition-colors">
-                                {getInitials(team.name) || (
-                                    <Users2 className="h-5 w-5" />
-                                )}
-                            </div>
-                            <div className="min-w-0">
-                                <Link
-                                    to="/teams/$teamId"
-                                    params={{ teamId: team.id }}
-                                    className="truncate block font-semibold text-foreground group-hover:text-primary transition-colors"
-                                >
-                                    {team.name}
-                                </Link>
-                                <span className="font-mono text-xs text-muted-foreground truncate block">
-                                    {team.slug}
-                                </span>
-                            </div>
+                        <div className="min-w-0 flex-1">
+                            <Link
+                                to="/teams/$teamId"
+                                params={{ teamId: team.id }}
+                                className="truncate block font-semibold text-base text-foreground hover:underline transition-colors tracking-tight"
+                            >
+                                {team.name}
+                            </Link>
+                            <span className="font-mono text-xs text-muted-foreground truncate block">
+                                {team.slug}
+                            </span>
                         </div>
 
                         <div className="flex items-center gap-1.5 shrink-0">
                             {team.demo ? (
                                 <Badge
                                     variant="outline"
-                                    className="gap-1 text-[11px] font-medium border-amber-500/30 text-amber-600 dark:text-amber-400 bg-amber-500/10"
+                                    className="text-[11px] font-medium"
                                 >
-                                    <Sparkles className="h-3 w-3" />
                                     Demo
                                 </Badge>
                             ) : null}
@@ -104,7 +68,7 @@ export function TeamCard({ team }: TeamCardProps) {
                             {team.stealth ? (
                                 <Badge
                                     variant="outline"
-                                    className="gap-1 text-[11px] font-medium border-purple-500/30 text-purple-600 dark:text-purple-400 bg-purple-500/10"
+                                    className="text-[11px] font-medium gap-1"
                                 >
                                     <Lock className="h-3 w-3" />
                                     Stealth
@@ -116,31 +80,13 @@ export function TeamCard({ team }: TeamCardProps) {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                                        className="h-8 w-8 text-muted-foreground hover:text-foreground shrink-0 rounded-md"
                                         aria-label={`Options for ${team.name}`}
                                     >
                                         <MoreHorizontal className="h-4 w-4" />
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                    <DropdownMenuItem asChild>
-                                        <Link
-                                            to="/teams/$teamId"
-                                            params={{ teamId: team.id }}
-                                        >
-                                            <Users className="mr-2 h-4 w-4 text-muted-foreground" />
-                                            Manage Members
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        asChild
-                                        onClick={handleSelectTeamForApps}
-                                    >
-                                        <Link to="/apps">
-                                            <Boxes className="mr-2 h-4 w-4 text-muted-foreground" />
-                                            View Team Apps
-                                        </Link>
-                                    </DropdownMenuItem>
                                     <DropdownMenuItem
                                         onClick={(e) => {
                                             handleCopyTeamId(e);
@@ -167,58 +113,33 @@ export function TeamCard({ team }: TeamCardProps) {
                         </div>
                     </div>
 
-                    {/* Metadata & Key Info Chips */}
-                    <div className="grid grid-cols-2 gap-2 pt-1">
-                        <div className="flex items-center gap-1.5 rounded-md border bg-muted/30 px-2.5 py-1.5 text-xs">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-muted-foreground">
-                                Status:
+                    {/* Metadata & Members */}
+                    <div className="flex items-center justify-between text-xs text-muted-foreground pt-0.5">
+                        <div className="flex items-center gap-2">
+                            <span>
+                                {memberCount}{' '}
+                                {memberCount === 1 ? 'member' : 'members'}
                             </span>
-                            <span className="font-medium text-foreground">
-                                Active
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-1.5 rounded-md border bg-muted/30 px-2.5 py-1.5 text-xs">
                             {pendingInvitesCount > 0 ? (
                                 <>
-                                    <Mail className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-                                    <span className="text-muted-foreground">
-                                        Invites:
-                                    </span>
-                                    <span className="font-medium text-amber-600 dark:text-amber-400">
-                                        {pendingInvitesCount} pending
-                                    </span>
-                                </>
-                            ) : (
-                                <>
-                                    <Calendar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                                    <span className="text-muted-foreground">
-                                        Invites:
-                                    </span>
-                                    <span className="font-medium text-muted-foreground">
-                                        None
+                                    <span>·</span>
+                                    <span>
+                                        {String(pendingInvitesCount)} pending{' '}
+                                        {pendingInvitesCount === 1
+                                            ? 'invite'
+                                            : 'invites'}
                                     </span>
                                 </>
-                            )}
+                            ) : null}
                         </div>
-                    </div>
 
-                    {/* Members List Box */}
-                    <div className="flex items-center justify-between rounded-lg border bg-muted/20 px-3 py-2 text-xs">
-                        <div className="flex items-center gap-1.5 font-medium text-muted-foreground">
-                            <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                            <span>Members</span>
-                            <span className="font-semibold text-foreground">
-                                ({memberCount})
-                            </span>
-                        </div>
-                        <div className="flex items-center -space-x-1.5 overflow-hidden">
-                            {members.length > 0 ? (
-                                members.slice(0, 4).map((m) => (
+                        {members.length > 0 && (
+                            <div className="flex items-center -space-x-1.5 overflow-hidden">
+                                {members.slice(0, 3).map((m) => (
                                     <div
                                         key={m.id}
                                         title={`${m.displayName} (${m.role})`}
-                                        className="inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-card bg-primary text-[10px] font-bold text-primary-foreground shadow-xs"
+                                        className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-card bg-muted text-[9px] font-medium text-foreground"
                                     >
                                         {m.displayName
                                             ? m.displayName
@@ -226,44 +147,27 @@ export function TeamCard({ team }: TeamCardProps) {
                                                   .toUpperCase()
                                             : 'U'}
                                     </div>
-                                ))
-                            ) : (
-                                <span className="text-xs text-muted-foreground italic">
-                                    0 members
-                                </span>
-                            )}
-                            {members.length > 4 ? (
-                                <div className="inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-card bg-muted text-[10px] font-semibold text-muted-foreground">
-                                    +{members.length - 4}
-                                </div>
-                            ) : null}
-                        </div>
+                                ))}
+                                {members.length > 3 && (
+                                    <span className="text-[10px] text-muted-foreground pl-1.5">
+                                        +{members.length - 3}
+                                    </span>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* Footer Action Bar */}
-                <div className="mt-5 flex items-center justify-between border-t pt-3.5">
+                <div className="mt-4 flex items-center justify-end border-t pt-3">
                     <Button
                         asChild
                         variant="outline"
                         size="sm"
-                        className="h-8 gap-1.5 text-xs font-medium"
-                        onClick={handleSelectTeamForApps}
-                    >
-                        <Link to="/apps">
-                            <Boxes className="h-3.5 w-3.5" />
-                            <span>View Apps</span>
-                        </Link>
-                    </Button>
-
-                    <Button
-                        asChild
-                        size="sm"
-                        className="h-8 gap-1 text-xs font-medium"
+                        className="h-7 px-2.5 text-xs font-medium"
                     >
                         <Link to="/teams/$teamId" params={{ teamId: team.id }}>
-                            <span>Manage Team</span>
-                            <ArrowRight className="h-3.5 w-3.5" />
+                            Manage Team
                         </Link>
                     </Button>
                 </div>
