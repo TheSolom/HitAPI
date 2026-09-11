@@ -6,7 +6,6 @@ import {
     AlertTriangle,
 } from 'lucide-react';
 import type { EndpointResponseDto } from '@hitapi/types';
-import { RestfulMethod } from '@hitapi/shared/enums';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +18,7 @@ import {
 } from '@/components/ui/dialog';
 import { EndpointConfigDialog } from './EndpointConfigDialog';
 import { EndpointErrorConfigDialog } from './EndpointErrorConfigDialog';
+import { getMethodBadgeClass } from './endpoint.utils';
 
 interface EndpointDetailsDialogProps {
     readonly appId: string;
@@ -26,21 +26,6 @@ interface EndpointDetailsDialogProps {
     readonly trigger?: React.ReactNode;
     readonly open?: boolean;
     readonly onOpenChange?: (open: boolean) => void;
-}
-
-function getMethodBadgeVariant(
-    method: RestfulMethod,
-): 'default' | 'secondary' | 'outline' | 'destructive' {
-    switch (method) {
-        case RestfulMethod.GET:
-            return 'secondary';
-        case RestfulMethod.POST:
-            return 'default';
-        case RestfulMethod.DELETE:
-            return 'destructive';
-        default:
-            return 'outline';
-    }
 }
 
 export function EndpointDetailsDialog({
@@ -63,7 +48,12 @@ export function EndpointDetailsDialog({
             <DialogContent className="max-w-md sm:max-w-lg">
                 <DialogHeader>
                     <div className="flex items-center gap-2">
-                        <Badge variant={getMethodBadgeVariant(endpoint.method)}>
+                        <Badge
+                            variant="outline"
+                            className={`font-mono text-[11px] font-semibold tracking-wider ${getMethodBadgeClass(
+                                endpoint.method,
+                            )}`}
+                        >
                             {endpoint.method}
                         </Badge>
                         <DialogTitle className="font-mono text-base break-all">

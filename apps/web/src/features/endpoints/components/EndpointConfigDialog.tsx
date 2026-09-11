@@ -31,6 +31,7 @@ import {
     type UpdateEndpointConfigFormValues,
 } from '../schemas';
 import { useUpdateEndpointConfigMutation } from '../hooks';
+import { getMethodBadgeClass } from './endpoint.utils';
 
 interface EndpointConfigDialogProps {
     readonly appId: string;
@@ -101,7 +102,14 @@ export function EndpointConfigDialog({
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Badge variant="outline">{endpoint.method}</Badge>
+                        <Badge
+                            variant="outline"
+                            className={`font-mono text-[11px] font-semibold tracking-wider ${getMethodBadgeClass(
+                                endpoint.method,
+                            )}`}
+                        >
+                            {endpoint.method}
+                        </Badge>
                         <span className="font-mono text-sm">
                             {endpoint.path}
                         </span>

@@ -7,7 +7,6 @@ import {
     Activity,
 } from 'lucide-react';
 import type { EndpointResponseDto } from '@hitapi/types';
-import { RestfulMethod } from '@hitapi/shared/enums';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -30,25 +29,11 @@ import { useUpdateEndpointConfigMutation } from '../hooks';
 import { EndpointConfigDialog } from './EndpointConfigDialog';
 import { EndpointErrorConfigDialog } from './EndpointErrorConfigDialog';
 import { EndpointDetailsDialog } from './EndpointDetailsDialog';
+import { getMethodBadgeClass } from './endpoint.utils';
 
 interface EndpointsTableProps {
     readonly appId: string;
     readonly endpoints: EndpointResponseDto[];
-}
-
-function getMethodBadgeVariant(
-    method: RestfulMethod,
-): 'default' | 'secondary' | 'outline' | 'destructive' {
-    switch (method) {
-        case RestfulMethod.GET:
-            return 'secondary';
-        case RestfulMethod.POST:
-            return 'default';
-        case RestfulMethod.DELETE:
-            return 'destructive';
-        default:
-            return 'outline';
-    }
 }
 
 export function EndpointsTable({ appId, endpoints }: EndpointsTableProps) {
@@ -88,7 +73,7 @@ export function EndpointsTable({ appId, endpoints }: EndpointsTableProps) {
 
     return (
         <>
-            <div className="rounded-lg border bg-card">
+            <div className="rounded-md border bg-card overflow-hidden">
                 <Table>
                     <caption className="sr-only">
                         Discovered endpoints and configurations
@@ -119,9 +104,10 @@ export function EndpointsTable({ appId, endpoints }: EndpointsTableProps) {
                             >
                                 <TableCell>
                                     <Badge
-                                        variant={getMethodBadgeVariant(
+                                        variant="outline"
+                                        className={`font-mono text-[11px] font-semibold tracking-wider ${getMethodBadgeClass(
                                             endpoint.method,
-                                        )}
+                                        )}`}
                                     >
                                         {endpoint.method}
                                     </Badge>

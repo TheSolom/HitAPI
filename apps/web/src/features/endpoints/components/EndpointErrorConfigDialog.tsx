@@ -30,6 +30,7 @@ import {
     type UpdateEndpointErrorConfigFormValues,
 } from '../schemas';
 import { useUpdateEndpointErrorConfigMutation } from '../hooks';
+import { getMethodBadgeClass } from './endpoint.utils';
 
 interface EndpointErrorConfigDialogProps {
     readonly appId: string;
@@ -96,7 +97,14 @@ export function EndpointErrorConfigDialog({
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Badge variant="outline">{endpoint.method}</Badge>
+                        <Badge
+                            variant="outline"
+                            className={`font-mono text-[11px] font-semibold tracking-wider ${getMethodBadgeClass(
+                                endpoint.method,
+                            )}`}
+                        >
+                            {endpoint.method}
+                        </Badge>
                         <span className="font-mono text-sm">
                             {endpoint.path}
                         </span>
