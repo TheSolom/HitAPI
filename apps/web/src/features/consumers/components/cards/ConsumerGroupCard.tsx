@@ -1,5 +1,5 @@
-﻿import { useState } from 'react';
-import { Edit, Layers, MoreHorizontal, Trash2, Users } from 'lucide-react';
+import { useState } from 'react';
+import { Edit, MoreHorizontal, Trash2, Users } from 'lucide-react';
 import type { ConsumerGroupResponseDto } from '@hitapi/types';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,25 +31,20 @@ export function ConsumerGroupCard({
         <>
             <div className="group relative flex flex-col justify-between rounded-md border bg-card p-4 transition-colors duration-150 hover:border-border/80">
                 <div className="space-y-3">
-                    {/* Header with Logo, Title, and Menu */}
+                    {/* Header with Title and Menu */}
                     <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-2.5 min-w-0 flex-1">
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border bg-muted/50 text-muted-foreground mt-0.5">
-                                <Layers className="h-4 w-4" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                                <h3 className="text-base font-semibold text-foreground truncate block tracking-tight">
-                                    {group.name}
-                                </h3>
-                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
-                                    <Users className="h-3 w-3 shrink-0 text-muted-foreground/80" />
-                                    <span>
-                                        {consumerCount.toLocaleString()}{' '}
-                                        {consumerCount === 1
-                                            ? 'consumer'
-                                            : 'consumers'}
-                                    </span>
-                                </div>
+                        <div className="min-w-0 flex-1">
+                            <h3 className="text-base font-semibold text-foreground truncate block tracking-tight">
+                                {group.name}
+                            </h3>
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                                <Users className="h-3 w-3 shrink-0 text-muted-foreground/80" />
+                                <span>
+                                    {consumerCount.toLocaleString()}{' '}
+                                    {consumerCount === 1
+                                        ? 'consumer'
+                                        : 'consumers'}
+                                </span>
                             </div>
                         </div>
 

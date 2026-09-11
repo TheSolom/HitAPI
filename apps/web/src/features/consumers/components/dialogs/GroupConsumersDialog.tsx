@@ -5,7 +5,6 @@ import {
     Check,
     Copy,
     ExternalLink,
-    Layers,
     Search,
     User,
     X,
@@ -50,16 +49,14 @@ export function GroupConsumersDialog({
     );
 
     const allConsumers = consumersData?.data ?? [];
-    const groupConsumers = allConsumers.filter(
-        (c) => c.group && c.group.id === group.id,
-    );
+    const groupConsumers = allConsumers.filter((c) => c.group?.id === group.id);
 
     const filteredConsumers = groupConsumers.filter((c) => {
         if (!search.trim()) return true;
         const q = search.toLowerCase();
         return (
             c.identifier.toLowerCase().includes(q) ||
-            Boolean(c.name && c.name.toLowerCase().includes(q))
+            Boolean(c.name?.toLowerCase().includes(q))
         );
     });
 
@@ -191,18 +188,13 @@ export function GroupConsumersDialog({
                 {/* Header */}
                 <DialogHeader className="p-5 pb-4 border-b bg-muted/20 shrink-0">
                     <div className="flex items-center justify-between pr-6">
-                        <div className="flex items-center gap-3">
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border bg-muted text-muted-foreground">
-                                <Layers className="h-4 w-4" />
-                            </div>
-                            <div>
-                                <DialogTitle className="text-base font-semibold">
-                                    {group.name} Clients
-                                </DialogTitle>
-                                <DialogDescription className="text-xs text-muted-foreground">
-                                    Consumers assigned to this group
-                                </DialogDescription>
-                            </div>
+                        <div>
+                            <DialogTitle className="text-base font-semibold">
+                                {group.name} Clients
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-muted-foreground mt-0.5">
+                                Consumers assigned to this group
+                            </DialogDescription>
                         </div>
 
                         <Badge
