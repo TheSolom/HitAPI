@@ -122,7 +122,7 @@ export function ConsumerGroupsPage() {
                             </strong>{' '}
                             {groups.length === 1 ? 'group' : 'groups'}
                         </span>
-                        <span>•</span>
+                        <span>·</span>
                         <span>
                             <strong className="font-semibold text-foreground">
                                 {totalConsumersInGroups.toLocaleString()}
@@ -133,9 +133,9 @@ export function ConsumerGroupsPage() {
                 </div>
 
                 {filteredGroups.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-12 text-center">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                            <Layers className="h-6 w-6 text-muted-foreground" />
+                    <div className="flex flex-col items-center justify-center rounded-md border border-dashed py-10 text-center">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-muted">
+                            <Layers className="h-5 w-5 text-muted-foreground" />
                         </div>
                         <h3 className="mt-4 text-sm font-semibold text-foreground">
                             No matching groups
@@ -175,7 +175,7 @@ export function ConsumerGroupsPage() {
         <div className="space-y-6">
             <PageHeader
                 title="Consumer Groups"
-                description="Bundle consumers into cohorts (e.g. plan tiers, enterprise accounts) to analyze aggregated traffic and performance."
+                description="Bundle consumers into groups (e.g. plan tiers, enterprise accounts) to analyze aggregated traffic and performance."
                 actions={
                     activeAppId ? (
                         <div className="flex items-center gap-2">

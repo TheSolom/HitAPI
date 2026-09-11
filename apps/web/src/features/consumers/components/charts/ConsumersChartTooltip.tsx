@@ -1,4 +1,4 @@
-interface CustomTooltipPayload {
+﻿interface CustomTooltipPayload {
     name?: string;
     value?: number;
     color?: string;
@@ -34,7 +34,7 @@ export function ConsumersChartTooltip({
             <div className="space-y-1.5">
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-1.5">
-                        <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-xs" />
+                        <span className="h-2 w-2 rounded-sm bg-primary/70" />
                         <span className="text-muted-foreground font-medium">
                             New Clients:
                         </span>
@@ -50,7 +50,7 @@ export function ConsumersChartTooltip({
                 </div>
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-1.5">
-                        <span className="h-2.5 w-2.5 rounded-full bg-violet-500 shadow-xs" />
+                        <span className="h-2 w-2 rounded-sm bg-muted-foreground/70" />
                         <span className="text-muted-foreground font-medium">
                             Existing:
                         </span>

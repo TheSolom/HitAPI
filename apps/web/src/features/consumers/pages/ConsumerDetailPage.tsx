@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import {
     Activity,
@@ -160,7 +160,7 @@ export function ConsumerDetailPage({ consumerId }: ConsumerDetailPageProps) {
             {/* Top Metric Cards */}
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {/* Identifier Card */}
-                <Card className="border-border/60 shadow-xs bg-linear-to-br from-card to-card/60">
+                <Card className="">
                     <CardHeader className="pb-2">
                         <CardDescription className="flex items-center justify-between text-xs">
                             <span className="flex items-center gap-1.5">
@@ -196,7 +196,7 @@ export function ConsumerDetailPage({ consumerId }: ConsumerDetailPageProps) {
                 </Card>
 
                 {/* Consumer Group Card */}
-                <Card className="border-border/60 shadow-xs bg-linear-to-br from-card to-card/60">
+                <Card className="">
                     <CardHeader className="pb-2">
                         <CardDescription className="flex items-center justify-between text-xs">
                             <span className="flex items-center gap-1.5">
@@ -243,7 +243,7 @@ export function ConsumerDetailPage({ consumerId }: ConsumerDetailPageProps) {
                 </Card>
 
                 {/* Total Requests Card */}
-                <Card className="border-border/60 shadow-xs bg-linear-to-br from-card to-card/60">
+                <Card className="">
                     <CardHeader className="pb-2">
                         <CardDescription className="flex items-center justify-between text-xs">
                             <span className="flex items-center gap-1.5">
@@ -265,7 +265,7 @@ export function ConsumerDetailPage({ consumerId }: ConsumerDetailPageProps) {
                 </Card>
 
                 {/* Error Rate Card */}
-                <Card className="border-border/60 shadow-xs bg-linear-to-br from-card to-card/60">
+                <Card className="">
                     <CardHeader className="pb-2">
                         <CardDescription className="flex items-center justify-between text-xs">
                             <span className="flex items-center gap-1.5">

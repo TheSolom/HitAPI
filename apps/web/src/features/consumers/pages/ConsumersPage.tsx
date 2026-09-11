@@ -131,7 +131,7 @@ export function ConsumersPage({
                 <EmptyState
                     icon={Layers}
                     title="No consumer groups created"
-                    description="Groups allow you to organize clients into cohorts (e.g. VIP, Enterprise, Free Tier) to analyze aggregated traffic."
+                    description="Groups allow you to organize clients into groups to analyze aggregated traffic."
                     action={
                         resolvedAppId ? (
                             <CreateConsumerGroupDialog
@@ -215,7 +215,7 @@ export function ConsumersPage({
         <div className="space-y-6">
             <PageHeader
                 title="Consumers"
-                description="Manage identified API consumers, monitor client activity, and organize cohorts with groups."
+                description="Manage identified API consumers, monitor client activity, and organize groups."
             />
 
             <Tabs
@@ -234,7 +234,7 @@ export function ConsumersPage({
                             <Users className="h-3.5 w-3.5" />
                             <span>Consumers</span>
                             {totalConsumers > 0 && (
-                                <span className="rounded-full bg-primary/10 px-1.5 py-0.2 text-[10px] font-semibold text-primary">
+                                <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground tabular-nums">
                                     {totalConsumers}
                                 </span>
                             )}
@@ -246,7 +246,7 @@ export function ConsumersPage({
                             <Layers className="h-3.5 w-3.5" />
                             <span>Consumer Groups</span>
                             {groups.length > 0 && (
-                                <span className="rounded-full bg-muted-foreground/15 px-1.5 py-0.2 text-[10px] font-semibold text-muted-foreground">
+                                <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground tabular-nums">
                                     {groups.length}
                                 </span>
                             )}
