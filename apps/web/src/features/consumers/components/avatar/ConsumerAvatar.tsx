@@ -10,8 +10,8 @@ export interface ConsumerAvatarProps {
 
 const SIZE_CLASSES = {
     sm: 'h-8 w-8 rounded-md text-xs',
-    md: 'h-9 w-9 rounded-lg text-xs font-bold shadow-2xs',
-    lg: 'h-11 w-11 rounded-xl text-sm font-bold shadow-xs',
+    md: 'h-9 w-9 rounded-md text-xs font-bold shadow-2xs',
+    lg: 'h-11 w-11 rounded-md text-sm font-bold shadow-xs',
 } as const;
 
 export function ConsumerAvatar({

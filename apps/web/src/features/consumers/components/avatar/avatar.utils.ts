@@ -1,24 +1,18 @@
 export const AVATAR_PALETTES = [
     {
-        bg: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25',
+        bg: 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20',
     },
     {
-        bg: 'bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/25',
+        bg: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/20',
     },
     {
-        bg: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/25',
+        bg: 'bg-stone-500/10 text-stone-700 dark:text-stone-300 border-stone-500/20',
     },
     {
-        bg: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/25',
+        bg: 'bg-zinc-500/10 text-zinc-700 dark:text-zinc-300 border-zinc-500/20',
     },
     {
-        bg: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/25',
-    },
-    {
-        bg: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/25',
-    },
-    {
-        bg: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/25',
+        bg: 'bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-500/20',
     },
 ] as const;
 

@@ -120,7 +120,7 @@ export function GroupConsumersDialog({
                         return (
                             <div
                                 key={consumer.id}
-                                className="group relative flex items-center justify-between gap-3 rounded-xl border bg-card p-3 transition-all duration-200 hover:border-primary/40 hover:bg-muted/30 hover:shadow-xs"
+                                className="group relative flex items-center justify-between gap-3 rounded-md border bg-card p-3 transition-colors duration-150 hover:bg-muted/30"
                             >
                                 <Link
                                     to="/consumers/$consumerId"
@@ -135,7 +135,6 @@ export function GroupConsumersDialog({
                                     <ConsumerAvatar
                                         name={consumer.name}
                                         identifier={consumer.identifier}
-                                        className="transition-transform group-hover:scale-105"
                                     />
 
                                     <div className="min-w-0 flex-1">
@@ -188,13 +187,13 @@ export function GroupConsumersDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-2xl max-h-[88vh] flex flex-col p-0 gap-0 overflow-hidden rounded-2xl shadow-2xl border-border/80 bg-card">
+            <DialogContent className="sm:max-w-2xl max-h-[88vh] flex flex-col p-0 gap-0 overflow-hidden rounded-md border-border bg-card">
                 {/* Header */}
                 <DialogHeader className="p-5 pb-4 border-b bg-muted/20 shrink-0">
                     <div className="flex items-center justify-between pr-6">
                         <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-500/20">
-                                <Layers className="h-5 w-5" />
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border bg-muted text-muted-foreground">
+                                <Layers className="h-4 w-4" />
                             </div>
                             <div>
                                 <DialogTitle className="text-base font-semibold">
