@@ -31,7 +31,7 @@ export function ProfileDetailsForm({
         <div className="space-y-4">
             {/* User Profile Mini Banner */}
             <div className="flex items-center gap-3.5 rounded-lg border bg-muted/20 p-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-base shadow-xs">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-base">
                     {initials}
                 </div>
                 <div className="min-w-0 flex-1">
