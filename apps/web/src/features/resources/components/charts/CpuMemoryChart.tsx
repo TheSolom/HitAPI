@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import type { Period } from '@hitapi/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { LoadingCards } from '@/components/states/LoadingState';
@@ -31,7 +31,7 @@ export function CpuMemoryChart({ appId, period }: CpuMemoryChartProps) {
     }
 
     return (
-        <Card className="overflow-hidden border-border/60 shadow-xs bg-linear-to-b from-card to-card/50">
+        <Card className="overflow-hidden">
             <CpuMemoryChartHeader
                 hasData={chartData.length > 0}
                 dataPointCount={chartData.length}

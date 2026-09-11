@@ -1,4 +1,4 @@
-import {
+﻿import {
     Area,
     AreaChart,
     CartesianGrid,
@@ -38,12 +38,12 @@ export function CpuMemoryChartView({
                         >
                             <stop
                                 offset="5%"
-                                stopColor="#0ea5e9"
-                                stopOpacity={0.3}
+                                stopColor="#3b82f6"
+                                stopOpacity={0.12}
                             />
                             <stop
                                 offset="95%"
-                                stopColor="#0ea5e9"
+                                stopColor="#3b82f6"
                                 stopOpacity={0.0}
                             />
                         </linearGradient>
@@ -56,12 +56,12 @@ export function CpuMemoryChartView({
                         >
                             <stop
                                 offset="5%"
-                                stopColor="#8b5cf6"
-                                stopOpacity={0.3}
+                                stopColor="#64748b"
+                                stopOpacity={0.12}
                             />
                             <stop
                                 offset="95%"
-                                stopColor="#8b5cf6"
+                                stopColor="#64748b"
                                 stopOpacity={0.0}
                             />
                         </linearGradient>
@@ -116,15 +116,14 @@ export function CpuMemoryChartView({
                         }}
                     />
 
-                    {/* CPU Area/Line */}
                     {(mode === 'combined' || mode === 'cpu') && (
                         <Area
                             yAxisId="cpu"
                             type="monotone"
                             dataKey="cpuAvg"
                             name="CPU Avg (%)"
-                            stroke="#0ea5e9"
-                            strokeWidth={2}
+                            stroke="#3b82f6"
+                            strokeWidth={1.5}
                             fill="url(#cpuGradient)"
                         />
                     )}
@@ -137,7 +136,7 @@ export function CpuMemoryChartView({
                                 dataKey="cpuMax"
                                 name="CPU Max (%)"
                                 stroke="#f59e0b"
-                                strokeWidth={1.5}
+                                strokeWidth={1}
                                 strokeDasharray="3 3"
                                 dot={false}
                             />
@@ -146,23 +145,22 @@ export function CpuMemoryChartView({
                                 type="monotone"
                                 dataKey="cpuMin"
                                 name="CPU Min (%)"
-                                stroke="#10b981"
-                                strokeWidth={1.5}
+                                stroke="#94a3b8"
+                                strokeWidth={1}
                                 strokeDasharray="3 3"
                                 dot={false}
                             />
                         </>
                     )}
 
-                    {/* Memory Area/Line */}
                     {(mode === 'combined' || mode === 'memory') && (
                         <Area
                             yAxisId="mem"
                             type="monotone"
                             dataKey="memAvgMb"
                             name="Memory Avg (MB)"
-                            stroke="#8b5cf6"
-                            strokeWidth={2}
+                            stroke="#64748b"
+                            strokeWidth={1.5}
                             fill="url(#memGradient)"
                         />
                     )}
@@ -174,8 +172,8 @@ export function CpuMemoryChartView({
                                 type="monotone"
                                 dataKey="memMaxMb"
                                 name="Memory Max (MB)"
-                                stroke="#ec4899"
-                                strokeWidth={1.5}
+                                stroke="#f59e0b"
+                                strokeWidth={1}
                                 strokeDasharray="3 3"
                                 dot={false}
                             />
@@ -184,8 +182,8 @@ export function CpuMemoryChartView({
                                 type="monotone"
                                 dataKey="memMinMb"
                                 name="Memory Min (MB)"
-                                stroke="#06b6d4"
-                                strokeWidth={1.5}
+                                stroke="#94a3b8"
+                                strokeWidth={1}
                                 strokeDasharray="3 3"
                                 dot={false}
                             />

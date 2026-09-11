@@ -1,4 +1,4 @@
-import { Cpu, HardDrive } from 'lucide-react';
+﻿import { Cpu, HardDrive } from 'lucide-react';
 import { formatBytes, formatCpuPercent } from '../../utils';
 
 export interface CustomTooltipPayload {
@@ -29,39 +29,38 @@ export function CpuMemoryChartTooltip({
     const memMaxBytes = payload.find((p) => p.dataKey === 'memMaxBytes')?.value;
 
     return (
-        <div className="rounded-xl border border-border/80 bg-popover/95 p-3.5 shadow-xl backdrop-blur-md text-xs space-y-2 min-w-52.5">
-            <div className="font-semibold text-foreground border-b pb-1.5 text-[11px]">
+        <div className="rounded-md border border-border bg-popover p-3 text-xs space-y-2 min-w-48 shadow-sm">
+            <div className="font-medium text-foreground border-b pb-1.5 text-[11px]">
                 {label}
             </div>
 
-            {/* CPU Metrics Section */}
             {(cpuAvg !== undefined || cpuMax !== undefined) && (
                 <div className="space-y-1">
-                    <div className="flex items-center gap-1.5 font-medium text-sky-500">
-                        <Cpu className="h-3.5 w-3.5" />
-                        <span>CPU Usage</span>
+                    <div className="flex items-center gap-1.5 font-medium text-muted-foreground">
+                        <Cpu className="h-3 w-3" />
+                        <span>CPU</span>
                     </div>
-                    <div className="pl-5 space-y-0.5 text-muted-foreground text-[11px]">
+                    <div className="pl-4 space-y-0.5 text-muted-foreground text-[11px]">
                         {cpuAvg !== undefined && (
-                            <div className="flex justify-between">
-                                <span>Average:</span>
-                                <span className="font-semibold text-foreground">
+                            <div className="flex justify-between gap-4">
+                                <span>Avg</span>
+                                <span className="font-medium text-foreground tabular-nums">
                                     {formatCpuPercent(cpuAvg)}
                                 </span>
                             </div>
                         )}
                         {cpuMin !== undefined && (
-                            <div className="flex justify-between">
-                                <span>Minimum:</span>
-                                <span className="font-medium text-foreground">
+                            <div className="flex justify-between gap-4">
+                                <span>Min</span>
+                                <span className="text-foreground tabular-nums">
                                     {formatCpuPercent(cpuMin)}
                                 </span>
                             </div>
                         )}
                         {cpuMax !== undefined && (
-                            <div className="flex justify-between">
-                                <span>Maximum:</span>
-                                <span className="font-medium text-foreground">
+                            <div className="flex justify-between gap-4">
+                                <span>Max</span>
+                                <span className="text-foreground tabular-nums">
                                     {formatCpuPercent(cpuMax)}
                                 </span>
                             </div>
@@ -70,34 +69,33 @@ export function CpuMemoryChartTooltip({
                 </div>
             )}
 
-            {/* Memory Metrics Section */}
             {(memAvgBytes !== undefined || memMaxBytes !== undefined) && (
                 <div className="space-y-1 pt-1 border-t border-border/50">
-                    <div className="flex items-center gap-1.5 font-medium text-violet-500">
-                        <HardDrive className="h-3.5 w-3.5" />
+                    <div className="flex items-center gap-1.5 font-medium text-muted-foreground">
+                        <HardDrive className="h-3 w-3" />
                         <span>Memory RSS</span>
                     </div>
-                    <div className="pl-5 space-y-0.5 text-muted-foreground text-[11px]">
+                    <div className="pl-4 space-y-0.5 text-muted-foreground text-[11px]">
                         {memAvgBytes !== undefined && (
-                            <div className="flex justify-between">
-                                <span>Average:</span>
-                                <span className="font-semibold text-foreground">
+                            <div className="flex justify-between gap-4">
+                                <span>Avg</span>
+                                <span className="font-medium text-foreground tabular-nums">
                                     {formatBytes(memAvgBytes)}
                                 </span>
                             </div>
                         )}
                         {memMinBytes !== undefined && (
-                            <div className="flex justify-between">
-                                <span>Minimum:</span>
-                                <span className="font-medium text-foreground">
+                            <div className="flex justify-between gap-4">
+                                <span>Min</span>
+                                <span className="text-foreground tabular-nums">
                                     {formatBytes(memMinBytes)}
                                 </span>
                             </div>
                         )}
                         {memMaxBytes !== undefined && (
-                            <div className="flex justify-between">
-                                <span>Maximum:</span>
-                                <span className="font-medium text-foreground">
+                            <div className="flex justify-between gap-4">
+                                <span>Max</span>
+                                <span className="text-foreground tabular-nums">
                                     {formatBytes(memMaxBytes)}
                                 </span>
                             </div>

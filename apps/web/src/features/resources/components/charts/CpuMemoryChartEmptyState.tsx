@@ -1,8 +1,8 @@
-import { Cpu } from 'lucide-react';
+﻿import { Cpu } from 'lucide-react';
 
 export function CpuMemoryChartEmptyState() {
     return (
-        <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-dashed border-border/80 p-8 text-center bg-muted/5">
+        <div className="flex h-64 flex-col items-center justify-center rounded-md border border-dashed border-border/80 p-8 text-center bg-muted/5">
             <Cpu className="h-10 w-10 text-muted-foreground/40 mb-3" />
             <h4 className="text-sm font-medium text-foreground">
                 No resource data available
