@@ -1,17 +1,9 @@
-import { Users, UserPlus, Layers, Activity } from 'lucide-react';
-import type { Period } from '@hitapi/types';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+﻿import type { Period } from '@hitapi/types';
+import { Card } from '@/components/ui/card';
 import { formatPeriodDescription } from '@/lib/utils';
 import { useConsumerMetricsQuery } from '../../hooks';
 
-interface ConsumerMetricsCardsProps {
+export interface ConsumerMetricsCardsProps {
     readonly appId: string;
     readonly period?: Period;
     readonly totalGroups?: number;
@@ -26,16 +18,12 @@ export function ConsumerMetricsCards({
 
     if (isLoading) {
         return (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {[1, 2, 3, 4].map((key) => (
-                    <Card key={key} className="animate-pulse">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <div className="h-4 w-24 rounded bg-muted" />
-                            <div className="h-4 w-4 rounded bg-muted" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="h-8 w-16 rounded bg-muted" />
-                        </CardContent>
+            <div className="grid gap-3 sm:grid-cols-3">
+                {[1, 2, 3].map((key) => (
+                    <Card key={key} className="animate-pulse p-4 space-y-2">
+                        <div className="h-3 w-24 rounded bg-muted" />
+                        <div className="h-7 w-16 rounded bg-muted" />
+                        <div className="h-3 w-32 rounded bg-muted" />
                     </Card>
                 ))}
             </div>
@@ -46,97 +34,44 @@ export function ConsumerMetricsCards({
     const newConsumers = metrics?.newConsumers ?? 0;
 
     return (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Total Consumers Card */}
-            <Card className="relative overflow-hidden border-border/60 bg-linear-to-br from-card to-card/50 transition-all hover:border-primary/30">
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">
-                        Total Consumers
-                    </CardTitle>
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                        <Users className="h-4 w-4" aria-hidden="true" />
-                    </div>
-                </CardHeader>
-                <CardContent className="space-y-1">
-                    <div className="text-2xl font-bold tracking-tight">
-                        {totalConsumers.toLocaleString()}
-                    </div>
-                    <CardDescription className="text-xs text-muted-foreground">
-                        Registered API consumers
-                    </CardDescription>
-                </CardContent>
+        <div className="grid gap-3 sm:grid-cols-3">
+            {/* Total Consumers */}
+            <Card className="p-4 space-y-1">
+                <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Total Consumers
+                </div>
+                <div className="text-2xl font-semibold tabular-nums tracking-tight text-foreground">
+                    {totalConsumers.toLocaleString()}
+                </div>
+                <div className="text-[11px] text-muted-foreground">
+                    Registered API consumers
+                </div>
             </Card>
 
-            {/* New Consumers Card */}
-            <Card className="relative overflow-hidden border-border/60 bg-linear-to-br from-card to-card/50 transition-all hover:border-emerald-500/30">
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">
-                        New Consumers
-                    </CardTitle>
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                        <UserPlus className="h-4 w-4" aria-hidden="true" />
-                    </div>
-                </CardHeader>
-                <CardContent className="space-y-1">
-                    <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold tracking-tight">
-                            {newConsumers.toLocaleString()}
-                        </span>
-                        {newConsumers > 0 && (
-                            <Badge
-                                variant="secondary"
-                                className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-xs px-1.5 py-0 font-medium"
-                            >
-                                +{newConsumers} new
-                            </Badge>
-                        )}
-                    </div>
-                    <CardDescription className="text-xs text-muted-foreground">
-                        {formatPeriodDescription(period)}
-                    </CardDescription>
-                </CardContent>
+            {/* New Consumers */}
+            <Card className="p-4 space-y-1">
+                <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    New Consumers
+                </div>
+                <div className="text-2xl font-semibold tabular-nums tracking-tight text-foreground">
+                    {newConsumers.toLocaleString()}
+                </div>
+                <div className="text-[11px] text-muted-foreground">
+                    {formatPeriodDescription(period)}
+                </div>
             </Card>
 
-            {/* Consumer Groups Card */}
-            <Card className="relative overflow-hidden border-border/60 bg-linear-to-br from-card to-card/50 transition-all hover:border-violet-500/30">
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">
-                        Consumer Groups
-                    </CardTitle>
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400">
-                        <Layers className="h-4 w-4" aria-hidden="true" />
-                    </div>
-                </CardHeader>
-                <CardContent className="space-y-1">
-                    <div className="text-2xl font-bold tracking-tight">
-                        {totalGroups.toLocaleString()}
-                    </div>
-                    <CardDescription className="text-xs text-muted-foreground">
-                        Segmented client cohorts
-                    </CardDescription>
-                </CardContent>
-            </Card>
-
-            {/* SDK Activity / Overview Card */}
-            <Card className="relative overflow-hidden border-border/60 bg-linear-to-br from-card to-card/50 transition-all hover:border-amber-500/30">
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                    <CardTitle className="text-sm font-medium text-muted-foreground">
-                        Identification Status
-                    </CardTitle>
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
-                        <Activity className="h-4 w-4" aria-hidden="true" />
-                    </div>
-                </CardHeader>
-                <CardContent className="space-y-1">
-                    <div className="text-2xl font-bold tracking-tight">
-                        {totalConsumers > 0 ? 'Active' : 'Awaiting Data'}
-                    </div>
-                    <CardDescription className="text-xs text-muted-foreground">
-                        {totalConsumers > 0
-                            ? 'Consumers reporting to Hub'
-                            : 'Set identifier in HitAPI SDK'}
-                    </CardDescription>
-                </CardContent>
+            {/* Consumer Groups */}
+            <Card className="p-4 space-y-1">
+                <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Consumer Groups
+                </div>
+                <div className="text-2xl font-semibold tabular-nums tracking-tight text-foreground">
+                    {totalGroups.toLocaleString()}
+                </div>
+                <div className="text-[11px] text-muted-foreground">
+                    Segmented client groups
+                </div>
             </Card>
         </div>
     );
