@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import {
     ChevronLeft,
-    Boxes,
     Users2,
     Copy,
     Check,
@@ -23,7 +22,6 @@ import {
 } from '@/components/ui/card';
 import { LoadingRows } from '@/components/states/LoadingState';
 import { ErrorState } from '@/components/states/ErrorState';
-import { useUiStore } from '@/stores/ui-store';
 import { useTeamQuery } from '../hooks';
 import {
     DeleteTeamDialog,
@@ -48,7 +46,6 @@ function getInitials(name: string): string {
 
 export function TeamDetailPage({ teamId }: TeamDetailPageProps) {
     const [copied, setCopied] = useState(false);
-    const setActiveTeamId = useUiStore((s) => s.setActiveTeamId);
     const teamQuery = useTeamQuery(teamId);
     const team = teamQuery.data?.data;
 
@@ -80,26 +77,10 @@ export function TeamDetailPage({ teamId }: TeamDetailPageProps) {
         }, 2000);
     };
 
-    const handleSelectTeamForApps = () => {
-        setActiveTeamId(team.id);
-    };
-
     const memberCount = team.teamMembers?.length ?? 0;
 
     const headerActions = (
         <div className="flex flex-wrap items-center gap-2">
-            <Button
-                asChild
-                variant="outline"
-                size="sm"
-                className="gap-1.5"
-                onClick={handleSelectTeamForApps}
-            >
-                <Link to="/apps">
-                    <Boxes className="h-4 w-4 text-muted-foreground" />
-                    <span>View Apps</span>
-                </Link>
-            </Button>
             <DeleteTeamDialog
                 teamId={team.id}
                 teamName={team.name}
@@ -132,7 +113,7 @@ export function TeamDetailPage({ teamId }: TeamDetailPageProps) {
                 <PageHeader
                     title={
                         <div className="flex items-center gap-3.5 flex-wrap">
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border bg-muted/60 text-primary font-bold text-base shadow-xs">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border bg-muted text-muted-foreground font-bold text-base">
                                 {getInitials(team.name) || (
                                     <Users2 className="h-5 w-5" />
                                 )}
@@ -142,13 +123,6 @@ export function TeamDetailPage({ teamId }: TeamDetailPageProps) {
                                     <h1 className="text-2xl font-bold tracking-tight text-foreground">
                                         {team.name}
                                     </h1>
-                                    <Badge
-                                        variant="default"
-                                        className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 gap-1.5 font-medium text-xs"
-                                    >
-                                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                        Active
-                                    </Badge>
                                     {team.demo ? (
                                         <Badge
                                             variant="outline"
