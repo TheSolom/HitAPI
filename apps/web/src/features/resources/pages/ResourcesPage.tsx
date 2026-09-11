@@ -35,8 +35,8 @@ export function ResourcesPage({ appId }: ResourcesPageProps) {
         }
 
         return (
-            <div className="space-y-6">
-                {/* KPI Metrics */}
+            <div className="space-y-4">
+                {/* Resource Summary */}
                 <ResourceMetricsCards appId={resolvedAppId} />
 
                 {/* CPU and Memory Utilization Chart */}
