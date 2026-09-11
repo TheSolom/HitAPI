@@ -16,10 +16,10 @@ export function EmptyState({
     action,
 }: Readonly<EmptyStateProps>) {
     return (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-muted/30 p-10 text-center">
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-muted">
+        <div className="flex flex-col items-center justify-center gap-3 rounded-md border border-dashed border-border bg-muted/20 p-8 text-center">
+            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-muted">
                 <Icon
-                    className="h-5 w-5 text-muted-foreground"
+                    className="h-4 w-4 text-muted-foreground"
                     aria-hidden="true"
                 />
             </span>
