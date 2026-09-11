@@ -3,7 +3,6 @@ import { Copy, Eye, EyeOff, Key, Server, Timer } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import type { AppResponseDto } from '@hitapi/types';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -43,32 +42,13 @@ export function AppConfigCard({ app }: AppConfigCardProps) {
     return (
         <Card>
             <CardHeader>
-                <div className="flex items-start justify-between gap-2">
-                    <div>
-                        <CardTitle className="text-base">
-                            App Configuration
-                        </CardTitle>
-                        <CardDescription>
-                            SDK credentials and performance configuration
-                        </CardDescription>
-                    </div>
-                    <Badge
-                        variant={app.active ? 'default' : 'secondary'}
-                        className={
-                            app.active
-                                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20 gap-1.5 font-medium'
-                                : 'gap-1.5 font-medium'
-                        }
-                    >
-                        <span
-                            className={
-                                app.active
-                                    ? 'h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse'
-                                    : 'h-1.5 w-1.5 rounded-full bg-muted-foreground'
-                            }
-                        />
-                        {app.active ? 'Active' : 'Inactive'}
-                    </Badge>
+                <div>
+                    <CardTitle className="text-base">
+                        App Configuration
+                    </CardTitle>
+                    <CardDescription>
+                        SDK credentials and performance configuration
+                    </CardDescription>
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
