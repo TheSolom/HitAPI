@@ -215,7 +215,7 @@ export function Topbar() {
                             className="h-8.5 gap-1.5 px-1.5 sm:h-9 sm:gap-2 sm:px-2"
                             aria-label="Account menu"
                         >
-                            <span className="flex h-6.5 w-6.5 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-semibold sm:h-7 sm:w-7">
+                            <span className="flex h-6.5 w-6.5 items-center justify-center rounded-md bg-muted text-foreground border border-border text-xs font-medium sm:h-7 sm:w-7">
                                 {initials}
                             </span>
                             <span className="hidden max-w-30 truncate text-sm sm:inline">

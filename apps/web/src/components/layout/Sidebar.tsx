@@ -42,7 +42,7 @@ const NavItemRow = memo(function NavItemRow({
             onClick={onClick}
             aria-current={active ? 'page' : undefined}
             className={cn(
-                'group relative flex h-9 items-center rounded-lg pr-2 text-sm font-medium overflow-hidden transition-[padding,colors] duration-300 ease-[cubic-bezier(0.2,0,0,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none',
+                'group relative flex h-9 items-center rounded-md pr-2 text-sm font-medium overflow-hidden transition-[padding,colors] duration-300 ease-[cubic-bezier(0.2,0,0,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none',
                 collapsed ? 'pl-3.5' : 'pl-2',
                 active
                     ? 'bg-sidebar-accent font-semibold text-sidebar-accent-foreground'
@@ -51,8 +51,10 @@ const NavItemRow = memo(function NavItemRow({
         >
             <span
                 className={cn(
-                    'flex h-6 w-6 shrink-0 items-center justify-center rounded-md transition-transform duration-200 group-hover:scale-110',
-                    active ? 'text-primary' : 'text-sidebar-foreground',
+                    'flex h-6 w-6 shrink-0 items-center justify-center rounded-md',
+                    active
+                        ? 'text-primary'
+                        : 'text-sidebar-foreground/70 group-hover:text-sidebar-foreground',
                 )}
             >
                 <Icon className="h-4 w-4" aria-hidden="true" />
@@ -135,7 +137,7 @@ export function Sidebar() {
                                 )}
                                 aria-label="HitAPI home"
                             >
-                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-xs transition-transform duration-200 group-hover/logo:scale-105">
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
                                     <Radar
                                         className="h-4 w-4"
                                         aria-hidden="true"
@@ -273,7 +275,7 @@ export function Sidebar() {
                 >
                     <SheetHeader className="flex h-14 flex-row items-center justify-between border-b border-sidebar-border px-4 space-y-0">
                         <div className="flex items-center gap-2.5">
-                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-xs">
+                            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
                                 <Radar className="h-4 w-4" aria-hidden="true" />
                             </span>
                             <span className="text-sm font-bold tracking-[0.18em] text-sidebar-foreground">
