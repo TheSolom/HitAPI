@@ -206,10 +206,13 @@ export function GroupConsumersDialog({
                         </div>
 
                         <Badge
-                            variant="secondary"
-                            className="px-2.5 py-1 text-xs font-semibold rounded-full bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20"
+                            variant="outline"
+                            className="h-6 px-2 text-xs font-normal text-muted-foreground border-border bg-muted/40 rounded gap-1 shrink-0"
                         >
-                            {groupConsumers.length} assigned
+                            <span className="font-mono font-medium text-foreground">
+                                {groupConsumers.length}
+                            </span>
+                            <span>assigned</span>
                         </Badge>
                     </div>
                 </DialogHeader>
@@ -224,7 +227,7 @@ export function GroupConsumersDialog({
                             onChange={(e) => {
                                 setSearch(e.target.value);
                             }}
-                            className="h-9 pl-9.5 pr-8 text-sm rounded-lg bg-background"
+                            className="h-9 pl-9.5 pr-8 text-sm rounded-md bg-background"
                         />
                         {search && (
                             <button
@@ -257,7 +260,7 @@ export function GroupConsumersDialog({
                     <Button
                         asChild
                         size="sm"
-                        className="gap-2 text-xs font-semibold bg-violet-600 hover:bg-violet-700 text-white"
+                        className="gap-2 text-xs font-medium"
                         onClick={() => {
                             onOpenChange(false);
                         }}
