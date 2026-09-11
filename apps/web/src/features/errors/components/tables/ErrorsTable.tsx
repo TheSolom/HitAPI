@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import { OrderDirection, type GetErrorOptions } from '@hitapi/types';
 import { RestfulMethod } from '@hitapi/shared/enums';
 import {
@@ -172,7 +172,7 @@ export function ErrorsTable({ options }: ErrorsTableProps) {
                 hasActiveFilters={hasActiveFilters}
             />
 
-            <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-xs">
+            <div className="rounded-md border bg-card overflow-hidden">
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-muted/30 hover:bg-muted/30">

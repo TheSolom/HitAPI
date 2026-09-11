@@ -1,4 +1,4 @@
-interface CustomTooltipPayload {
+﻿interface CustomTooltipPayload {
     name?: string;
     value?: number;
     color?: string;
@@ -35,7 +35,7 @@ export function ErrorsChartTooltip({
             <div className="space-y-1.5">
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-1.5">
-                        <span className="h-2.5 w-2.5 rounded-full bg-amber-500 shadow-xs" />
+                        <span className="h-2 w-2 rounded-sm bg-primary/70" />
                         <span className="text-muted-foreground font-medium">
                             Client (4xx):
                         </span>
@@ -51,7 +51,7 @@ export function ErrorsChartTooltip({
                 </div>
                 <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-1.5">
-                        <span className="h-2.5 w-2.5 rounded-full bg-rose-500 shadow-xs" />
+                        <span className="h-2 w-2 rounded-sm bg-destructive/70" />
                         <span className="text-muted-foreground font-medium">
                             Server (5xx):
                         </span>

@@ -1,10 +1,9 @@
-import {
+﻿import {
     AlertTriangle,
     BarChart2,
     LineChart as LineChartIcon,
 } from 'lucide-react';
 import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 export type ChartViewType = 'bar' | 'area';
@@ -25,12 +24,10 @@ export function ErrorsChartHeader({
     onChartTypeChange,
 }: ErrorsChartHeaderProps) {
     return (
-        <CardHeader className="flex flex-col gap-3 pb-3 sm:flex-row sm:items-center sm:justify-between border-b bg-muted/10">
-            <div className="space-y-1">
+        <CardHeader className="flex flex-col gap-3 pb-3 sm:flex-row sm:items-center sm:justify-between border-b">
+            <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
-                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
-                        <AlertTriangle className="h-4 w-4" />
-                    </div>
+                    <AlertTriangle className="h-4 w-4 text-muted-foreground" />
                     <CardTitle className="text-sm font-semibold tracking-tight">
                         Error Volume Timeline
                     </CardTitle>
@@ -43,34 +40,18 @@ export function ErrorsChartHeader({
 
             {hasData && (
                 <div className="flex flex-wrap items-center gap-2.5">
-                    {/* Summary Badges */}
-                    <div className="flex items-center gap-1.5 bg-muted/40 rounded-lg p-1 border text-xs">
-                        <Badge
-                            variant="outline"
-                            className="h-6 gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-[11px] font-semibold"
-                        >
-                            <span>
-                                {totalClientErrors.toLocaleString()} 4xx
-                            </span>
-                        </Badge>
-                        <Badge
-                            variant="outline"
-                            className="h-6 gap-1 bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20 text-[11px] font-semibold"
-                        >
-                            <span>
-                                {totalServerErrors.toLocaleString()} 5xx
-                            </span>
-                        </Badge>
-                    </div>
+                    <span className="text-[11px] text-muted-foreground tabular-nums">
+                        {totalClientErrors.toLocaleString()} 4xx ·{' '}
+                        {totalServerErrors.toLocaleString()} 5xx
+                    </span>
 
-                    {/* Chart Type Toggle */}
-                    <div className="flex items-center rounded-lg border bg-background p-0.5">
+                    <div className="flex items-center rounded-md border bg-background p-0.5">
                         <Button
                             variant={
                                 chartType === 'bar' ? 'secondary' : 'ghost'
                             }
                             size="icon"
-                            className="h-7 w-7"
+                            className="h-7 w-7 rounded-sm"
                             onClick={() => {
                                 onChartTypeChange('bar');
                             }}
@@ -83,7 +64,7 @@ export function ErrorsChartHeader({
                                 chartType === 'area' ? 'secondary' : 'ghost'
                             }
                             size="icon"
-                            className="h-7 w-7"
+                            className="h-7 w-7 rounded-sm"
                             onClick={() => {
                                 onChartTypeChange('area');
                             }}

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import { Search, Terminal, X } from 'lucide-react';
 import type {
     GetValidationAndServerErrorOptions,
@@ -146,7 +146,7 @@ export function ServerErrorsTable({ options }: ServerErrorsTableProps) {
                 </div>
             </div>
 
-            <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-xs">
+            <div className="rounded-md border bg-card overflow-hidden">
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-muted/30 hover:bg-muted/30">

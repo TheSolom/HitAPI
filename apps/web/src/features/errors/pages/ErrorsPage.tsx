@@ -136,7 +136,7 @@ export function ErrorsPage({
                             <BarChart3 className="h-3.5 w-3.5" />
                             <span>Overview &amp; Endpoints</span>
                             {totalErrors > 0 && (
-                                <span className="rounded-full bg-rose-500/10 px-1.5 py-0.2 text-[10px] font-semibold text-rose-600 dark:text-rose-400">
+                                <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground tabular-nums">
                                     {totalErrors.toLocaleString()}
                                 </span>
                             )}
@@ -148,7 +148,7 @@ export function ErrorsPage({
                             <AlertCircle className="h-3.5 w-3.5" />
                             <span>Validation Errors</span>
                             {validationCount > 0 && (
-                                <span className="rounded-full bg-amber-500/10 px-1.5 py-0.2 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                                <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground tabular-nums">
                                     {validationCount.toLocaleString()}
                                 </span>
                             )}
@@ -160,7 +160,7 @@ export function ErrorsPage({
                             <AlertOctagon className="h-3.5 w-3.5" />
                             <span>Server Exceptions</span>
                             {serverCount > 0 && (
-                                <span className="rounded-full bg-destructive/10 px-1.5 py-0.2 text-[10px] font-semibold text-destructive">
+                                <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground tabular-nums">
                                     {serverCount.toLocaleString()}
                                 </span>
                             )}

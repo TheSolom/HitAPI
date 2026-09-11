@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+﻿import { useMemo } from 'react';
 import type { GetErrorOptions } from '@hitapi/types';
 import {
     CartesianGrid,
@@ -41,7 +41,7 @@ export function ErrorRatesChart({ options }: ErrorRatesChartProps) {
 
     if (chartData.length === 0) {
         return (
-            <Card className="overflow-hidden border-border/60 shadow-xs bg-linear-to-b from-card to-card/50">
+            <Card className="overflow-hidden">
                 <CardHeader className="flex flex-col gap-2 pb-3 sm:flex-row sm:items-center sm:justify-between border-b bg-muted/10">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
@@ -70,7 +70,7 @@ export function ErrorRatesChart({ options }: ErrorRatesChartProps) {
     }
 
     return (
-        <Card className="overflow-hidden border-border/60 shadow-xs bg-linear-to-b from-card to-card/50">
+        <Card className="overflow-hidden">
             <CardHeader className="flex flex-col gap-2 pb-3 sm:flex-row sm:items-center sm:justify-between border-b bg-muted/10">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2">

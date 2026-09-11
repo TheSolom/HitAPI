@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import { Eye, Search, X } from 'lucide-react';
 import type {
     GetValidationAndServerErrorOptions,
@@ -103,7 +103,7 @@ export function ValidationErrorsTable({ options }: ValidationErrorsTableProps) {
                                     {err.loc.join(' > ')}
                                 </span>
                             ) : (
-                                '—'
+                                'â€”'
                             )}
                         </TableCell>
                         <TableCell className="text-right font-mono text-xs font-semibold text-foreground">
@@ -155,7 +155,7 @@ export function ValidationErrorsTable({ options }: ValidationErrorsTableProps) {
                 </div>
             </div>
 
-            <div className="rounded-xl border border-border/60 bg-card overflow-hidden shadow-xs">
+            <div className="rounded-md border bg-card overflow-hidden">
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-muted/30 hover:bg-muted/30">

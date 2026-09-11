@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import type { GetErrorOptions } from '@hitapi/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { LoadingCards } from '@/components/states/LoadingState';
@@ -37,7 +37,7 @@ export function ErrorsChart({ options }: ErrorsChartProps) {
     }
 
     return (
-        <Card className="overflow-hidden border-border/60 shadow-xs bg-linear-to-b from-card to-card/50">
+        <Card className="overflow-hidden">
             <ErrorsChartHeader
                 hasData={chartData.length > 0}
                 totalClientErrors={totalClientErrors}
