@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import { Users2, Search, X } from 'lucide-react';
 import type { TeamResponseDto } from '@hitapi/types';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -88,7 +88,7 @@ export function TeamsPage() {
 
         if (filteredTeams.length === 0) {
             return (
-                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed p-12 text-center">
+                <div className="flex flex-col items-center justify-center rounded-md border border-dashed p-8 text-center">
                     <Search className="h-8 w-8 text-muted-foreground" />
                     <h3 className="mt-3 text-base font-semibold">
                         No matching teams found
