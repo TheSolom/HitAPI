@@ -1,4 +1,4 @@
-import { RotateCcw, User } from 'lucide-react';
+﻿import { RotateCcw, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export interface ConsumersEmptyStateProps {
@@ -11,7 +11,7 @@ export function ConsumersEmptyState({
     onResetFilters,
 }: ConsumersEmptyStateProps) {
     return (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-12 text-center">
+        <div className="flex flex-col items-center justify-center rounded-md border border-dashed py-10 text-center">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
                 <User className="h-6 w-6 text-muted-foreground" />
             </div>

@@ -132,7 +132,7 @@ export function ConsumersTable({
             )}
 
             {consumers.length > 0 && (
-                <div className="rounded-xl border bg-card shadow-xs overflow-hidden">
+                <div className="rounded-md border bg-card overflow-hidden">
                     <Table>
                         <caption className="sr-only">
                             Consumer traffic telemetry and reliability
@@ -169,7 +169,6 @@ export function ConsumersTable({
                                         />
                                     </div>
                                 </TableHead>
-                                <TableHead scope="col">Identifier</TableHead>
                                 <TableHead scope="col" className="text-center">
                                     Group
                                 </TableHead>

@@ -1,7 +1,5 @@
-import { useState } from 'react';
-import { Link } from '@tanstack/react-router';
+﻿import { Link } from '@tanstack/react-router';
 import {
-    Check,
     Clock,
     Copy,
     Edit,
@@ -30,8 +28,6 @@ export interface ConsumerTableRowProps {
 }
 
 export function ConsumerTableRow({ consumer, onEdit }: ConsumerTableRowProps) {
-    const [isCopied, setIsCopied] = useState(false);
-
     const displayName = consumer.name || consumer.identifier;
     const hasDistinctName =
         Boolean(consumer.name) && consumer.name !== consumer.identifier;
@@ -39,11 +35,7 @@ export function ConsumerTableRow({ consumer, onEdit }: ConsumerTableRowProps) {
     const handleCopy = (e: React.MouseEvent) => {
         e.stopPropagation();
         void navigator.clipboard.writeText(consumer.identifier);
-        setIsCopied(true);
         toast.success(`Copied "${consumer.identifier}" to clipboard`);
-        setTimeout(() => {
-            setIsCopied(false);
-        }, 2000);
     };
 
     return (
@@ -68,7 +60,7 @@ export function ConsumerTableRow({ consumer, onEdit }: ConsumerTableRowProps) {
                             {consumer.isNew ? (
                                 <Badge
                                     variant="outline"
-                                    className="px-1.5 py-0 text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                                    className="px-1.5 py-0 text-[10px] font-medium"
                                 >
                                     New
                                 </Badge>
@@ -83,33 +75,12 @@ export function ConsumerTableRow({ consumer, onEdit }: ConsumerTableRowProps) {
                 </div>
             </TableCell>
 
-            <TableCell>
-                <div className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
-                    <span className="truncate max-w-42.5">
-                        {consumer.identifier}
-                    </span>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={handleCopy}
-                        title="Copy identifier"
-                    >
-                        {isCopied ? (
-                            <Check className="h-3.5 w-3.5 text-emerald-500" />
-                        ) : (
-                            <Copy className="h-3.5 w-3.5" />
-                        )}
-                    </Button>
-                </div>
-            </TableCell>
-
             <TableCell className="text-center">
                 {consumer.group ? (
                     <div className="inline-flex items-center justify-center">
                         <Badge
-                            variant="secondary"
-                            className="gap-1 font-medium bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20"
+                            variant="outline"
+                            className="gap-1 font-medium text-xs"
                         >
                             <Layers className="h-3 w-3" />
                             {consumer.group.name}
@@ -126,7 +97,7 @@ export function ConsumerTableRow({ consumer, onEdit }: ConsumerTableRowProps) {
 
             <TableCell className="text-center font-medium tabular-nums text-sm">
                 {consumer.errorRate > 0 ? (
-                    <span className="text-amber-600 dark:text-amber-400 font-semibold">
+                    <span className="text-destructive">
                         {consumer.errorRate}%
                     </span>
                 ) : (
