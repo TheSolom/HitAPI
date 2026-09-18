@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RestfulMethod } from '@hitapi/shared/enums';
+import type { StatusCodeCountsResponseDto as IStatusCodeCountsResponseDto } from '@hitapi/types';
 
-export class StatusCodeCountsResponseDto {
+export class StatusCodeCountsResponseDto implements IStatusCodeCountsResponseDto {
     @ApiProperty({ enum: RestfulMethod })
     method: RestfulMethod;
 

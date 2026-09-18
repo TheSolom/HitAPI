@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ResponseStatus } from '../enums/response-status.enum.js';
+import {
+    type RequestsByConsumerChartResponseDto as IRequestsByConsumerChartResponseDto,
+    ResponseStatus,
+} from '@hitapi/types';
 
-export class RequestsByConsumerChartResponseDto {
+export class RequestsByConsumerChartResponseDto implements IRequestsByConsumerChartResponseDto {
     @ApiProperty({ enum: ResponseStatus })
     responseStatus: ResponseStatus;
 

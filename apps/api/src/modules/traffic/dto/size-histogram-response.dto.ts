@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type { SizeHistogramResponseDto as ISizeHistogramResponseDto } from '@hitapi/types';
 
-export class SizeHistogramResponseDto {
+export class SizeHistogramResponseDto implements ISizeHistogramResponseDto {
     @ApiProperty({ type: 'integer', isArray: true })
     bins: number[];
 
