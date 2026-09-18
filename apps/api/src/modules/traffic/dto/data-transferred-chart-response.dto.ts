@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import type { DataTransferredChartResponseDto as IDataTransferredChartResponseDto } from '@hitapi/types';
 
-export class DataTransferredChartResponseDto {
+export class DataTransferredChartResponseDto implements IDataTransferredChartResponseDto {
     @ApiProperty({ type: 'string', isArray: true })
     timeWindows: string[];
 

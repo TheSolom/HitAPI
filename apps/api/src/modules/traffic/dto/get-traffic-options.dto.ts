@@ -11,9 +11,12 @@ import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RestfulMethod } from '@hitapi/shared/enums';
 import { IsPeriod } from '../../../common/validators/is-period.validator.js';
-import type { Period } from '@hitapi/types';
+import type {
+    GetTrafficOptions as IGetTrafficOptions,
+    Period,
+} from '@hitapi/types';
 
-export class GetTrafficOptionsDto {
+export class GetTrafficOptionsDto implements IGetTrafficOptions {
     @ApiProperty({ format: 'uuid' })
     @IsUUID()
     @IsNotEmpty()

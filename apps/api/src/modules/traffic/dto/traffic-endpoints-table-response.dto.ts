@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RestfulMethod } from '@hitapi/shared/enums';
+import type { TrafficEndpointsTableResponseDto as ITrafficEndpointsTableResponseDto } from '@hitapi/types';
 
-export class TrafficEndpointsTableResponseDto {
+export class TrafficEndpointsTableResponseDto implements ITrafficEndpointsTableResponseDto {
     @ApiProperty({ format: 'uuid' })
     id: string;
 
