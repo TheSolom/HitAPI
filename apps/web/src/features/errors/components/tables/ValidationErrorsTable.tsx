@@ -1,5 +1,5 @@
-﻿import { useMemo, useState } from 'react';
-import { Eye, Search, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Eye, ShieldCheck } from 'lucide-react';
 import type {
     GetValidationAndServerErrorOptions,
     ValidationErrorsTableResponseDto,
@@ -12,19 +12,24 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { LoadingRows } from '@/components/states/LoadingState';
+import {
+    SearchInput,
+    TableLoadingRows,
+    TableWrapper,
+} from '@/components/common';
+import { EmptyState } from '@/components/states/EmptyState';
 import { useValidationErrorsTableQuery } from '../../hooks';
 import { ValidationErrorDetailDialog } from '../dialogs/ValidationErrorDetailDialog';
-import { ErrorsEmptyState } from './ErrorsEmptyState';
 
 interface ValidationErrorsTableProps {
-    readonly options: Partial<GetValidationAndServerErrorOptions>;
+    options: Partial<GetValidationAndServerErrorOptions>;
 }
 
-export function ValidationErrorsTable({ options }: ValidationErrorsTableProps) {
+export function ValidationErrorsTable({
+    options,
+}: Readonly<ValidationErrorsTableProps>) {
     const [search, setSearch] = useState('');
     const [selectedError, setSelectedError] =
         useState<ValidationErrorsTableResponseDto | null>(null);
@@ -59,21 +64,20 @@ export function ValidationErrorsTable({ options }: ValidationErrorsTableProps) {
 
     const renderTableBody = () => {
         if (tableQuery.isLoading) {
-            return (
-                <TableRow>
-                    <TableCell colSpan={5} className="h-32">
-                        <LoadingRows rows={3} />
-                    </TableCell>
-                </TableRow>
-            );
+            return <TableLoadingRows colSpan={5} rows={3} />;
         }
         if (filteredErrors.length === 0) {
             return (
                 <TableRow>
-                    <TableCell colSpan={5} className="h-48">
-                        <ErrorsEmptyState
+                    <TableCell colSpan={5} className="p-6">
+                        <EmptyState
+                            icon={ShieldCheck}
                             title={emptyTitle}
                             description={emptyDescription}
+                            isFiltered={Boolean(search)}
+                            onResetFilters={() => {
+                                setSearch('');
+                            }}
                         />
                     </TableCell>
                 </TableRow>
@@ -103,7 +107,7 @@ export function ValidationErrorsTable({ options }: ValidationErrorsTableProps) {
                                     {err.loc.join(' > ')}
                                 </span>
                             ) : (
-                                'â€”'
+                                '—'
                             )}
                         </TableCell>
                         <TableCell className="text-right font-mono text-xs font-semibold text-foreground">
@@ -131,31 +135,15 @@ export function ValidationErrorsTable({ options }: ValidationErrorsTableProps) {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <div className="relative flex-1 min-w-48 sm:max-w-xs">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="Search validation errors or fields..."
-                        value={search}
-                        onChange={(e) => {
-                            setSearch(e.target.value);
-                        }}
-                        className="pl-8.5 h-9 text-xs"
-                    />
-                    {search && (
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setSearch('');
-                            }}
-                            className="absolute right-2.5 top-2.5 text-muted-foreground hover:text-foreground"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    )}
-                </div>
+                <SearchInput
+                    placeholder="Search validation errors or fields..."
+                    value={search}
+                    onChange={setSearch}
+                    className="min-w-48 sm:max-w-xs"
+                />
             </div>
 
-            <div className="rounded-md border bg-card overflow-hidden">
+            <TableWrapper>
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-muted/30 hover:bg-muted/30">
@@ -163,12 +151,12 @@ export function ValidationErrorsTable({ options }: ValidationErrorsTableProps) {
                                 Error Type
                             </TableHead>
                             <TableHead className="text-xs font-semibold">
-                                Message
+                                Error Message
                             </TableHead>
-                            <TableHead className="text-xs font-semibold">
+                            <TableHead className="w-48 text-xs font-semibold">
                                 Location
                             </TableHead>
-                            <TableHead className="text-right text-xs font-semibold w-24">
+                            <TableHead className="w-24 text-right text-xs font-semibold">
                                 Count
                             </TableHead>
                             <TableHead className="w-20 text-center text-xs font-semibold">
@@ -178,16 +166,15 @@ export function ValidationErrorsTable({ options }: ValidationErrorsTableProps) {
                     </TableHeader>
                     <TableBody>{renderTableBody()}</TableBody>
                 </Table>
-            </div>
+            </TableWrapper>
 
-            <ValidationErrorDetailDialog
-                error={selectedError}
-                open={detailDialogOpen}
-                onOpenChange={(open) => {
-                    setDetailDialogOpen(open);
-                    if (!open) setSelectedError(null);
-                }}
-            />
+            {selectedError ? (
+                <ValidationErrorDetailDialog
+                    error={selectedError}
+                    open={detailDialogOpen}
+                    onOpenChange={setDetailDialogOpen}
+                />
+            ) : null}
         </div>
     );
 }

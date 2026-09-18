@@ -2,23 +2,19 @@ import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import type { ErrorsTableResponseDto } from '@hitapi/types';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { getMethodBadgeClass, getStatusCodeBadgeClass } from './table.utils';
+import { MethodBadge } from '@/components/common';
+import { getStatusCodeBadgeClass } from '@/lib/badge';
 
 interface ErrorsTableRowProps {
-    readonly error: ErrorsTableResponseDto;
+    error: ErrorsTableResponseDto;
 }
 
-export function ErrorsTableRow({ error }: ErrorsTableRowProps) {
+export function ErrorsTableRow({ error }: Readonly<ErrorsTableRowProps>) {
     return (
         <TableRow className="hover:bg-muted/40 transition-colors">
             {/* Method */}
             <TableCell className="w-24">
-                <Badge
-                    variant="outline"
-                    className={`font-mono text-[11px] font-semibold tracking-wider ${getMethodBadgeClass(error.method)}`}
-                >
-                    {error.method}
-                </Badge>
+                <MethodBadge method={error.method} />
             </TableCell>
 
             {/* Path */}

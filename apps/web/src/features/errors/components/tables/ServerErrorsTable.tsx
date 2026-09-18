@@ -1,5 +1,5 @@
-﻿import { useMemo, useState } from 'react';
-import { Search, Terminal, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Terminal } from 'lucide-react';
 import type {
     GetValidationAndServerErrorOptions,
     ServerErrorsTableResponseDto,
@@ -12,19 +12,24 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { LoadingRows } from '@/components/states/LoadingState';
+import {
+    SearchInput,
+    TableLoadingRows,
+    TableWrapper,
+} from '@/components/common';
+import { EmptyState } from '@/components/states/EmptyState';
 import { useServerErrorsTableQuery } from '../../hooks';
 import { ServerErrorTracebackDialog } from '../dialogs/ServerErrorTracebackDialog';
-import { ErrorsEmptyState } from './ErrorsEmptyState';
 
 interface ServerErrorsTableProps {
-    readonly options: Partial<GetValidationAndServerErrorOptions>;
+    options: Partial<GetValidationAndServerErrorOptions>;
 }
 
-export function ServerErrorsTable({ options }: ServerErrorsTableProps) {
+export function ServerErrorsTable({
+    options,
+}: Readonly<ServerErrorsTableProps>) {
     const [search, setSearch] = useState('');
     const [selectedError, setSelectedError] =
         useState<ServerErrorsTableResponseDto | null>(null);
@@ -59,21 +64,20 @@ export function ServerErrorsTable({ options }: ServerErrorsTableProps) {
 
     const renderTableBody = () => {
         if (tableQuery.isLoading) {
-            return (
-                <TableRow>
-                    <TableCell colSpan={4} className="h-32">
-                        <LoadingRows rows={3} />
-                    </TableCell>
-                </TableRow>
-            );
+            return <TableLoadingRows colSpan={4} rows={3} />;
         }
         if (filteredErrors.length === 0) {
             return (
                 <TableRow>
-                    <TableCell colSpan={4} className="h-48">
-                        <ErrorsEmptyState
+                    <TableCell colSpan={4} className="p-6">
+                        <EmptyState
+                            icon={Terminal}
                             title={emptyTitle}
                             description={emptyDescription}
+                            isFiltered={Boolean(search)}
+                            onResetFilters={() => {
+                                setSearch('');
+                            }}
                         />
                     </TableCell>
                 </TableRow>
@@ -89,28 +93,28 @@ export function ServerErrorsTable({ options }: ServerErrorsTableProps) {
                         <TableCell>
                             <Badge
                                 variant="outline"
-                                className="font-mono text-[11px] bg-destructive/10 text-destructive border-destructive/20"
+                                className="font-mono text-[11px] bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20"
                             >
                                 {err.type}
                             </Badge>
                         </TableCell>
-                        <TableCell className="text-xs font-medium text-foreground max-w-md truncate">
+                        <TableCell className="text-xs font-medium text-foreground max-w-sm truncate">
                             <span title={err.msg}>{err.msg}</span>
                         </TableCell>
-                        <TableCell className="text-right font-mono text-xs font-semibold text-destructive">
+                        <TableCell className="text-right font-mono text-xs font-semibold text-foreground">
                             {err.errorCount.toLocaleString()}
                         </TableCell>
                         <TableCell className="text-center">
                             <Button
-                                variant="outline"
+                                variant="ghost"
                                 size="sm"
-                                className="h-7 text-xs gap-1.5 font-mono"
+                                className="h-7 w-7 p-0"
                                 onClick={() => {
                                     handleViewTraceback(err);
                                 }}
+                                title="View Traceback"
                             >
-                                <Terminal className="h-3 w-3" />
-                                <span>Trace</span>
+                                <Terminal className="h-3.5 w-3.5" />
                             </Button>
                         </TableCell>
                     </TableRow>
@@ -122,31 +126,15 @@ export function ServerErrorsTable({ options }: ServerErrorsTableProps) {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <div className="relative flex-1 min-w-48 sm:max-w-xs">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="Search server exceptions or messages..."
-                        value={search}
-                        onChange={(e) => {
-                            setSearch(e.target.value);
-                        }}
-                        className="pl-8.5 h-9 text-xs"
-                    />
-                    {search && (
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setSearch('');
-                            }}
-                            className="absolute right-2.5 top-2.5 text-muted-foreground hover:text-foreground"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    )}
-                </div>
+                <SearchInput
+                    placeholder="Search exceptions or stack traces..."
+                    value={search}
+                    onChange={setSearch}
+                    className="min-w-48 sm:max-w-xs"
+                />
             </div>
 
-            <div className="rounded-md border bg-card overflow-hidden">
+            <TableWrapper>
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-muted/30 hover:bg-muted/30">
@@ -156,26 +144,25 @@ export function ServerErrorsTable({ options }: ServerErrorsTableProps) {
                             <TableHead className="text-xs font-semibold">
                                 Error Message
                             </TableHead>
-                            <TableHead className="text-right text-xs font-semibold w-24">
+                            <TableHead className="w-24 text-right text-xs font-semibold">
                                 Crashes
                             </TableHead>
-                            <TableHead className="w-32 text-center text-xs font-semibold">
+                            <TableHead className="w-20 text-center text-xs font-semibold">
                                 Traceback
                             </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>{renderTableBody()}</TableBody>
                 </Table>
-            </div>
+            </TableWrapper>
 
-            <ServerErrorTracebackDialog
-                error={selectedError}
-                open={tracebackDialogOpen}
-                onOpenChange={(open) => {
-                    setTracebackDialogOpen(open);
-                    if (!open) setSelectedError(null);
-                }}
-            />
+            {selectedError ? (
+                <ServerErrorTracebackDialog
+                    error={selectedError}
+                    open={tracebackDialogOpen}
+                    onOpenChange={setTracebackDialogOpen}
+                />
+            ) : null}
         </div>
     );
 }

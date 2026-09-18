@@ -1,4 +1,5 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { ShieldCheck } from 'lucide-react';
 import { OrderDirection, type GetErrorOptions } from '@hitapi/types';
 import { RestfulMethod } from '@hitapi/shared/enums';
 import {
@@ -9,24 +10,27 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { LoadingRows } from '@/components/states/LoadingState';
+import { SortIcon, TableLoadingRows, TableWrapper } from '@/components/common';
+import { EmptyState } from '@/components/states/EmptyState';
+import { getAriaSort } from '@/lib/sort';
+import { useSortState } from '@/hooks';
 import { useErrorsTableQuery } from '../../hooks';
 import { ErrorsTableToolbar } from './ErrorsTableToolbar';
 import { ErrorsTableRow } from './ErrorsTableRow';
-import { ErrorsEmptyState } from './ErrorsEmptyState';
-import { SortIcon } from './SortIcon';
-import { getAriaSort, type ErrorSortField } from './table.utils';
+import type { ErrorSortField } from './table.utils';
 
 interface ErrorsTableProps {
-    readonly options: Partial<GetErrorOptions>;
+    options: Partial<GetErrorOptions>;
 }
 
-export function ErrorsTable({ options }: ErrorsTableProps) {
+export function ErrorsTable({ options }: Readonly<ErrorsTableProps>) {
     const [search, setSearch] = useState('');
     const [methodFilter, setMethodFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
-    const [sortBy, setSortBy] = useState<ErrorSortField>('requestCount');
-    const [order, setOrder] = useState<OrderDirection>(OrderDirection.DESC);
+    const { sortBy, order, handleSort } = useSortState<ErrorSortField>(
+        'requestCount',
+        OrderDirection.DESC,
+    );
 
     const effectiveMethod =
         methodFilter !== 'all'
@@ -45,19 +49,6 @@ export function ErrorsTable({ options }: ErrorsTableProps) {
         method: effectiveMethod,
         statusCode: effectiveStatusCode,
     });
-
-    const handleSort = (column: ErrorSortField) => {
-        if (sortBy === column) {
-            setOrder((prev) =>
-                prev === OrderDirection.ASC
-                    ? OrderDirection.DESC
-                    : OrderDirection.ASC,
-            );
-        } else {
-            setSortBy(column);
-            setOrder(OrderDirection.DESC);
-        }
-    };
 
     const queryData = tableQuery.data;
 
@@ -98,10 +89,8 @@ export function ErrorsTable({ options }: ErrorsTableProps) {
                     comparison = a.affectedConsumers - b.affectedConsumers;
                     break;
                 case 'path':
-                    comparison = a.path.localeCompare(b.path);
-                    break;
                 default:
-                    comparison = 0;
+                    comparison = a.path.localeCompare(b.path);
                     break;
             }
             return order === OrderDirection.ASC ? comparison : -comparison;
@@ -111,7 +100,7 @@ export function ErrorsTable({ options }: ErrorsTableProps) {
     }, [queryData, search, statusFilter, sortBy, order]);
 
     const hasActiveFilters =
-        search.trim().length > 0 ||
+        Boolean(search.trim()) ||
         methodFilter !== 'all' ||
         statusFilter !== 'all';
 
@@ -130,21 +119,18 @@ export function ErrorsTable({ options }: ErrorsTableProps) {
 
     const renderTableBody = () => {
         if (tableQuery.isLoading) {
-            return (
-                <TableRow>
-                    <TableCell colSpan={6} className="h-32">
-                        <LoadingRows rows={3} />
-                    </TableCell>
-                </TableRow>
-            );
+            return <TableLoadingRows colSpan={6} rows={3} />;
         }
         if (filteredAndSortedErrors.length === 0) {
             return (
                 <TableRow>
-                    <TableCell colSpan={6} className="h-48">
-                        <ErrorsEmptyState
+                    <TableCell colSpan={6} className="p-6">
+                        <EmptyState
+                            icon={ShieldCheck}
                             title={emptyTitle}
                             description={emptyDescription}
+                            isFiltered={hasActiveFilters}
+                            onResetFilters={handleResetFilters}
                         />
                     </TableCell>
                 </TableRow>
@@ -172,7 +158,7 @@ export function ErrorsTable({ options }: ErrorsTableProps) {
                 hasActiveFilters={hasActiveFilters}
             />
 
-            <div className="rounded-md border bg-card overflow-hidden">
+            <TableWrapper>
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-muted/30 hover:bg-muted/30">
@@ -262,7 +248,7 @@ export function ErrorsTable({ options }: ErrorsTableProps) {
                     </TableHeader>
                     <TableBody>{renderTableBody()}</TableBody>
                 </Table>
-            </div>
+            </TableWrapper>
         </div>
     );
 }
