@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
-import type { GetTrafficOptions } from '@hitapi/types';
+import { Network } from 'lucide-react';
+import { OrderDirection, type GetTrafficOptions } from '@hitapi/types';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,16 +11,13 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { LoadingRows } from '@/components/states/LoadingState';
+import { SortIcon, TableLoadingRows } from '@/components/common';
+import { EmptyState } from '@/components/states/EmptyState';
+import { usePagination, useSortState } from '@/hooks';
 import { useTrafficEndpointsTableQuery } from '../../hooks';
-import {
-    sortTrafficEndpoints,
-    type TrafficSortDirection,
-    type TrafficSortField,
-} from './table.utils';
+import { sortTrafficEndpoints, type TrafficSortField } from './table.utils';
 import { TrafficEndpointsTableToolbar } from './TrafficEndpointsTableToolbar';
 import { TrafficEndpointsTableRow } from './TrafficEndpointsTableRow';
-import { TrafficEndpointsEmptyState } from './TrafficEndpointsEmptyState';
 
 export interface TrafficEndpointsTableProps {
     options: Partial<GetTrafficOptions>;
@@ -34,21 +31,14 @@ export function TrafficEndpointsTable({
 
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedMethod, setSelectedMethod] = useState<string>('all');
-    const [sortBy, setSortBy] = useState<TrafficSortField>('totalRequestCount');
-    const [sortDirection, setSortDirection] =
-        useState<TrafficSortDirection>('desc');
-    const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 15;
-
-    const handleSort = (field: TrafficSortField) => {
-        if (sortBy === field) {
-            setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-        } else {
-            setSortBy(field);
-            setSortDirection('desc');
-        }
-        setCurrentPage(1);
-    };
+    const {
+        sortBy,
+        order,
+        handleSort: onSort,
+    } = useSortState<TrafficSortField>(
+        'totalRequestCount',
+        OrderDirection.DESC,
+    );
 
     const filteredEndpoints = useMemo(() => {
         return rawEndpoints.filter((ep) => {
@@ -63,36 +53,33 @@ export function TrafficEndpointsTable({
     }, [rawEndpoints, searchTerm, selectedMethod]);
 
     const sortedEndpoints = useMemo(() => {
-        return sortTrafficEndpoints(filteredEndpoints, sortBy, sortDirection);
-    }, [filteredEndpoints, sortBy, sortDirection]);
+        return sortTrafficEndpoints(filteredEndpoints, sortBy, order);
+    }, [filteredEndpoints, sortBy, order]);
 
-    const totalPages = Math.max(
-        1,
-        Math.ceil(sortedEndpoints.length / pageSize),
-    );
-    const paginatedEndpoints = useMemo(() => {
-        const start = (currentPage - 1) * pageSize;
-        return sortedEndpoints.slice(start, start + pageSize);
-    }, [sortedEndpoints, currentPage, pageSize]);
+    const {
+        currentPage,
+        totalPages,
+        pageSize,
+        paginatedItems: paginatedEndpoints,
+        goToNextPage,
+        goToPrevPage,
+        hasNextPage,
+        hasPrevPage,
+        resetPage,
+    } = usePagination(sortedEndpoints, 15);
+
+    const handleSort = (field: TrafficSortField) => {
+        onSort(field);
+        resetPage();
+    };
 
     const resetFilters = () => {
         setSearchTerm('');
         setSelectedMethod('all');
-        setCurrentPage(1);
+        resetPage();
     };
 
-    const renderSortIcon = (field: TrafficSortField) => {
-        if (sortBy !== field) {
-            return (
-                <ArrowUpDown className="ml-1 h-3 w-3 text-muted-foreground/40" />
-            );
-        }
-        return sortDirection === 'asc' ? (
-            <ArrowUp className="ml-1 h-3 w-3 text-foreground" />
-        ) : (
-            <ArrowDown className="ml-1 h-3 w-3 text-foreground" />
-        );
-    };
+    const isFiltered = searchTerm !== '' || selectedMethod !== 'all';
 
     return (
         <Card className="overflow-hidden">
@@ -100,12 +87,12 @@ export function TrafficEndpointsTable({
                 searchTerm={searchTerm}
                 onSearchChange={(val) => {
                     setSearchTerm(val);
-                    setCurrentPage(1);
+                    resetPage();
                 }}
                 selectedMethod={selectedMethod}
                 onMethodChange={(val) => {
                     setSelectedMethod(val);
-                    setCurrentPage(1);
+                    resetPage();
                 }}
                 totalCount={rawEndpoints.length}
                 filteredCount={filteredEndpoints.length}
@@ -125,9 +112,14 @@ export function TrafficEndpointsTable({
                                     onClick={() => {
                                         handleSort('path');
                                     }}
-                                    className="flex items-center text-xs font-semibold text-muted-foreground hover:text-foreground"
+                                    className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground group"
                                 >
-                                    Endpoint Path {renderSortIcon('path')}
+                                    <span>Endpoint Path</span>
+                                    <SortIcon
+                                        column="path"
+                                        sortBy={sortBy}
+                                        order={order}
+                                    />
                                 </button>
                             </TableHead>
                             <TableHead className="text-right">
@@ -136,10 +128,14 @@ export function TrafficEndpointsTable({
                                     onClick={() => {
                                         handleSort('totalRequestCount');
                                     }}
-                                    className="ml-auto flex items-center text-xs font-semibold text-muted-foreground hover:text-foreground"
+                                    className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground group"
                                 >
-                                    Requests{' '}
-                                    {renderSortIcon('totalRequestCount')}
+                                    <span>Requests</span>
+                                    <SortIcon
+                                        column="totalRequestCount"
+                                        sortBy={sortBy}
+                                        order={order}
+                                    />
                                 </button>
                             </TableHead>
                             <TableHead className="text-right">
@@ -148,10 +144,14 @@ export function TrafficEndpointsTable({
                                     onClick={() => {
                                         handleSort('clientErrorCount');
                                     }}
-                                    className="ml-auto flex items-center text-xs font-semibold text-muted-foreground hover:text-foreground"
+                                    className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground group"
                                 >
-                                    4xx Errors{' '}
-                                    {renderSortIcon('clientErrorCount')}
+                                    <span>4xx Errors</span>
+                                    <SortIcon
+                                        column="clientErrorCount"
+                                        sortBy={sortBy}
+                                        order={order}
+                                    />
                                 </button>
                             </TableHead>
                             <TableHead className="text-right">
@@ -160,10 +160,14 @@ export function TrafficEndpointsTable({
                                     onClick={() => {
                                         handleSort('serverErrorCount');
                                     }}
-                                    className="ml-auto flex items-center text-xs font-semibold text-muted-foreground hover:text-foreground"
+                                    className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground group"
                                 >
-                                    5xx Errors{' '}
-                                    {renderSortIcon('serverErrorCount')}
+                                    <span>5xx Errors</span>
+                                    <SortIcon
+                                        column="serverErrorCount"
+                                        sortBy={sortBy}
+                                        order={order}
+                                    />
                                 </button>
                             </TableHead>
                             <TableHead className="text-right">
@@ -172,9 +176,14 @@ export function TrafficEndpointsTable({
                                     onClick={() => {
                                         handleSort('errorRate');
                                     }}
-                                    className="ml-auto flex items-center text-xs font-semibold text-muted-foreground hover:text-foreground"
+                                    className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground group"
                                 >
-                                    Error Rate {renderSortIcon('errorRate')}
+                                    <span>Error Rate</span>
+                                    <SortIcon
+                                        column="errorRate"
+                                        sortBy={sortBy}
+                                        order={order}
+                                    />
                                 </button>
                             </TableHead>
                             <TableHead className="text-right">
@@ -183,9 +192,14 @@ export function TrafficEndpointsTable({
                                     onClick={() => {
                                         handleSort('dataTransferred');
                                     }}
-                                    className="ml-auto flex items-center text-xs font-semibold text-muted-foreground hover:text-foreground"
+                                    className="ml-auto flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground group"
                                 >
-                                    Data {renderSortIcon('dataTransferred')}
+                                    <span>Data</span>
+                                    <SortIcon
+                                        column="dataTransferred"
+                                        sortBy={sortBy}
+                                        order={order}
+                                    />
                                 </button>
                             </TableHead>
                         </TableRow>
@@ -193,11 +207,11 @@ export function TrafficEndpointsTable({
 
                     <TableBody>
                         {isLoading && (
-                            <TableRow>
-                                <TableCell colSpan={7} className="p-8">
-                                    <LoadingRows rows={5} />
-                                </TableCell>
-                            </TableRow>
+                            <TableLoadingRows
+                                colSpan={7}
+                                rows={5}
+                                className="p-8"
+                            />
                         )}
                         {!isLoading &&
                             paginatedEndpoints.length > 0 &&
@@ -209,12 +223,20 @@ export function TrafficEndpointsTable({
                             ))}
                         {!isLoading && paginatedEndpoints.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={7} className="p-0">
-                                    <TrafficEndpointsEmptyState
-                                        isFiltered={
-                                            searchTerm !== '' ||
-                                            selectedMethod !== 'all'
+                                <TableCell colSpan={7} className="p-6">
+                                    <EmptyState
+                                        icon={Network}
+                                        title={
+                                            isFiltered
+                                                ? 'No matching endpoints'
+                                                : 'No endpoint traffic data'
                                         }
+                                        description={
+                                            isFiltered
+                                                ? 'No endpoints match your current filter criteria. Try clearing your search or method filters.'
+                                                : 'Endpoint traffic and error metrics will appear as API requests are processed.'
+                                        }
+                                        isFiltered={isFiltered}
                                         onResetFilters={resetFilters}
                                     />
                                 </TableCell>
@@ -234,10 +256,8 @@ export function TrafficEndpointsTable({
                         <Button
                             variant="outline"
                             size="sm"
-                            disabled={currentPage <= 1}
-                            onClick={() => {
-                                setCurrentPage((p) => Math.max(1, p - 1));
-                            }}
+                            disabled={!hasPrevPage}
+                            onClick={goToPrevPage}
                             className="h-7 text-xs"
                         >
                             Previous
@@ -245,12 +265,8 @@ export function TrafficEndpointsTable({
                         <Button
                             variant="outline"
                             size="sm"
-                            disabled={currentPage >= totalPages}
-                            onClick={() => {
-                                setCurrentPage((p) =>
-                                    Math.min(totalPages, p + 1),
-                                );
-                            }}
+                            disabled={!hasNextPage}
+                            onClick={goToNextPage}
                             className="h-7 text-xs"
                         >
                             Next
