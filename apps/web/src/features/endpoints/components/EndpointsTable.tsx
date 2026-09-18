@@ -7,7 +7,6 @@ import {
     Activity,
 } from 'lucide-react';
 import type { EndpointResponseDto } from '@hitapi/types';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -25,19 +24,21 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { EndpointPath, MethodBadge, TableWrapper } from '@/components/common';
 import { useUpdateEndpointConfigMutation } from '../hooks';
 import { EndpointConfigDialog } from './EndpointConfigDialog';
 import { EndpointErrorConfigDialog } from './EndpointErrorConfigDialog';
 import { EndpointDetailsDialog } from './EndpointDetailsDialog';
-import { getMethodBadgeClass } from './endpoint.utils';
-import { EndpointPath } from '@/components/common';
 
 interface EndpointsTableProps {
-    readonly appId: string;
-    readonly endpoints: EndpointResponseDto[];
+    appId: string;
+    endpoints: EndpointResponseDto[];
 }
 
-export function EndpointsTable({ appId, endpoints }: EndpointsTableProps) {
+export function EndpointsTable({
+    appId,
+    endpoints,
+}: Readonly<EndpointsTableProps>) {
     const [detailsEndpoint, setDetailsEndpoint] =
         useState<EndpointResponseDto | null>(null);
     const [configEndpoint, setConfigEndpoint] =
@@ -74,7 +75,7 @@ export function EndpointsTable({ appId, endpoints }: EndpointsTableProps) {
 
     return (
         <>
-            <div className="rounded-md border bg-card overflow-hidden">
+            <TableWrapper>
                 <Table>
                     <caption className="sr-only">
                         Discovered endpoints and configurations
@@ -104,14 +105,7 @@ export function EndpointsTable({ appId, endpoints }: EndpointsTableProps) {
                                 }}
                             >
                                 <TableCell>
-                                    <Badge
-                                        variant="outline"
-                                        className={`font-mono text-[11px] font-semibold tracking-wider ${getMethodBadgeClass(
-                                            endpoint.method,
-                                        )}`}
-                                    >
-                                        {endpoint.method}
-                                    </Badge>
+                                    <MethodBadge method={endpoint.method} />
                                 </TableCell>
                                 <TableCell>
                                     <EndpointPath path={endpoint.path} />
@@ -212,7 +206,7 @@ export function EndpointsTable({ appId, endpoints }: EndpointsTableProps) {
                         ))}
                     </TableBody>
                 </Table>
-            </div>
+            </TableWrapper>
 
             {detailsEndpoint ? (
                 <EndpointDetailsDialog

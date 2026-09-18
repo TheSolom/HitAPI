@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertTriangle } from 'lucide-react';
@@ -24,20 +23,20 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { MethodBadge } from '@/components/common';
+import { useDialogState } from '@/hooks';
 import {
     updateEndpointErrorConfigSchema,
     type UpdateEndpointErrorConfigFormValues,
 } from '../schemas';
 import { useUpdateEndpointErrorConfigMutation } from '../hooks';
-import { getMethodBadgeClass } from './endpoint.utils';
 
 interface EndpointErrorConfigDialogProps {
-    readonly appId: string;
-    readonly endpoint: EndpointResponseDto;
-    readonly trigger?: React.ReactNode;
-    readonly open?: boolean;
-    readonly onOpenChange?: (open: boolean) => void;
+    appId: string;
+    endpoint: EndpointResponseDto;
+    trigger?: React.ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
 export function EndpointErrorConfigDialog({
@@ -46,10 +45,11 @@ export function EndpointErrorConfigDialog({
     trigger,
     open: externalOpen,
     onOpenChange: externalOnOpenChange,
-}: EndpointErrorConfigDialogProps) {
-    const [internalOpen, setInternalOpen] = useState(false);
-    const isOpen = externalOpen ?? internalOpen;
-    const setIsOpen = externalOnOpenChange ?? setInternalOpen;
+}: Readonly<EndpointErrorConfigDialogProps>) {
+    const { isOpen, setIsOpen } = useDialogState(
+        externalOpen,
+        externalOnOpenChange,
+    );
     const updateErrorConfig = useUpdateEndpointErrorConfigMutation();
 
     const form = useForm<UpdateEndpointErrorConfigFormValues>({
@@ -97,14 +97,7 @@ export function EndpointErrorConfigDialog({
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Badge
-                            variant="outline"
-                            className={`font-mono text-[11px] font-semibold tracking-wider ${getMethodBadgeClass(
-                                endpoint.method,
-                            )}`}
-                        >
-                            {endpoint.method}
-                        </Badge>
+                        <MethodBadge method={endpoint.method} />
                         <span className="font-mono text-sm">
                             {endpoint.path}
                         </span>

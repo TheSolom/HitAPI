@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SlidersHorizontal } from 'lucide-react';
@@ -23,22 +22,21 @@ import {
     FormMessage,
 } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
-import { TargetResponseTimeSlider } from '@/components/common/target-response-time-slider';
+import { MethodBadge, TargetResponseTimeSlider } from '@/components/common';
+import { useDialogState } from '@/hooks';
 import { applyFormErrors } from '@/lib/api';
 import {
     updateEndpointConfigSchema,
     type UpdateEndpointConfigFormValues,
 } from '../schemas';
 import { useUpdateEndpointConfigMutation } from '../hooks';
-import { getMethodBadgeClass } from './endpoint.utils';
 
 interface EndpointConfigDialogProps {
-    readonly appId: string;
-    readonly endpoint: EndpointResponseDto;
-    readonly trigger?: React.ReactNode;
-    readonly open?: boolean;
-    readonly onOpenChange?: (open: boolean) => void;
+    appId: string;
+    endpoint: EndpointResponseDto;
+    trigger?: React.ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
 export function EndpointConfigDialog({
@@ -47,10 +45,11 @@ export function EndpointConfigDialog({
     trigger,
     open: externalOpen,
     onOpenChange: externalOnOpenChange,
-}: EndpointConfigDialogProps) {
-    const [internalOpen, setInternalOpen] = useState(false);
-    const isOpen = externalOpen ?? internalOpen;
-    const setIsOpen = externalOnOpenChange ?? setInternalOpen;
+}: Readonly<EndpointConfigDialogProps>) {
+    const { isOpen, setIsOpen } = useDialogState(
+        externalOpen,
+        externalOnOpenChange,
+    );
     const updateConfig = useUpdateEndpointConfigMutation();
 
     const form = useForm<UpdateEndpointConfigFormValues>({
@@ -102,14 +101,7 @@ export function EndpointConfigDialog({
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Badge
-                            variant="outline"
-                            className={`font-mono text-[11px] font-semibold tracking-wider ${getMethodBadgeClass(
-                                endpoint.method,
-                            )}`}
-                        >
-                            {endpoint.method}
-                        </Badge>
+                        <MethodBadge method={endpoint.method} />
                         <span className="font-mono text-sm">
                             {endpoint.path}
                         </span>

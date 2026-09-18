@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
     SlidersHorizontal,
     Clock,
@@ -16,16 +15,17 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { MethodBadge } from '@/components/common';
+import { useDialogState } from '@/hooks';
 import { EndpointConfigDialog } from './EndpointConfigDialog';
 import { EndpointErrorConfigDialog } from './EndpointErrorConfigDialog';
-import { getMethodBadgeClass } from './endpoint.utils';
 
 interface EndpointDetailsDialogProps {
-    readonly appId: string;
-    readonly endpoint: EndpointResponseDto;
-    readonly trigger?: React.ReactNode;
-    readonly open?: boolean;
-    readonly onOpenChange?: (open: boolean) => void;
+    appId: string;
+    endpoint: EndpointResponseDto;
+    trigger?: React.ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
 export function EndpointDetailsDialog({
@@ -33,10 +33,11 @@ export function EndpointDetailsDialog({
     endpoint,
     open: externalOpen,
     onOpenChange: externalOnOpenChange,
-}: EndpointDetailsDialogProps) {
-    const [internalOpen, setInternalOpen] = useState(false);
-    const isOpen = externalOpen ?? internalOpen;
-    const setIsOpen = externalOnOpenChange ?? setInternalOpen;
+}: Readonly<EndpointDetailsDialogProps>) {
+    const { isOpen, setIsOpen } = useDialogState(
+        externalOpen,
+        externalOnOpenChange,
+    );
 
     const targetLatencyText =
         typeof endpoint.targetResponseTimeMs === 'number'
@@ -48,14 +49,7 @@ export function EndpointDetailsDialog({
             <DialogContent className="max-w-md sm:max-w-lg">
                 <DialogHeader>
                     <div className="flex items-center gap-2">
-                        <Badge
-                            variant="outline"
-                            className={`font-mono text-[11px] font-semibold tracking-wider ${getMethodBadgeClass(
-                                endpoint.method,
-                            )}`}
-                        >
-                            {endpoint.method}
-                        </Badge>
+                        <MethodBadge method={endpoint.method} />
                         <DialogTitle className="font-mono text-base break-all">
                             {endpoint.path}
                         </DialogTitle>
