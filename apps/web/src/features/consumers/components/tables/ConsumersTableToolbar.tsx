@@ -1,7 +1,6 @@
-import { RotateCcw, Search, Sparkles, X } from 'lucide-react';
+import { RotateCcw, Sparkles } from 'lucide-react';
 import type { ConsumerGroupResponseDto } from '@hitapi/types';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
@@ -9,17 +8,18 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { SearchInput } from '@/components/common';
 
 export interface ConsumersTableToolbarProps {
-    readonly search: string;
-    readonly onSearchChange: (value: string) => void;
-    readonly onlyNew: boolean;
-    readonly onToggleOnlyNew: () => void;
-    readonly selectedGroupFilter: string;
-    readonly onGroupFilterChange: (value: string) => void;
-    readonly groups: readonly ConsumerGroupResponseDto[];
-    readonly hasActiveFilters: boolean;
-    readonly onResetFilters: () => void;
+    search: string;
+    onSearchChange: (value: string) => void;
+    onlyNew: boolean;
+    onToggleOnlyNew: () => void;
+    selectedGroupFilter: string;
+    onGroupFilterChange: (value: string) => void;
+    groups: readonly ConsumerGroupResponseDto[];
+    hasActiveFilters: boolean;
+    onResetFilters: () => void;
 }
 
 export function ConsumersTableToolbar({
@@ -32,32 +32,14 @@ export function ConsumersTableToolbar({
     groups,
     hasActiveFilters,
     onResetFilters,
-}: ConsumersTableToolbarProps) {
+}: Readonly<ConsumersTableToolbarProps>) {
     return (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="relative flex-1 sm:max-w-xs">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                    placeholder="Search by name or identifier..."
-                    value={search}
-                    onChange={(e) => {
-                        onSearchChange(e.target.value);
-                    }}
-                    className="pl-8.5 pr-8 h-9 text-sm"
-                />
-                {search && (
-                    <button
-                        type="button"
-                        onClick={() => {
-                            onSearchChange('');
-                        }}
-                        className="absolute right-2.5 top-2.5 text-muted-foreground hover:text-foreground"
-                        aria-label="Clear search"
-                    >
-                        <X className="h-4 w-4" />
-                    </button>
-                )}
-            </div>
+            <SearchInput
+                placeholder="Search by name or identifier..."
+                value={search}
+                onChange={onSearchChange}
+            />
 
             <div className="flex flex-wrap items-center gap-2">
                 {/* Quick New Client Pill */}
@@ -93,7 +75,7 @@ export function ConsumersTableToolbar({
                 </Select>
 
                 {/* Reset Button (shows if filters active) */}
-                {hasActiveFilters && (
+                {hasActiveFilters ? (
                     <Button
                         variant="ghost"
                         size="sm"
@@ -104,7 +86,7 @@ export function ConsumersTableToolbar({
                         <RotateCcw className="h-3.5 w-3.5" />
                         <span>Reset</span>
                     </Button>
-                )}
+                ) : null}
             </div>
         </div>
     );

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { User } from 'lucide-react';
 import {
     OrderDirection,
     type ConsumerGroupResponseDto,
@@ -6,6 +7,8 @@ import {
     type TrafficConsumersTableResponseDto,
 } from '@hitapi/types';
 import { cn } from '@/lib/utils';
+import { getAriaSort } from '@/lib/sort';
+import { useSortState } from '@/hooks';
 import {
     Table,
     TableBody,
@@ -14,19 +17,19 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { LoadingRows } from '@/components/states/LoadingState';
+import { EmptyState } from '@/components/states/EmptyState';
+import { SortIcon, TableWrapper } from '@/components/common';
 import { EditConsumerDialog } from '../dialogs/EditConsumerDialog';
 import { useConsumersTableQuery } from '../../hooks';
-import { SortIcon } from './SortIcon';
-import { getAriaSort, type SortField } from './table.utils';
-import { ConsumersEmptyState } from './ConsumersEmptyState';
+import type { SortField } from './table.utils';
 import { ConsumersTableToolbar } from './ConsumersTableToolbar';
 import { ConsumerTableRow } from './ConsumerTableRow';
 
 interface ConsumersTableProps {
-    readonly appId: string;
-    readonly period?: Period;
-    readonly groups?: ConsumerGroupResponseDto[];
-    readonly initialGroupId?: string;
+    appId: string;
+    period?: Period;
+    groups?: ConsumerGroupResponseDto[];
+    initialGroupId?: string;
 }
 
 function useSyncedGroupFilter(initialGroupId?: string) {
@@ -51,7 +54,7 @@ export function ConsumersTable({
     period,
     groups = [],
     initialGroupId,
-}: ConsumersTableProps) {
+}: Readonly<ConsumersTableProps>) {
     const [selectedConsumer, setSelectedConsumer] =
         useState<TrafficConsumersTableResponseDto | null>(null);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -59,8 +62,10 @@ export function ConsumersTable({
     const [selectedGroupFilter, setSelectedGroupFilter] =
         useSyncedGroupFilter(initialGroupId);
     const [onlyNew, setOnlyNew] = useState(false);
-    const [sortBy, setSortBy] = useState<SortField>('requests');
-    const [order, setOrder] = useState<OrderDirection>(OrderDirection.DESC);
+    const { sortBy, order, handleSort } = useSortState<SortField>(
+        'requests',
+        OrderDirection.DESC,
+    );
 
     const consumerGroupId =
         selectedGroupFilter !== 'all' && selectedGroupFilter !== 'unassigned'
@@ -85,19 +90,6 @@ export function ConsumersTable({
     const handleEdit = (consumer: TrafficConsumersTableResponseDto) => {
         setSelectedConsumer(consumer);
         setEditDialogOpen(true);
-    };
-
-    const handleSort = (column: SortField) => {
-        if (sortBy === column) {
-            setOrder((prev) =>
-                prev === OrderDirection.ASC
-                    ? OrderDirection.DESC
-                    : OrderDirection.ASC,
-            );
-        } else {
-            setSortBy(column);
-            setOrder(OrderDirection.DESC);
-        }
     };
 
     const resetFilters = () => {
@@ -125,14 +117,21 @@ export function ConsumersTable({
             {tableQuery.isLoading && consumers.length === 0 && <LoadingRows />}
 
             {!tableQuery.isLoading && consumers.length === 0 && (
-                <ConsumersEmptyState
-                    hasActiveFilters={hasActiveFilters}
+                <EmptyState
+                    icon={User}
+                    title="No consumers found"
+                    description={
+                        hasActiveFilters
+                            ? 'No consumers match your active filters. Try adjusting your search query, group filter, or new client toggle.'
+                            : 'No consumers reported traffic in this period yet.'
+                    }
+                    isFiltered={hasActiveFilters}
                     onResetFilters={resetFilters}
                 />
             )}
 
             {consumers.length > 0 && (
-                <div className="rounded-md border bg-card overflow-hidden">
+                <TableWrapper>
                     <Table>
                         <caption className="sr-only">
                             Consumer traffic telemetry and reliability
@@ -280,7 +279,7 @@ export function ConsumersTable({
                             ))}
                         </TableBody>
                     </Table>
-                </div>
+                </TableWrapper>
             )}
 
             {/* Edit Consumer Dialog */}
