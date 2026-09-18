@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import type { TrafficMetricsResponseDto as ITrafficMetricsResponseDto } from '@hitapi/types';
 
-export class TrafficMetricsResponseDto {
+export class TrafficMetricsResponseDto implements ITrafficMetricsResponseDto {
     @ApiProperty({ type: 'integer' })
     totalRequestCount: number;
 
