@@ -1,8 +1,8 @@
-﻿import { useMemo, useState } from 'react';
-import { Users2, Search, X } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Users2, Search } from 'lucide-react';
 import type { TeamResponseDto } from '@hitapi/types';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Input } from '@/components/ui/input';
+import { SearchInput } from '@/components/common';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LoadingCards } from '@/components/states/LoadingState';
@@ -88,26 +88,17 @@ export function TeamsPage() {
 
         if (filteredTeams.length === 0) {
             return (
-                <div className="flex flex-col items-center justify-center rounded-md border border-dashed p-8 text-center">
-                    <Search className="h-8 w-8 text-muted-foreground" />
-                    <h3 className="mt-3 text-base font-semibold">
-                        No matching teams found
-                    </h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                        No teams match your search query or selected filter.
-                    </p>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-4"
-                        onClick={() => {
-                            setSearch('');
-                            setFilter('all');
-                        }}
-                    >
-                        Clear filters
-                    </Button>
-                </div>
+                <EmptyState
+                    icon={Search}
+                    title="No matching teams found"
+                    description="No teams match your search query or selected filter."
+                    isFiltered
+                    onResetFilters={() => {
+                        setSearch('');
+                        setFilter('all');
+                    }}
+                    resetLabel="Clear filters"
+                />
             );
         }
 
@@ -124,36 +115,18 @@ export function TeamsPage() {
         <div className="space-y-6">
             <PageHeader
                 title="Teams"
-                description="Switch between teams, manage members and control who can see your API data."
+                description="Manage your team workspaces, invite members, and configure access."
                 actions={<CreateTeamDialog />}
             />
 
             {teams.length > 0 ? (
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="relative max-w-sm flex-1">
-                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                            value={search}
-                            onChange={(e) => {
-                                setSearch(e.target.value);
-                            }}
-                            placeholder="Search teams by name, slug or member..."
-                            className="pl-9 pr-9"
-                            aria-label="Search teams"
-                        />
-                        {search ? (
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setSearch('');
-                                }}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                aria-label="Clear search"
-                            >
-                                <X className="h-3.5 w-3.5" />
-                            </button>
-                        ) : null}
-                    </div>
+                    <SearchInput
+                        value={search}
+                        onChange={setSearch}
+                        placeholder="Search teams by name, slug or member..."
+                        className="max-w-sm flex-1"
+                    />
 
                     <div className="flex items-center gap-1.5 self-start sm:self-auto">
                         <Button

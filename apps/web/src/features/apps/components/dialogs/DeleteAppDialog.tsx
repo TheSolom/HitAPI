@@ -1,27 +1,17 @@
-import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { Trash2 } from 'lucide-react';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { ConfirmDeleteDialog } from '@/components/common';
+import { useDialogState } from '@/hooks';
 import { useDeleteAppMutation } from '../../hooks';
 
 interface DeleteAppDialogProps {
-    readonly appId: string;
-    readonly appName: string;
-    readonly trigger?: React.ReactNode;
-    readonly redirectToApps?: boolean;
-    readonly open?: boolean;
-    readonly onOpenChange?: (open: boolean) => void;
+    appId: string;
+    appName: string;
+    trigger?: React.ReactNode;
+    redirectToApps?: boolean;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
 export function DeleteAppDialog({
@@ -31,10 +21,11 @@ export function DeleteAppDialog({
     redirectToApps = false,
     open: externalOpen,
     onOpenChange: externalOnOpenChange,
-}: DeleteAppDialogProps) {
-    const [internalOpen, setInternalOpen] = useState(false);
-    const isOpen = externalOpen ?? internalOpen;
-    const setIsOpen = externalOnOpenChange ?? setInternalOpen;
+}: Readonly<DeleteAppDialogProps>) {
+    const { isOpen, setIsOpen } = useDialogState(
+        externalOpen,
+        externalOnOpenChange,
+    );
     const deleteApp = useDeleteAppMutation();
     const navigate = useNavigate();
 
@@ -57,37 +48,15 @@ export function DeleteAppDialog({
     );
 
     return (
-        <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-            {trigger !== null ? (
-                <AlertDialogTrigger asChild>
-                    {trigger ?? defaultTrigger}
-                </AlertDialogTrigger>
-            ) : null}
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Delete {appName}?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete the app, its endpoints, traffic metrics, and
-                        associated request logs.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel disabled={deleteApp.isPending}>
-                        Cancel
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                        onClick={(e) => {
-                            e.preventDefault();
-                            handleDelete();
-                        }}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        disabled={deleteApp.isPending}
-                    >
-                        {deleteApp.isPending ? 'Deleting...' : 'Delete app'}
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+        <ConfirmDeleteDialog
+            open={isOpen}
+            onOpenChange={setIsOpen}
+            trigger={trigger !== null ? (trigger ?? defaultTrigger) : undefined}
+            title={`Delete ${appName}?`}
+            confirmLabel="Delete app"
+            isPending={deleteApp.isPending}
+            onConfirm={handleDelete}
+            description="This action cannot be undone. This will permanently delete the app, its endpoints, traffic metrics, and associated request logs."
+        />
     );
 }

@@ -15,15 +15,16 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useDialogState } from '@/hooks';
 import { useDeleteTeamMutation, useTeamsQuery } from '../../hooks';
 
 interface DeleteTeamDialogProps {
-    readonly teamId: string;
-    readonly teamName: string;
-    readonly trigger?: React.ReactNode;
-    readonly redirectToTeams?: boolean;
-    readonly open?: boolean;
-    readonly onOpenChange?: (open: boolean) => void;
+    teamId: string;
+    teamName: string;
+    trigger?: React.ReactNode;
+    redirectToTeams?: boolean;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
 export function DeleteTeamDialog({
@@ -33,10 +34,11 @@ export function DeleteTeamDialog({
     redirectToTeams = false,
     open: externalOpen,
     onOpenChange: externalOnOpenChange,
-}: DeleteTeamDialogProps) {
-    const [internalOpen, setInternalOpen] = useState(false);
-    const isOpen = externalOpen ?? internalOpen;
-    const setIsOpen = externalOnOpenChange ?? setInternalOpen;
+}: Readonly<DeleteTeamDialogProps>) {
+    const { isOpen, setIsOpen } = useDialogState(
+        externalOpen,
+        externalOnOpenChange,
+    );
     const [confirmationInput, setConfirmationInput] = useState('');
     const deleteTeam = useDeleteTeamMutation();
     const teamsQuery = useTeamsQuery();

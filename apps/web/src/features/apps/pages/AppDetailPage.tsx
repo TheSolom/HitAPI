@@ -1,5 +1,5 @@
-﻿import { PageHeader } from '@/components/layout/PageHeader';
-import { Badge } from '@/components/ui/badge';
+import { PageHeader } from '@/components/layout/PageHeader';
+import { ActiveStatusBadge } from '@/components/common';
 import { LoadingCards } from '@/components/states/LoadingState';
 import { ErrorState } from '@/components/states/ErrorState';
 import { useAppQuery } from '../hooks';
@@ -11,10 +11,10 @@ import {
 } from '../components';
 
 interface AppDetailPageProps {
-    readonly appId: string;
+    appId: string;
 }
 
-export function AppDetailPage({ appId }: AppDetailPageProps) {
+export function AppDetailPage({ appId }: Readonly<AppDetailPageProps>) {
     const appQuery = useAppQuery(appId);
     const app = appQuery.data?.data;
 
@@ -46,16 +46,7 @@ export function AppDetailPage({ appId }: AppDetailPageProps) {
                 title={
                     <div className="flex items-center gap-3">
                         <span>{app.name}</span>
-                        <Badge
-                            variant="outline"
-                            className={
-                                app.active
-                                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25 font-medium'
-                                    : 'text-muted-foreground font-medium'
-                            }
-                        >
-                            {app.active ? 'Active' : 'Inactive'}
-                        </Badge>
+                        <ActiveStatusBadge active={app.active} />
                     </div>
                 }
                 description="Application configuration, key metrics, and monitoring data."

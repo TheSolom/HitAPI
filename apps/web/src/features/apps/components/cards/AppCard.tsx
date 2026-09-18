@@ -3,7 +3,6 @@ import { Link } from '@tanstack/react-router';
 import { Copy, MoreHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
 import type { AppResponseDto } from '@hitapi/types';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -12,14 +11,15 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ActiveStatusBadge } from '@/components/common';
 import { EditAppDialog } from '../dialogs/EditAppDialog';
 import { DeleteAppDialog } from '../dialogs/DeleteAppDialog';
 
 interface AppCardProps {
-    readonly app: AppResponseDto;
+    app: AppResponseDto;
 }
 
-export function AppCard({ app }: AppCardProps) {
+export function AppCard({ app }: Readonly<AppCardProps>) {
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -49,16 +49,7 @@ export function AppCard({ app }: AppCardProps) {
                         </div>
 
                         <div className="flex items-center gap-1.5 shrink-0">
-                            <Badge
-                                variant="outline"
-                                className={
-                                    app.active
-                                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25 font-medium'
-                                        : 'text-muted-foreground font-medium'
-                                }
-                            >
-                                {app.active ? 'Active' : 'Inactive'}
-                            </Badge>
+                            <ActiveStatusBadge active={app.active} />
 
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
