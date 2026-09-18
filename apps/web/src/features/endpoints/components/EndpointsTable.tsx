@@ -30,6 +30,7 @@ import { EndpointConfigDialog } from './EndpointConfigDialog';
 import { EndpointErrorConfigDialog } from './EndpointErrorConfigDialog';
 import { EndpointDetailsDialog } from './EndpointDetailsDialog';
 import { getMethodBadgeClass } from './endpoint.utils';
+import { EndpointPath } from '@/components/common';
 
 interface EndpointsTableProps {
     readonly appId: string;
@@ -113,9 +114,7 @@ export function EndpointsTable({ appId, endpoints }: EndpointsTableProps) {
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
-                                    <span className="font-mono text-sm font-bold text-foreground">
-                                        {endpoint.path}
-                                    </span>
+                                    <EndpointPath path={endpoint.path} />
                                 </TableCell>
                                 <TableCell>
                                     {endpoint.summary ? (
