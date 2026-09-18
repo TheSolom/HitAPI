@@ -11,13 +11,13 @@ import {
 } from '@/components/ui/select';
 
 export interface TrafficEndpointsTableToolbarProps {
-    readonly searchTerm: string;
-    readonly onSearchChange: (value: string) => void;
-    readonly selectedMethod: string;
-    readonly onMethodChange: (value: string) => void;
-    readonly totalCount: number;
-    readonly filteredCount: number;
-    readonly onResetFilters: () => void;
+    searchTerm: string;
+    onSearchChange: (value: string) => void;
+    selectedMethod: string;
+    onMethodChange: (value: string) => void;
+    totalCount: number;
+    filteredCount: number;
+    onResetFilters: () => void;
 }
 
 export function TrafficEndpointsTableToolbar({
@@ -28,7 +28,7 @@ export function TrafficEndpointsTableToolbar({
     totalCount,
     filteredCount,
     onResetFilters,
-}: TrafficEndpointsTableToolbarProps) {
+}: Readonly<TrafficEndpointsTableToolbarProps>) {
     const isFiltered = searchTerm !== '' || selectedMethod !== 'all';
 
     return (

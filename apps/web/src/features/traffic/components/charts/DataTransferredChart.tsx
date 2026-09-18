@@ -26,10 +26,12 @@ import { DataTransferredChartTooltip } from './DataTransferredChartTooltip';
 import { RequestsChartEmptyState } from './RequestsChartEmptyState';
 
 export interface DataTransferredChartProps {
-    readonly options: Partial<GetTrafficOptions>;
+    options: Partial<GetTrafficOptions>;
 }
 
-export function DataTransferredChart({ options }: DataTransferredChartProps) {
+export function DataTransferredChart({
+    options,
+}: Readonly<DataTransferredChartProps>) {
     const { data: rawData, isLoading } = useDataTransferredChartQuery(options);
 
     const chartData = useMemo(

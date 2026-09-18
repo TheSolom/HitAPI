@@ -10,11 +10,11 @@ import { formatNumber } from '../../utils';
 export type ChartViewType = 'bar' | 'area';
 
 export interface RequestsChartHeaderProps {
-    readonly hasData: boolean;
-    readonly totalRequests: number;
-    readonly totalErrors: number;
-    readonly chartType: ChartViewType;
-    readonly onChartTypeChange: (type: ChartViewType) => void;
+    hasData: boolean;
+    totalRequests: number;
+    totalErrors: number;
+    chartType: ChartViewType;
+    onChartTypeChange: (type: ChartViewType) => void;
 }
 
 export function RequestsChartHeader({
@@ -23,7 +23,7 @@ export function RequestsChartHeader({
     totalErrors,
     chartType,
     onChartTypeChange,
-}: RequestsChartHeaderProps) {
+}: Readonly<RequestsChartHeaderProps>) {
     return (
         <CardHeader className="flex flex-col gap-3 pb-3 sm:flex-row sm:items-center sm:justify-between border-b">
             <div className="space-y-0.5">

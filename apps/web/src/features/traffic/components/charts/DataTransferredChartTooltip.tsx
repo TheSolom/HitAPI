@@ -8,16 +8,16 @@ interface CustomTooltipPayload {
 }
 
 export interface DataTransferredChartTooltipProps {
-    readonly active?: boolean;
-    readonly payload?: readonly CustomTooltipPayload[];
-    readonly label?: string;
+    active?: boolean;
+    payload?: readonly CustomTooltipPayload[];
+    label?: string;
 }
 
 export function DataTransferredChartTooltip({
     active,
     payload,
     label,
-}: DataTransferredChartTooltipProps) {
+}: Readonly<DataTransferredChartTooltipProps>) {
     if (!active || !payload || payload.length === 0) return null;
 
     const requestBytes =

@@ -14,10 +14,12 @@ import { formatBytes, formatNumber, formatRate } from '../../utils';
 import { TrafficStatCard } from './TrafficStatCard';
 
 export interface TrafficMetricsCardsProps {
-    readonly options: Partial<GetTrafficOptions>;
+    options: Partial<GetTrafficOptions>;
 }
 
-export function TrafficMetricsCards({ options }: TrafficMetricsCardsProps) {
+export function TrafficMetricsCards({
+    options,
+}: Readonly<TrafficMetricsCardsProps>) {
     const { data: metrics, isLoading } = useTrafficMetricsQuery(options);
 
     if (isLoading) {

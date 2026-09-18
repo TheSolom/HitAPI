@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 export interface TrafficStatCardProps {
-    readonly title: string;
-    readonly value: ReactNode;
-    readonly description?: ReactNode;
-    readonly icon?: LucideIcon;
-    readonly className?: string;
-    readonly valueClassName?: string;
+    title: string;
+    value: ReactNode;
+    description?: ReactNode;
+    icon?: LucideIcon;
+    className?: string;
+    valueClassName?: string;
 }
 
 export function TrafficStatCard({
@@ -19,7 +19,7 @@ export function TrafficStatCard({
     icon: Icon,
     className,
     valueClassName,
-}: TrafficStatCardProps) {
+}: Readonly<TrafficStatCardProps>) {
     return (
         <Card className={cn('overflow-hidden', className)}>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">

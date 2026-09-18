@@ -1,14 +1,14 @@
 import { Network } from 'lucide-react';
 
 export interface TrafficEndpointsEmptyStateProps {
-    readonly isFiltered?: boolean;
-    readonly onResetFilters?: () => void;
+    isFiltered?: boolean;
+    onResetFilters?: () => void;
 }
 
 export function TrafficEndpointsEmptyState({
     isFiltered,
     onResetFilters,
-}: TrafficEndpointsEmptyStateProps) {
+}: Readonly<TrafficEndpointsEmptyStateProps>) {
     return (
         <div className="flex flex-col items-center justify-center p-8 text-center text-xs text-muted-foreground">
             <Network className="h-8 w-8 text-muted-foreground/40 mb-2" />

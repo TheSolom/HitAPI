@@ -65,15 +65,15 @@ export function TrafficRouteComponent() {
 }
 
 export interface PlaceholderRouteComponentProps {
-    readonly title: string;
-    readonly description: string;
-    readonly phase: string;
+    title: string;
+    description: string;
+    phase: string;
 }
 
 export function PlaceholderRouteComponent({
     title,
     description,
     phase,
-}: PlaceholderRouteComponentProps) {
+}: Readonly<PlaceholderRouteComponentProps>) {
     return <ComingSoon title={title} description={description} phase={phase} />;
 }

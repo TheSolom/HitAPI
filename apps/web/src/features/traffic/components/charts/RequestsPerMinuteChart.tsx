@@ -23,12 +23,12 @@ import { transformRpmChartData } from './chart.utils';
 import { RequestsChartEmptyState } from './RequestsChartEmptyState';
 
 export interface RequestsPerMinuteChartProps {
-    readonly options: Partial<GetTrafficOptions>;
+    options: Partial<GetTrafficOptions>;
 }
 
 export function RequestsPerMinuteChart({
     options,
-}: RequestsPerMinuteChartProps) {
+}: Readonly<RequestsPerMinuteChartProps>) {
     const { data: rawData, isLoading } =
         useRequestsPerMinuteChartQuery(options);
 

@@ -5,8 +5,6 @@ import {
     createRouter,
     redirect,
 } from '@tanstack/react-router';
-import type { Period } from '@hitapi/types';
-import type { RestfulMethod } from '@hitapi/shared/enums';
 import { AppShell } from '@/components/layout/AppShell';
 import { useAuthStore } from '@/stores/auth-store';
 import {
@@ -21,7 +19,6 @@ import {
 import { TeamsPage } from '@/features/teams';
 import { AppsPage } from '@/features/apps';
 import { RequestLogsPage } from '@/features/request-logs/pages/RequestLogsPage';
-import type { ErrorsTab } from '@/features/errors';
 import {
     AppDetailRouteComponent,
     ConsumerDetailRouteComponent,
@@ -35,6 +32,10 @@ import {
     TeamDetailRouteComponent,
     TrafficRouteComponent,
 } from './routes/route-components';
+import {
+    validateTrafficSearch,
+    validateErrorsSearch,
+} from './routes/route-search';
 
 /* ---------------------------------- Root ---------------------------------- */
 
@@ -120,6 +121,8 @@ const protectedRoute = createRoute({
     component: AppShell,
 });
 
+/* -------------------- Protected Route Factory Helpers --------------------- */
+
 function createChildRoute<P extends string>(
     path: P,
     component: () => ReactNode,
@@ -131,6 +134,29 @@ function createChildRoute<P extends string>(
     });
 }
 
+function createPlaceholderRoute<P extends string>(
+    path: P,
+    title: string,
+    description: string,
+    phase: string,
+) {
+    return createRoute({
+        getParentRoute: () => protectedRoute,
+        path,
+        component: function PlaceholderRoute() {
+            return (
+                <PlaceholderRouteComponent
+                    title={title}
+                    description={description}
+                    phase={phase}
+                />
+            );
+        },
+    });
+}
+
+/* ------------------------------ Index Route ------------------------------- */
+
 const indexRoute = createRoute({
     getParentRoute: () => protectedRoute,
     path: '/',
@@ -141,8 +167,14 @@ const indexRoute = createRoute({
     component: IndexComponent,
 });
 
+/* ------------------------- Simple Child Routes ---------------------------- */
+
 const profileRoute = createChildRoute('/profile', ProfilePage);
 const teamsRoute = createChildRoute('/teams', TeamsPage);
+const appsRoute = createChildRoute('/apps', AppsPage);
+const logsRoute = createChildRoute('/logs', RequestLogsPage);
+
+/* -------------------------- Parametric Routes ----------------------------- */
 
 const teamDetailRoute = createRoute({
     getParentRoute: () => protectedRoute,
@@ -150,13 +182,19 @@ const teamDetailRoute = createRoute({
     component: TeamDetailRouteComponent,
 });
 
-const appsRoute = createChildRoute('/apps', AppsPage);
-
 const appDetailRoute = createRoute({
     getParentRoute: () => protectedRoute,
     path: '/apps/$appId',
     component: AppDetailRouteComponent,
 });
+
+const consumerDetailRoute = createRoute({
+    getParentRoute: () => protectedRoute,
+    path: '/consumers/$consumerId',
+    component: ConsumerDetailRouteComponent,
+});
+
+/* ------------------------- Search-Validated Routes ------------------------ */
 
 const consumersRoute = createRoute({
     getParentRoute: () => protectedRoute,
@@ -179,24 +217,6 @@ const consumersRoute = createRoute({
     component: ConsumersRouteComponent,
 });
 
-const consumerDetailRoute = createRoute({
-    getParentRoute: () => protectedRoute,
-    path: '/consumers/$consumerId',
-    component: ConsumerDetailRouteComponent,
-});
-
-const consumerGroupsRoute = createRoute({
-    getParentRoute: () => protectedRoute,
-    path: '/consumer-groups',
-    beforeLoad: () => {
-        // eslint-disable-next-line @typescript-eslint/only-throw-error
-        throw redirect({
-            to: '/consumers',
-            search: { tab: 'groups' },
-        });
-    },
-});
-
 const endpointsRoute = createRoute({
     getParentRoute: () => protectedRoute,
     path: '/endpoints',
@@ -215,114 +235,35 @@ const resourcesRoute = createRoute({
     component: ResourcesRouteComponent,
 });
 
-function parseSearchNumber(val: unknown): number | undefined {
-    if (typeof val === 'number') {
-        return val;
-    }
-    if (typeof val === 'string') {
-        const parsed = Number.parseInt(val, 10);
-        return Number.isNaN(parsed) ? undefined : parsed;
-    }
-    return undefined;
-}
-
-function parseSearchString(val: unknown): string | undefined {
-    if (typeof val === 'string') {
-        return val;
-    }
-    if (typeof val === 'number') {
-        return String(val);
-    }
-    return undefined;
-}
-
-function parseErrorsTab(val: unknown): ErrorsTab {
-    if (val === 'validation' || val === 'server') {
-        return val;
-    }
-    return 'overview';
-}
-
 const errorsRoute = createRoute({
     getParentRoute: () => protectedRoute,
     path: '/errors',
-    validateSearch: (
-        search: Record<string, unknown>,
-    ): {
-        appId?: string;
-        period?: Period;
-        tab?: ErrorsTab;
-        consumerId?: number;
-        consumerGroupId?: number;
-        method?: RestfulMethod;
-        path?: string;
-        statusCode?: string;
-    } => ({
-        appId: typeof search.appId === 'string' ? search.appId : undefined,
-        period: typeof search.period === 'string' ? search.period : undefined,
-        tab: parseErrorsTab(search.tab),
-        consumerId: parseSearchNumber(search.consumerId),
-        consumerGroupId: parseSearchNumber(search.consumerGroupId),
-        method:
-            typeof search.method === 'string'
-                ? (search.method as RestfulMethod)
-                : undefined,
-        path: typeof search.path === 'string' ? search.path : undefined,
-        statusCode: parseSearchString(search.statusCode),
-    }),
+    validateSearch: validateErrorsSearch,
     component: ErrorsRouteComponent,
 });
-
-const logsRoute = createChildRoute('/logs', RequestLogsPage);
 
 const trafficRoute = createRoute({
     getParentRoute: () => protectedRoute,
     path: '/traffic',
-    validateSearch: (
-        search: Record<string, unknown>,
-    ): {
-        appId?: string;
-        period?: Period;
-        consumerId?: number;
-        consumerGroupId?: number;
-        method?: RestfulMethod;
-        path?: string;
-        statusCode?: string;
-    } => ({
-        appId: typeof search.appId === 'string' ? search.appId : undefined,
-        period: typeof search.period === 'string' ? search.period : undefined,
-        consumerId: parseSearchNumber(search.consumerId),
-        consumerGroupId: parseSearchNumber(search.consumerGroupId),
-        method:
-            typeof search.method === 'string'
-                ? (search.method as RestfulMethod)
-                : undefined,
-        path: typeof search.path === 'string' ? search.path : undefined,
-        statusCode: parseSearchString(search.statusCode),
-    }),
+    validateSearch: validateTrafficSearch,
     component: TrafficRouteComponent,
 });
 
-function createPlaceholderRoute<P extends string>(
-    path: P,
-    title: string,
-    description: string,
-    phase: string,
-) {
-    return createRoute({
-        getParentRoute: () => protectedRoute,
-        path,
-        component: function PlaceholderRoute() {
-            return (
-                <PlaceholderRouteComponent
-                    title={title}
-                    description={description}
-                    phase={phase}
-                />
-            );
-        },
-    });
-}
+/* ------------------- Redirect Routes (Legacy Aliases) -------------------- */
+
+const consumerGroupsRoute = createRoute({
+    getParentRoute: () => protectedRoute,
+    path: '/consumer-groups',
+    beforeLoad: () => {
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
+        throw redirect({
+            to: '/consumers',
+            search: { tab: 'groups' },
+        });
+    },
+});
+
+/* ----------------------- Scaffold (Coming-Soon) Routes -------------------- */
 
 const scaffoldRoutes = [
     createPlaceholderRoute(
@@ -375,6 +316,8 @@ const scaffoldRoutes = [
     ),
 ];
 
+/* ------------------------------ Route Tree -------------------------------- */
+
 const routeTree = rootRoute.addChildren([
     loginRoute,
     registerRoute,
@@ -400,6 +343,8 @@ const routeTree = rootRoute.addChildren([
         ...scaffoldRoutes,
     ]),
 ]);
+
+/* ------------------------------ Router Instance --------------------------- */
 
 export const router = createRouter({ routeTree, defaultPreload: 'intent' });
 

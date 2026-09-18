@@ -15,14 +15,14 @@ import { RequestsChartTooltip } from './RequestsChartTooltip';
 import type { ChartViewType } from './RequestsChartHeader';
 
 export interface RequestsChartViewProps {
-    readonly chartType: ChartViewType;
-    readonly chartData: readonly RequestsChartEntry[];
+    chartType: ChartViewType;
+    chartData: readonly RequestsChartEntry[];
 }
 
 export function RequestsChartView({
     chartType,
     chartData,
-}: RequestsChartViewProps) {
+}: Readonly<RequestsChartViewProps>) {
     return (
         <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
