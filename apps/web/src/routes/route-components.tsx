@@ -6,6 +6,7 @@ import { ConsumerDetailPage, ConsumersPage } from '@/features/consumers';
 import { EndpointsPage } from '@/features/endpoints';
 import { ResourcesPage } from '@/features/resources';
 import { ErrorsPage } from '@/features/errors';
+import { TrafficPage } from '@/features/traffic';
 
 export function RootComponent() {
     return <Outlet />;
@@ -56,6 +57,11 @@ export function ResourcesRouteComponent() {
 export function ErrorsRouteComponent() {
     const search = useSearch({ from: '/protected/errors' });
     return <ErrorsPage {...search} />;
+}
+
+export function TrafficRouteComponent() {
+    const search = useSearch({ from: '/protected/traffic' });
+    return <TrafficPage {...search} />;
 }
 
 export interface PlaceholderRouteComponentProps {

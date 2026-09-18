@@ -33,6 +33,7 @@ import {
     ResourcesRouteComponent,
     RootComponent,
     TeamDetailRouteComponent,
+    TrafficRouteComponent,
 } from './routes/route-components';
 
 /* ---------------------------------- Root ---------------------------------- */
@@ -274,6 +275,34 @@ const errorsRoute = createRoute({
 
 const logsRoute = createChildRoute('/logs', RequestLogsPage);
 
+const trafficRoute = createRoute({
+    getParentRoute: () => protectedRoute,
+    path: '/traffic',
+    validateSearch: (
+        search: Record<string, unknown>,
+    ): {
+        appId?: string;
+        period?: Period;
+        consumerId?: number;
+        consumerGroupId?: number;
+        method?: RestfulMethod;
+        path?: string;
+        statusCode?: string;
+    } => ({
+        appId: typeof search.appId === 'string' ? search.appId : undefined,
+        period: typeof search.period === 'string' ? search.period : undefined,
+        consumerId: parseSearchNumber(search.consumerId),
+        consumerGroupId: parseSearchNumber(search.consumerGroupId),
+        method:
+            typeof search.method === 'string'
+                ? (search.method as RestfulMethod)
+                : undefined,
+        path: typeof search.path === 'string' ? search.path : undefined,
+        statusCode: parseSearchString(search.statusCode),
+    }),
+    component: TrafficRouteComponent,
+});
+
 function createPlaceholderRoute<P extends string>(
     path: P,
     title: string,
@@ -296,12 +325,6 @@ function createPlaceholderRoute<P extends string>(
 }
 
 const scaffoldRoutes = [
-    createPlaceholderRoute(
-        '/traffic',
-        'Traffic',
-        'Request volume, throughput and endpoint breakdowns.',
-        'Phase 4',
-    ),
     createPlaceholderRoute(
         '/performance',
         'Performance',
@@ -372,6 +395,7 @@ const routeTree = rootRoute.addChildren([
         endpointsRoute,
         resourcesRoute,
         errorsRoute,
+        trafficRoute,
         logsRoute,
         ...scaffoldRoutes,
     ]),
