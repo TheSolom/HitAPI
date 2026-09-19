@@ -7,6 +7,7 @@ import { EndpointsPage } from '@/features/endpoints';
 import { ResourcesPage } from '@/features/resources';
 import { ErrorsPage } from '@/features/errors';
 import { TrafficPage } from '@/features/traffic';
+import { PerformancePage } from '@/features/performance';
 
 export function RootComponent() {
     return <Outlet />;
@@ -62,6 +63,11 @@ export function ErrorsRouteComponent() {
 export function TrafficRouteComponent() {
     const search = useSearch({ from: '/protected/traffic' });
     return <TrafficPage {...search} />;
+}
+
+export function PerformanceRouteComponent() {
+    const search = useSearch({ from: '/protected/performance' });
+    return <PerformancePage {...search} />;
 }
 
 export interface PlaceholderRouteComponentProps {

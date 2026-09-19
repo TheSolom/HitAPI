@@ -68,3 +68,11 @@ export function validateErrorsSearch(
         tab: parseErrorsTab(search.tab),
     };
 }
+
+export type PerformanceSearch = TrafficSearch;
+
+export function validatePerformanceSearch(
+    search: Record<string, unknown>,
+): PerformanceSearch {
+    return validateTrafficSearch(search);
+}

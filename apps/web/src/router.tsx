@@ -31,10 +31,12 @@ import {
     RootComponent,
     TeamDetailRouteComponent,
     TrafficRouteComponent,
+    PerformanceRouteComponent,
 } from './routes/route-components';
 import {
     validateTrafficSearch,
     validateErrorsSearch,
+    validatePerformanceSearch,
 } from './routes/route-search';
 
 /* ---------------------------------- Root ---------------------------------- */
@@ -249,6 +251,13 @@ const trafficRoute = createRoute({
     component: TrafficRouteComponent,
 });
 
+const performanceRoute = createRoute({
+    getParentRoute: () => protectedRoute,
+    path: '/performance',
+    validateSearch: validatePerformanceSearch,
+    component: PerformanceRouteComponent,
+});
+
 /* ------------------- Redirect Routes (Legacy Aliases) -------------------- */
 
 const consumerGroupsRoute = createRoute({
@@ -266,12 +275,6 @@ const consumerGroupsRoute = createRoute({
 /* ----------------------- Scaffold (Coming-Soon) Routes -------------------- */
 
 const scaffoldRoutes = [
-    createPlaceholderRoute(
-        '/performance',
-        'Performance',
-        'Response time percentiles and slowest endpoints.',
-        'Phase 4',
-    ),
     createPlaceholderRoute(
         '/alerts',
         'Alerts',
@@ -339,6 +342,7 @@ const routeTree = rootRoute.addChildren([
         resourcesRoute,
         errorsRoute,
         trafficRoute,
+        performanceRoute,
         logsRoute,
         ...scaffoldRoutes,
     ]),
