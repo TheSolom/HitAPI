@@ -28,6 +28,7 @@ import { GeoIPModule } from './modules/geo-ip/geo-ip.module.js';
 import { RequestLogsModule } from './modules/request-logs/request-logs.module.js';
 import { ErrorsModule } from './modules/errors/errors.module.js';
 import { TrafficModule } from './modules/traffic/traffic.module.js';
+import { PerformanceModule } from './modules/performance/performance.module.js';
 import { ResourcesModule } from './modules/resources/resources.module.js';
 import { IngestionModule } from './modules/ingestion/ingestion.module.js';
 import { ClsSeedingMiddleware } from './common/middlewares/cls-seeding.middleware.js';
@@ -70,6 +71,7 @@ const envFilePath = isIgnoreEnvFile
         RequestLogsModule,
         ErrorsModule,
         TrafficModule,
+        PerformanceModule,
         ResourcesModule,
         IngestionModule,
     ],
