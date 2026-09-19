@@ -38,6 +38,15 @@ export class TrafficMetric {
     @Column('int')
     responseTimeP95: number;
 
+    @Column('int', { default: 0 })
+    apdexSatisfiedCount: number;
+
+    @Column('int', { default: 0 })
+    apdexToleratedCount: number;
+
+    @Column('int', { default: 0 })
+    apdexFrustratedCount: number;
+
     @Column('timestamptz')
     timeWindow: Date;
 

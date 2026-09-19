@@ -188,6 +188,12 @@ export class TrafficMetricsRepository implements ITrafficMetricsRepository {
                 responseTimeP50: createTrafficMetricsDto.responseTimeP50,
                 responseTimeP75: createTrafficMetricsDto.responseTimeP75,
                 responseTimeP95: createTrafficMetricsDto.responseTimeP95,
+                apdexSatisfiedCount:
+                    createTrafficMetricsDto.apdexSatisfiedCount ?? 0,
+                apdexToleratedCount:
+                    createTrafficMetricsDto.apdexToleratedCount ?? 0,
+                apdexFrustratedCount:
+                    createTrafficMetricsDto.apdexFrustratedCount ?? 0,
                 timeWindow: createTrafficMetricsDto.timeWindow,
                 endpoint: { id: createTrafficMetricsDto.endpointId },
                 consumer: createTrafficMetricsDto.consumerId

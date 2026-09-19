@@ -52,4 +52,22 @@ export class CreateTrafficMetricsDto {
     @IsInt()
     @IsOptional()
     consumerId?: number;
+
+    @ApiPropertyOptional({ type: 'integer', minimum: 0 })
+    @Min(0)
+    @IsInt()
+    @IsOptional()
+    apdexSatisfiedCount?: number;
+
+    @ApiPropertyOptional({ type: 'integer', minimum: 0 })
+    @Min(0)
+    @IsInt()
+    @IsOptional()
+    apdexToleratedCount?: number;
+
+    @ApiPropertyOptional({ type: 'integer', minimum: 0 })
+    @Min(0)
+    @IsInt()
+    @IsOptional()
+    apdexFrustratedCount?: number;
 }
