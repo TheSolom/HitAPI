@@ -51,7 +51,7 @@ export class PerformanceService implements IPerformanceService {
                 apdexToleratedCount,
                 totalRequestCount,
             ),
-            targetResponseTimeMs: stringToInt(raw?.targetResponseTimeMs),
+            targetResponseTimeMs: stringToInt(raw?.targetResponseTimeMs) || 500,
         };
     }
 

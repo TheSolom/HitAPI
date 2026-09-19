@@ -109,7 +109,7 @@ export class PerformanceRepository implements IPerformanceRepository {
                 'SUM(CASE WHEN rl.responseTime > a.targetResponseTimeMs * 4 THEN 1 ELSE 0 END)',
                 'apdexFrustratedCount',
             )
-            .addSelect('a.targetResponseTimeMs', 'targetResponseTimeMs')
+            .addSelect('MAX(a.targetResponseTimeMs)', 'targetResponseTimeMs')
             .innerJoin('rl.app', 'a')
             .getRawOne<IPerformanceMetricsRaw>();
     }
