@@ -45,7 +45,7 @@ export function ApdexScoreChart({ options }: Readonly<ApdexScoreChartProps>) {
             (acc, curr) => acc + (curr.apdexScore ?? 0),
             0,
         );
-        const latest = validPoints[validPoints.length - 1]?.apdexScore ?? 0;
+        const latest = validPoints.at(-1)?.apdexScore ?? 0;
         return {
             avg: sum / validPoints.length,
             latest,
