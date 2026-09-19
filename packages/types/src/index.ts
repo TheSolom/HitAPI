@@ -15,3 +15,4 @@ export * from './endpoint.js';
 export * from './team.js';
 export * from './resources.js';
 export * from './traffic.js';
+export * from './performance.js';
