@@ -20,9 +20,9 @@ export function formatPeriodLabel(period?: string | null): string {
             const startYear = start.getFullYear();
             const endYear = end.getFullYear();
             if (startYear === endYear) {
-                return `${format(start, 'MMM d')} – ${format(end, 'MMM d, yyyy')}`;
+                return `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`;
             }
-            return `${format(start, 'MMM d, yyyy')} – ${format(end, 'MMM d, yyyy')}`;
+            return `${format(start, 'MMM d, yyyy')} - ${format(end, 'MMM d, yyyy')}`;
         }
     }
     return period;
@@ -42,9 +42,9 @@ export function formatPeriodDescription(period?: string | null): string {
             const startYear = start.getFullYear();
             const endYear = end.getFullYear();
             if (startYear === endYear) {
-                return `${format(start, 'MMM d')} – ${format(end, 'MMM d, yyyy')}`;
+                return `${format(start, 'MMM d')} - ${format(end, 'MMM d, yyyy')}`;
             }
-            return `${format(start, 'MMM d, yyyy')} – ${format(end, 'MMM d, yyyy')}`;
+            return `${format(start, 'MMM d, yyyy')} - ${format(end, 'MMM d, yyyy')}`;
         }
     }
     return period;
