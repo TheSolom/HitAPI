@@ -13,6 +13,7 @@ export enum Routes {
     REQUEST_LOGS = 'request-logs',
     ERRORS = 'errors',
     TRAFFIC = 'traffic',
+    PERFORMANCE = 'performance',
     RESOURCES = 'resources',
     INGESTION = 'ingest',
     FRAMEWORKS = 'frameworks',
