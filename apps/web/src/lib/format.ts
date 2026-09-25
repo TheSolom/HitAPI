@@ -22,3 +22,16 @@ export function formatTimeWindow(timeString: string): string {
         minute: '2-digit',
     });
 }
+
+/**
+ * Format response time in milliseconds or seconds
+ */
+export function formatResponseTime(ms?: number | null): string {
+    if (ms === undefined || ms === null || Number.isNaN(ms)) {
+        return '0 ms';
+    }
+    if (ms >= 1000) {
+        return `${(ms / 1000).toFixed(2)} s`;
+    }
+    return `${String(Math.round(ms))} ms`;
+}
