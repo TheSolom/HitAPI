@@ -155,13 +155,17 @@ export class RequestLogIngestionProcessor extends BaseProcessor<
             url: item.request.url,
             requestSize: item.request.size,
             requestHeaders: item.request.headers,
-            requestBody: item.request.body,
+            requestBody: RequestLogIngestionProcessor.toBuffer(
+                item.request.body,
+            ),
             statusCode: item.response.statusCode,
             statusText: STATUS_CODES[item.response.statusCode] ?? 'Unknown',
             responseTime: item.response.responseTime,
             responseSize: item.response.size,
             responseHeaders: item.response.headers,
-            responseBody: item.response.body,
+            responseBody: RequestLogIngestionProcessor.toBuffer(
+                item.response.body,
+            ),
             clientIp: item.request.clientIp,
             clientCountryCode: item.request.clientIp
                 ? (ipMap.get(item.request.clientIp) ?? undefined)
@@ -201,5 +205,24 @@ export class RequestLogIngestionProcessor extends BaseProcessor<
         } catch {
             return url;
         }
+    }
+
+    private static toBuffer(value: unknown): Buffer | undefined {
+        if (!value) return undefined;
+        if (Buffer.isBuffer(value)) return value;
+        if (
+            typeof value === 'object' &&
+            (value as { type?: string }).type === 'Buffer' &&
+            Array.isArray((value as { data?: unknown }).data)
+        ) {
+            return Buffer.from((value as { data: number[] }).data);
+        }
+        if (typeof value === 'string') {
+            return Buffer.from(value, 'utf8');
+        }
+        if (typeof value === 'object') {
+            return Buffer.from(JSON.stringify(value), 'utf8');
+        }
+        return undefined;
     }
 }
