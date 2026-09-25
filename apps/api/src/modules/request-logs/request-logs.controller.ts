@@ -27,6 +27,7 @@ import type { IRequestLogsService } from './interfaces/request-logs-service.inte
 import type { IApplicationLogsService } from './interfaces/application-logs-service.interface.js';
 import { GetRequestLogsOptionsDto } from './dto/get-request-logs-options.dto.js';
 import { GetRequestLogTimelineOptionsDto } from './dto/get-request-log-timeline-options.dto.js';
+import { ExportRequestLogsOptionsDto } from './dto/export-request-logs-options.dto.js';
 import {
     RequestLogResponseDto,
     RequestLogResponsePaginatedDto,
@@ -81,9 +82,11 @@ export class RequestLogsController {
     @ApiProduces('text/csv')
     @ApiOkResponse({ type: 'string' })
     async exportRequestLogsCsv(
-        @Query() getRequestLogsDto: GetRequestLogsOptionsDto,
+        @Query() exportRequestLogsDto: ExportRequestLogsOptionsDto,
     ): Promise<string> {
-        return this.requestLogsService.exportRequestLogsCsv(getRequestLogsDto);
+        return this.requestLogsService.exportRequestLogsCsv(
+            exportRequestLogsDto,
+        );
     }
 
     @Get(':requestUuid')

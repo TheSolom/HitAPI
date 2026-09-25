@@ -137,6 +137,7 @@ describe('RequestLogsService', () => {
                     order: 'DESC',
                     skip: 0,
                     take: 10,
+                    cursor: null,
                 },
             );
 
@@ -149,6 +150,10 @@ describe('RequestLogsService', () => {
                 currentPage: 1,
                 totalPages: 1,
                 totalItems: 1,
+                nextCursor: null,
+                prevCursor: null,
+                hasNextPage: false,
+                hasPrevPage: false,
             });
         });
     });

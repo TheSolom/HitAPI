@@ -9,6 +9,7 @@ import type {
 import type { IApplicationLogsRepository } from './interfaces/application-logs-repository.interface.js';
 import type { CreateRequestLogDto } from './dto/create-request-log.dto.js';
 import type { GetRequestLogsOptionsDto } from './dto/get-request-logs-options.dto.js';
+import type { ExportRequestLogsOptionsDto } from './dto/export-request-logs-options.dto.js';
 import type { RequestLogResponsePaginatedDto } from './dto/request-log-response.dto.js';
 import type { GetRequestLogTimelineOptionsDto } from './dto/get-request-log-timeline-options.dto.js';
 import type { RequestLogTimelineResponseDto } from './dto/request-log-timeline-response.dto.js';
@@ -16,6 +17,7 @@ import type { RequestLogDetailsResponseDto } from './dto/request-log-details-res
 import { RequestLogMapper } from './mappers/request-log.mapper.js';
 import { createCSV } from '../../common/utils/csv.util.js';
 import { buildMetadata } from '../../common/helpers/metadata.helper.js';
+import { decodeRequestLogCursor } from '../../common/helpers/cursor.helper.js';
 
 @Injectable()
 export class RequestLogsService implements IRequestLogsService {
@@ -52,20 +54,28 @@ export class RequestLogsService implements IRequestLogsService {
         order,
         offset,
         limit,
+        cursor,
         ...filters
     }: GetRequestLogsOptionsDto): Promise<RequestLogResponsePaginatedDto> {
-        const { items, totalItems } =
+        const decodedCursor = decodeRequestLogCursor(cursor);
+
+        const { items, totalItems, hasNextPage, nextCursor } =
             await this.requestLogsRepository.findWithFilters(filters, {
                 order,
                 skip: (offset - 1) * limit,
                 take: limit,
+                cursor: decodedCursor,
             });
 
         const logCountMap = await this.fetchApplicationLogCounts(items);
 
         return {
             data: RequestLogMapper.toRequestLogResponseDto(items, logCountMap),
-            metadata: buildMetadata(offset, limit, totalItems),
+            metadata: buildMetadata(offset, limit, totalItems, {
+                nextCursor,
+                hasNextPage,
+                hasPrevPage: Boolean(cursor) || offset > 1,
+            }),
         };
     }
 
@@ -82,10 +92,21 @@ export class RequestLogsService implements IRequestLogsService {
         };
     }
 
-    async exportRequestLogsCsv(
-        getRequestLogsOptionsDto: GetRequestLogsOptionsDto,
-    ): Promise<string> {
-        const { data } = await this.getRequestLogs(getRequestLogsOptionsDto);
+    async exportRequestLogsCsv({
+        order,
+        limit,
+        ...filters
+    }: ExportRequestLogsOptionsDto): Promise<string> {
+        const { items } = await this.requestLogsRepository.findWithFilters(
+            filters,
+            { order, skip: 0, take: limit ?? 10000 },
+        );
+
+        const logCountMap = await this.fetchApplicationLogCounts(items);
+        const data = RequestLogMapper.toRequestLogResponseDto(
+            items,
+            logCountMap,
+        );
 
         const headers = [
             'requestUuid',
