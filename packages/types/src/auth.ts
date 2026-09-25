@@ -94,4 +94,3 @@ export interface TokenExchangePayload {
     client_secret: string;
     redirect_uri: string;
 }
-

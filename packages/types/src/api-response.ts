@@ -2,6 +2,10 @@ export interface MetadataResponse {
     totalItems: number;
     totalPages: number;
     currentPage: number;
+    nextCursor?: string | null;
+    prevCursor?: string | null;
+    hasNextPage?: boolean;
+    hasPrevPage?: boolean;
 }
 
 export interface CustomResponse<T = unknown> {
