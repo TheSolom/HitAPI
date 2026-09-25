@@ -1,6 +1,7 @@
 import type { QueryRunner } from 'typeorm';
 import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
 import type { GetRequestLogsOptionsDto } from '../dto/get-request-logs-options.dto.js';
+import type { ExportRequestLogsOptionsDto } from '../dto/export-request-logs-options.dto.js';
 import type { RequestLogResponsePaginatedDto } from '../dto/request-log-response.dto.js';
 import type { GetRequestLogTimelineOptionsDto } from '../dto/get-request-log-timeline-options.dto.js';
 import type { RequestLogTimelineResponseDto } from '../dto/request-log-timeline-response.dto.js';
@@ -35,11 +36,11 @@ export interface IRequestLogsService {
     ): Promise<RequestLogTimelineResponseDto>;
     /**
      * Export request logs to csv
-     * @param getRequestLogsDto
+     * @param exportRequestLogsDto
      * @returns {string}
      */
     exportRequestLogsCsv(
-        getRequestLogsDto: GetRequestLogsOptionsDto,
+        exportRequestLogsDto: ExportRequestLogsOptionsDto,
     ): Promise<string>;
     /**
      * Get request log details

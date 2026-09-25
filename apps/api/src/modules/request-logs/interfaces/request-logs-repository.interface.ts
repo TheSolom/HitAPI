@@ -1,7 +1,7 @@
 import type { QueryRunner } from 'typeorm';
 import type { RestfulMethod } from '@hitapi/shared/enums';
-import type { NullableType, Period } from '@hitapi/types';
-import type { FindOptions } from '../../../common/types/find-options.type.js';
+import type { NullableType, OrderDirection, Period } from '@hitapi/types';
+import type { RequestLogCursorPayload } from '../../../common/helpers/cursor.helper.js';
 import type { RequestLog } from '../entities/request-log.entity.js';
 import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
 
@@ -22,6 +22,7 @@ export interface PartialRequestLog {
     consumerId?: number;
     consumerIdentifier?: string;
     consumerName?: string;
+    consumerGroupName?: string;
     traceId?: string;
 }
 
@@ -62,6 +63,13 @@ export interface AppMetricsRawResult {
     consumerCount: string;
 }
 
+export interface RequestLogPaginationOptions {
+    order?: OrderDirection;
+    skip?: number;
+    take: number;
+    cursor?: RequestLogCursorPayload | null;
+}
+
 export interface IRequestLogsRepository {
     /**
      * Create multiple request logs
@@ -77,12 +85,17 @@ export interface IRequestLogsRepository {
      * Find request logs with filtering, pagination and ordering
      * @param criteria
      * @param pagination
-     * @returns {Promise<{ items: PartialRequestLog[]; totalItems: number }>}
+     * @returns {Promise<{ items: PartialRequestLog[]; totalItems: number; hasNextPage?: boolean; nextCursor?: string | null }>}
      */
     findWithFilters(
         criteria: RequestLogFilterCriteria,
-        pagination: Pick<FindOptions, 'order' | 'skip' | 'take'>,
-    ): Promise<{ items: PartialRequestLog[]; totalItems: number }>;
+        pagination: RequestLogPaginationOptions,
+    ): Promise<{
+        items: PartialRequestLog[];
+        totalItems: number;
+        hasNextPage?: boolean;
+        nextCursor?: string | null;
+    }>;
     /**
      * Find timeline aggregated data for chart
      * @param criteria

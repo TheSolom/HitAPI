@@ -1,20 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, type SelectQueryBuilder, type QueryRunner } from 'typeorm';
-import type { NullableType, Period } from '@hitapi/types';
+import { type NullableType, OrderDirection, type Period } from '@hitapi/types';
 import type {
     IRequestLogsRepository,
     PartialRequestLog,
     TimelineRawResult,
     RequestLogFilterCriteria,
     AppMetricsRawResult,
+    RequestLogPaginationOptions,
 } from '../interfaces/request-logs-repository.interface.js';
 import { RequestLog } from '../entities/request-log.entity.js';
 import {
     applyPeriodFilter,
     parsePeriod,
 } from '../../../common/utils/period.util.js';
-import type { FindOptions } from '../../../common/types/find-options.type.js';
+import {
+    encodeCursor,
+    type RequestLogCursorPayload,
+} from '../../../common/helpers/cursor.helper.js';
 import type { CreateRequestLogDto } from '../dto/create-request-log.dto.js';
 
 @Injectable()
@@ -131,44 +135,138 @@ export class RequestLogsRepository
         await repository.insert(entities);
     }
 
+    private applyKeysetPagination(
+        qb: SelectQueryBuilder<RequestLog>,
+        order: OrderDirection,
+        cursor?: RequestLogCursorPayload | null,
+        skip?: number,
+    ): void {
+        if (cursor) {
+            const cursorTimestamp = new Date(cursor.timestamp);
+            const cursorUuid = cursor.requestUuid;
+
+            const operator = order === OrderDirection.DESC ? '<' : '>';
+            qb.andWhere(
+                `(rl.timestamp ${operator} :cursorTimestamp OR (rl.timestamp = :cursorTimestamp AND rl.requestUuid ${operator} :cursorUuid))`,
+                { cursorTimestamp, cursorUuid },
+            );
+        } else if (skip && skip > 0) {
+            qb.offset(skip);
+        }
+    }
+
+    private projectPartialRequestLog(
+        qb: SelectQueryBuilder<RequestLog>,
+        order: OrderDirection,
+        take: number,
+    ): void {
+        qb.select([
+            'rl.requestUuid AS "requestUuid"',
+            'rl.method AS "method"',
+            'rl.path AS "path"',
+            'rl.url AS "url"',
+            'rl.requestSize AS "requestSize"',
+            'rl.statusCode AS "statusCode"',
+            'rl.statusText AS "statusText"',
+            'rl.responseTime AS "responseTime"',
+            'rl.responseSize AS "responseSize"',
+            'rl.clientIp AS "clientIp"',
+            'rl.clientCountryCode AS "clientCountryCode"',
+            'rl.consumerId AS "consumerId"',
+            'c.identifier AS "consumerIdentifier"',
+            'c.name AS "consumerName"',
+            'cg.name AS "consumerGroupName"',
+            'rl.traceId AS "traceId"',
+            'rl.timestamp AS "timestamp"',
+        ])
+            .orderBy('rl.timestamp', order)
+            .addOrderBy('rl.requestUuid', order)
+            .limit(take + 1);
+    }
+
+    private buildNextCursor(
+        hasNextPage: boolean,
+        items: PartialRequestLog[],
+    ): string | null {
+        if (!hasNextPage || items.length === 0) return null;
+
+        const lastItem = items[items.length - 1];
+        const tsStr =
+            typeof lastItem.timestamp === 'string'
+                ? lastItem.timestamp
+                : lastItem.timestamp.toISOString();
+
+        return encodeCursor({
+            timestamp: tsStr,
+            requestUuid: lastItem.requestUuid,
+        });
+    }
+
+    private async resolveTotalCount(
+        criteria: RequestLogFilterCriteria,
+        rawItemsCount: number,
+        take: number,
+        cursor?: RequestLogCursorPayload | null,
+        skip?: number,
+    ): Promise<number> {
+        const isFirstPageWithoutCursor = !cursor && (!skip || skip === 0);
+        if (isFirstPageWithoutCursor && rawItemsCount <= take) {
+            return rawItemsCount;
+        }
+
+        const countQb = this.requestLogRepository
+            .createQueryBuilder('rl')
+            .where({ app: { id: criteria.appId } });
+
+        if (criteria.consumerGroupId) {
+            countQb.leftJoin('rl.consumer', 'c');
+        }
+
+        this.applyFilters(countQb, criteria);
+        return countQb.getCount();
+    }
+
     async findWithFilters(
         criteria: RequestLogFilterCriteria,
-        pagination: Pick<FindOptions, 'order' | 'skip' | 'take'>,
-    ): Promise<{ items: PartialRequestLog[]; totalItems: number }> {
+        pagination: RequestLogPaginationOptions,
+    ): Promise<{
+        items: PartialRequestLog[];
+        totalItems: number;
+        hasNextPage: boolean;
+        nextCursor?: string | null;
+    }> {
+        const order = pagination.order ?? OrderDirection.DESC;
+        const take = pagination.take;
+
         const qb = this.requestLogRepository
             .createQueryBuilder('rl')
-            .select([
-                'rl.requestUuid AS "requestUuid"',
-                'rl.method AS "method"',
-                'rl.path AS "path"',
-                'rl.url AS "url"',
-                'rl.requestSize AS "requestSize"',
-                'rl.statusCode AS "statusCode"',
-                'rl.statusText AS "statusText"',
-                'rl.responseTime AS "responseTime"',
-                'rl.responseSize AS "responseSize"',
-                'rl.clientIp AS "clientIp"',
-                'rl.clientCountryCode AS "clientCountryCode"',
-                'rl.consumerId AS "consumerId"',
-                'c.identifier AS "consumerIdentifier"',
-                'c.name AS "consumerName"',
-                'rl.traceId AS "traceId"',
-                'rl.timestamp AS "timestamp"',
-            ])
             .leftJoin('rl.consumer', 'c')
-            .where({ app: { id: criteria.appId } })
-            .orderBy('rl.timestamp', pagination.order)
-            .skip(pagination.skip)
-            .take(pagination.take);
+            .leftJoin('c.group', 'cg')
+            .where({ app: { id: criteria.appId } });
 
         this.applyFilters(qb, criteria);
+        this.applyKeysetPagination(
+            qb,
+            order,
+            pagination.cursor,
+            pagination.skip,
+        );
+        this.projectPartialRequestLog(qb, order, take);
 
-        const [items, totalItems] = await Promise.all([
-            qb.getRawMany<PartialRequestLog>(),
-            qb.clone().getCount(),
-        ]);
+        const rawItems = await qb.getRawMany<PartialRequestLog>();
+        const hasNextPage = rawItems.length > take;
+        const items = hasNextPage ? rawItems.slice(0, take) : rawItems;
+        const nextCursor = this.buildNextCursor(hasNextPage, items);
 
-        return { items, totalItems };
+        const totalItems = await this.resolveTotalCount(
+            criteria,
+            rawItems.length,
+            take,
+            pagination.cursor,
+            pagination.skip,
+        );
+
+        return { items, totalItems, hasNextPage, nextCursor };
     }
 
     async findTimelineData(
@@ -196,6 +294,7 @@ export class RequestLogsRepository
         const qb = this.requestLogRepository
             .createQueryBuilder('rl')
             .leftJoinAndSelect('rl.consumer', 'c')
+            .leftJoinAndSelect('c.group', 'cg')
             .where('rl.requestUuid = :requestUuid', { requestUuid })
             .andWhere({ app: { id: appId } });
 

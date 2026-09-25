@@ -30,6 +30,7 @@ export const RequestLogMapper = {
             consumerId: item.consumerId ?? undefined,
             consumerIdentifier: item.consumerIdentifier ?? undefined,
             consumerName: item.consumerName ?? undefined,
+            consumerGroupName: item.consumerGroupName ?? undefined,
             applicationLogsCountByLevel:
                 logCountMap.get(item.requestUuid) ?? {},
         }));
@@ -69,6 +70,7 @@ export const RequestLogMapper = {
             consumerId: log.consumer?.id,
             consumerIdentifier: log.consumer?.identifier,
             consumerName: log.consumer?.name ?? undefined,
+            consumerGroupName: log.consumer?.group?.name ?? undefined,
             traceId: log.traceId ?? undefined,
             applicationLogsCountByLevel: logCountByLevel,
             applicationLogsCount: logsCount,

@@ -1,4 +1,4 @@
-import type { CreateApplicationLogDto } from '../dto/create-application-log.dto.js';
+import type { CreateApplicationLogPayload } from '@hitapi/types';
 import type { ApplicationLog } from '../entities/application-log.entity.js';
 
 export interface IApplicationLogsService {
@@ -8,7 +8,7 @@ export interface IApplicationLogsService {
      * @returns {void}
      */
     createApplicationLogs(
-        applicationLogDto: CreateApplicationLogDto[],
+        applicationLogDto: CreateApplicationLogPayload[],
     ): Promise<void>;
     /**
      * Get application logs
