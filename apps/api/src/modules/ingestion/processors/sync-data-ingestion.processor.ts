@@ -15,6 +15,7 @@ import type { IValidationErrorsService } from '../../errors/interfaces/validatio
 import type { IServerErrorsService } from '../../errors/interfaces/server-errors-service.interface.js';
 import type { ITrafficService } from '../../traffic/interfaces/traffic-service.interface.js';
 import type { IResourcesService } from '../../resources/interfaces/resources-service.interface.js';
+import type { IAppsService } from '../../apps/interfaces/apps-service.interface.js';
 import type { IngestSyncDataJobData } from '../types/job-data.type.js';
 import type {
     RequestsItemDto,
@@ -48,6 +49,8 @@ export class SyncDataIngestionProcessor extends BaseProcessor<
         private readonly trafficService: ITrafficService,
         @Inject(Services.RESOURCES)
         private readonly resourcesService: IResourcesService,
+        @Inject(Services.APPS)
+        private readonly appsService: IAppsService,
     ) {
         super();
         this.logger.setContext(SyncDataIngestionProcessor.name);
@@ -65,6 +68,9 @@ export class SyncDataIngestionProcessor extends BaseProcessor<
             serverErrors: payload.serverErrors.length,
             validationErrors: payload.validationErrors.length,
         });
+
+        const app = await this.appsService.findById(appId);
+        const targetResponseTimeMs = app?.targetResponseTimeMs ?? 500;
 
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
@@ -99,6 +105,7 @@ export class SyncDataIngestionProcessor extends BaseProcessor<
                     payload.requests,
                     endpointMap,
                     consumerMap,
+                    targetResponseTimeMs,
                 ),
                 this.processServerErrors(
                     queryRunner,
@@ -256,6 +263,7 @@ export class SyncDataIngestionProcessor extends BaseProcessor<
         requests: RequestsItemDto[],
         endpointMap: Map<string, string>,
         consumerMap: Map<string, number>,
+        targetResponseTimeMs: number,
     ): Promise<void> {
         for (const request of requests) {
             const endpointId = endpointMap.get(
@@ -272,6 +280,10 @@ export class SyncDataIngestionProcessor extends BaseProcessor<
             const percentiles = this.calculatePercentilesFromHistogram(
                 request.responseTimes,
             );
+            const apdex = this.calculateApdexCountsFromHistogram(
+                request.responseTimes,
+                targetResponseTimeMs,
+            );
 
             await this.trafficService.upsertTrafficMetrics(
                 {
@@ -281,6 +293,9 @@ export class SyncDataIngestionProcessor extends BaseProcessor<
                     responseTimeP50: percentiles.p50,
                     responseTimeP75: percentiles.p75,
                     responseTimeP95: percentiles.p95,
+                    apdexSatisfiedCount: apdex.satisfiedCount,
+                    apdexToleratedCount: apdex.toleratedCount,
+                    apdexFrustratedCount: apdex.frustratedCount,
                     timeWindow,
                     endpointId,
                     consumerId,
@@ -403,6 +418,32 @@ export class SyncDataIngestionProcessor extends BaseProcessor<
             },
             queryRunner,
         );
+    }
+
+    private calculateApdexCountsFromHistogram(
+        histogram: Record<number, number>,
+        targetMs: number,
+    ): {
+        satisfiedCount: number;
+        toleratedCount: number;
+        frustratedCount: number;
+    } {
+        let satisfiedCount = 0;
+        let toleratedCount = 0;
+        let frustratedCount = 0;
+
+        for (const [bucket, count] of Object.entries(histogram)) {
+            const ms = Number(bucket);
+            if (ms <= targetMs) {
+                satisfiedCount += count;
+            } else if (ms <= targetMs * 4) {
+                toleratedCount += count;
+            } else {
+                frustratedCount += count;
+            }
+        }
+
+        return { satisfiedCount, toleratedCount, frustratedCount };
     }
 
     private calculatePercentilesFromHistogram(
