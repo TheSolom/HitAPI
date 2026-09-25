@@ -1,4 +1,4 @@
-import { formatNumber } from '../../utils';
+import { formatNumber } from '@/lib/format';
 
 interface CustomTooltipPayload {
     name?: string;

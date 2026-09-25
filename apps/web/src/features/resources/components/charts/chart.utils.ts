@@ -1,4 +1,5 @@
 import type { CpuMemoryChartResponseDto } from '@hitapi/types';
+import { formatTimeWindow } from '@/lib/format';
 
 export type ChartMode = 'combined' | 'cpu' | 'memory';
 
@@ -14,18 +15,6 @@ export interface ResourceChartDataPoint {
     memAvgMb: number;
     memMinMb: number;
     memMaxMb: number;
-}
-
-export function formatTimeWindow(timeString: string): string {
-    const date = new Date(timeString);
-    if (Number.isNaN(date.getTime())) return timeString;
-
-    return date.toLocaleTimeString([], {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
 }
 
 export function transformResourceChartData(

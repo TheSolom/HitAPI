@@ -1,4 +1,5 @@
-﻿import type { ConsumersChartResponseDto } from '@hitapi/types';
+import type { ConsumersChartResponseDto } from '@hitapi/types';
+import { formatTimeWindow } from '@/lib/format';
 
 export interface ConsumerChartEntry {
     timeWindow: string;
@@ -6,18 +7,6 @@ export interface ConsumerChartEntry {
     New: number;
     Existing: number;
     Total: number;
-}
-
-export function formatTimeWindow(timeString: string): string {
-    const date = new Date(timeString);
-    if (Number.isNaN(date.getTime())) return timeString;
-
-    return date.toLocaleTimeString([], {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
 }
 
 export function transformConsumerChartData(

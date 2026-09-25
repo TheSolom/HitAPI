@@ -4,7 +4,7 @@ import {
     type RequestsPerMinuteChartResponseDto,
     ResponseStatus,
 } from '@hitapi/types';
-import { formatTimeWindow } from '../../utils';
+import { formatTimeWindow } from '@/lib/format';
 
 export interface RequestsChartEntry {
     timeWindow: string;

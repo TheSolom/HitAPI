@@ -2,7 +2,7 @@ import type {
     ApdexScoreChartResponseDto,
     ResponseTimeChartResponseDto,
 } from '@hitapi/types';
-import { formatTimeWindow } from '../../utils';
+import { formatTimeWindow } from '@/lib/format';
 
 export interface ApdexChartDataPoint {
     timeWindow: string;
