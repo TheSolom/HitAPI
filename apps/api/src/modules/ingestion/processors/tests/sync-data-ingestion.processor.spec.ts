@@ -39,6 +39,9 @@ describe('SyncDataIngestionProcessor', () => {
     let resourcesServiceMock: {
         upsertResource: jest.Mock<any>;
     };
+    let appsServiceMock: {
+        findById: jest.Mock<any>;
+    };
     let loggerMock: {
         setContext: jest.Mock<any>;
         debug: jest.Mock<any>;
@@ -91,6 +94,9 @@ describe('SyncDataIngestionProcessor', () => {
         resourcesServiceMock = {
             upsertResource: jest.fn<any>(async () => {}),
         };
+        appsServiceMock = {
+            findById: jest.fn<any>(async () => ({ targetResponseTimeMs: 500 })),
+        };
         loggerMock = {
             setContext: jest.fn<any>(),
             debug: jest.fn<any>(),
@@ -136,6 +142,7 @@ describe('SyncDataIngestionProcessor', () => {
                 },
                 { provide: Services.TRAFFIC, useValue: trafficServiceMock },
                 { provide: Services.RESOURCES, useValue: resourcesServiceMock },
+                { provide: Services.APPS, useValue: appsServiceMock },
             ],
         }).compile();
 
