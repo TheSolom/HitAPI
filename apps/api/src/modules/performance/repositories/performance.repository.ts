@@ -1,9 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { type ObjectLiteral, type SelectQueryBuilder } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import {
+    Repository,
+    type ObjectLiteral,
+    type SelectQueryBuilder,
+} from 'typeorm';
 import { stringToInt } from '@hitapi/shared/utils';
 import { Repositories } from '../../../common/constants/repositories.constant.js';
 import type { RequestLogsRepository } from '../../request-logs/repositories/request-logs.repository.js';
 import { RequestLog } from '../../request-logs/entities/request-log.entity.js';
+import { TrafficMetric } from '../../traffic/entities/traffic-metric.entity.js';
 import {
     applyPeriodFilter,
     parsePeriod,
@@ -22,21 +28,11 @@ export class PerformanceRepository implements IPerformanceRepository {
     constructor(
         @Inject(Repositories.REQUEST_LOGS)
         private readonly requestLogsRepository: RequestLogsRepository,
+        @InjectRepository(TrafficMetric)
+        private readonly trafficMetricRepository: Repository<TrafficMetric>,
     ) {}
 
-    private applyPathFilter<T extends ObjectLiteral>(
-        qb: SelectQueryBuilder<T>,
-        { path, pathExact }: GetPerformanceOptionsDto,
-    ): void {
-        if (!path) return;
-        if (pathExact) {
-            qb.andWhere('rl.path = :path', { path });
-        } else {
-            qb.andWhere('rl.path LIKE :path', { path: `%${path}%` });
-        }
-    }
-
-    private applyFilters<T extends ObjectLiteral>(
+    private applyRequestLogFilters<T extends ObjectLiteral>(
         qb: SelectQueryBuilder<T>,
         criteria: GetPerformanceOptionsDto,
     ): void {
@@ -70,16 +66,26 @@ export class PerformanceRepository implements IPerformanceRepository {
                 });
             }
         }
-
-        this.applyPathFilter(qb, criteria);
+        if (criteria.path) {
+            if (criteria.pathExact) {
+                qb.andWhere('rl.path = :path', { path: criteria.path });
+            } else {
+                qb.andWhere('rl.path LIKE :path', {
+                    path: `%${criteria.path}%`,
+                });
+            }
+        }
     }
 
+    /**
+     * Overall headline KPIs — kept on request_logs for exact PERCENTILE_CONT accuracy.
+     */
     async getPerformanceMetrics(
         options: GetPerformanceOptionsDto,
     ): Promise<IPerformanceMetricsRaw | undefined> {
         const qb = this.requestLogsRepository.createQueryBuilder('rl');
 
-        this.applyFilters<RequestLog>(qb, options);
+        this.applyRequestLogFilters<RequestLog>(qb, options);
         const period = parsePeriod(options.period);
         applyPeriodFilter<RequestLog>(qb, period, 'rl', 'timestamp');
 
@@ -114,72 +120,83 @@ export class PerformanceRepository implements IPerformanceRepository {
             .getRawOne<IPerformanceMetricsRaw>();
     }
 
+    /**
+     * Apdex score over time — queries pre-aggregated traffic_metrics for O(rows) performance.
+     */
     async getApdexScoreChart(
         options: GetPerformanceOptionsDto,
     ): Promise<IApdexScoreChartRaw[]> {
-        const qb = this.requestLogsRepository.createQueryBuilder('rl');
-
-        this.applyFilters<RequestLog>(qb, options);
         const period = parsePeriod(options.period);
-        applyPeriodFilter<RequestLog>(qb, period, 'rl', 'timestamp');
 
-        return qb
+        const qb = this.trafficMetricRepository
+            .createQueryBuilder('tm')
             .select(
-                `DATE_TRUNC('${period.granularity}', rl.timestamp)`,
+                `DATE_TRUNC('${period.granularity}', tm.timeWindow)`,
                 'timeWindow',
             )
-            .addSelect('COUNT(*)', 'totalRequestCount')
-            .addSelect(
-                'SUM(CASE WHEN rl.responseTime <= a.targetResponseTimeMs THEN 1 ELSE 0 END)',
-                'apdexSatisfiedCount',
-            )
-            .addSelect(
-                'SUM(CASE WHEN rl.responseTime > a.targetResponseTimeMs AND rl.responseTime <= a.targetResponseTimeMs * 4 THEN 1 ELSE 0 END)',
-                'apdexToleratedCount',
-            )
-            .innerJoin('rl.app', 'a')
+            .addSelect('SUM(tm.requestCount)', 'totalRequestCount')
+            .addSelect('SUM(tm.apdexSatisfiedCount)', 'apdexSatisfiedCount')
+            .addSelect('SUM(tm.apdexToleratedCount)', 'apdexToleratedCount')
+            .innerJoin('tm.endpoint', 'e')
+            .innerJoin('e.app', 'a')
+            .where('a.id = :appId', { appId: options.appId });
+
+        applyPeriodFilter<TrafficMetric>(qb, period, 'tm', 'timeWindow');
+
+        return qb
             .groupBy('"timeWindow"')
             .orderBy('"timeWindow"', 'ASC')
             .getRawMany<IApdexScoreChartRaw>();
     }
 
+    /**
+     * Response-time chart over time — uses weighted-average of pre-aggregated percentiles.
+     * Acceptable approximation for a trend chart; saves a full request_logs scan.
+     */
     async getResponseTimeChart(
         options: GetPerformanceOptionsDto,
     ): Promise<IResponseTimeChartRaw[]> {
-        const qb = this.requestLogsRepository.createQueryBuilder('rl');
-
-        this.applyFilters<RequestLog>(qb, options);
         const period = parsePeriod(options.period);
-        applyPeriodFilter<RequestLog>(qb, period, 'rl', 'timestamp');
 
-        return qb
+        const qb = this.trafficMetricRepository
+            .createQueryBuilder('tm')
             .select(
-                `DATE_TRUNC('${period.granularity}', rl.timestamp)`,
+                `DATE_TRUNC('${period.granularity}', tm.timeWindow)`,
                 'timeWindow',
             )
             .addSelect(
-                'COALESCE(PERCENTILE_CONT(0.50) WITHIN GROUP (ORDER BY rl.responseTime), 0)',
+                'SUM(tm.responseTimeP50 * tm.requestCount) / NULLIF(SUM(tm.requestCount), 0)',
                 'responseTimeP50',
             )
             .addSelect(
-                'COALESCE(PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY rl.responseTime), 0)',
+                'SUM(tm.responseTimeP75 * tm.requestCount) / NULLIF(SUM(tm.requestCount), 0)',
                 'responseTimeP75',
             )
             .addSelect(
-                'COALESCE(PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY rl.responseTime), 0)',
+                'SUM(tm.responseTimeP95 * tm.requestCount) / NULLIF(SUM(tm.requestCount), 0)',
                 'responseTimeP95',
             )
+            .innerJoin('tm.endpoint', 'e')
+            .innerJoin('e.app', 'a')
+            .where('a.id = :appId', { appId: options.appId });
+
+        applyPeriodFilter<TrafficMetric>(qb, period, 'tm', 'timeWindow');
+
+        return qb
             .groupBy('"timeWindow"')
             .orderBy('"timeWindow"', 'ASC')
             .getRawMany<IResponseTimeChartRaw>();
     }
 
+    /**
+     * Per-endpoint breakdown — kept on request_logs for exact PERCENTILE_CONT per endpoint.
+     */
     async getPerformanceEndpointsTable(
         options: GetPerformanceOptionsDto,
     ): Promise<IPerformanceEndpointsTableRaw[]> {
         const qb = this.requestLogsRepository.createQueryBuilder('rl');
 
-        this.applyFilters<RequestLog>(qb, options);
+        this.applyRequestLogFilters<RequestLog>(qb, options);
         const period = parsePeriod(options.period);
         applyPeriodFilter<RequestLog>(qb, period, 'rl', 'timestamp');
 
