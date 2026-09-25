@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import type { ApplicationLogResponseDto as IApplicationLogResponseDto } from '@hitapi/types';
 
-export class ApplicationLogResponseDto {
+export class ApplicationLogResponseDto implements IApplicationLogResponseDto {
     @Expose()
     @ApiProperty({ type: 'string' })
     message: string;

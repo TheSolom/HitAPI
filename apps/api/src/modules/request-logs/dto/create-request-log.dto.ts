@@ -14,8 +14,9 @@ import {
     Min,
 } from 'class-validator';
 import { RestfulMethod } from '@hitapi/shared/enums';
+import type { CreateRequestLogPayload } from '@hitapi/types';
 
-export class CreateRequestLogDto {
+export class CreateRequestLogDto implements CreateRequestLogPayload {
     @ApiProperty({ format: 'uuid' })
     @IsUUID()
     requestUuid: string;

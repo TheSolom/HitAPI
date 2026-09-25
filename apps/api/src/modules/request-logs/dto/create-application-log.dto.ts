@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsUUID, IsString, IsOptional, IsInt, IsDate } from 'class-validator';
+import type { CreateApplicationLogPayload } from '@hitapi/types';
 
-export class CreateApplicationLogDto {
+export class CreateApplicationLogDto implements CreateApplicationLogPayload {
     @ApiProperty({ format: 'uuid' })
     @IsUUID()
     requestUuid: string;

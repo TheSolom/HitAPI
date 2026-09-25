@@ -16,9 +16,9 @@ import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RestfulMethod } from '@hitapi/shared/enums';
 import { IsPeriod } from '../../../common/validators/is-period.validator.js';
-import type { Period } from '@hitapi/types';
+import type { BaseRequestLogsOptions, Period } from '@hitapi/types';
 
-export class BaseRequestLogsOptionsDto {
+export class BaseRequestLogsOptionsDto implements BaseRequestLogsOptions {
     @ApiProperty({ format: 'uuid' })
     @IsUUID()
     @IsNotEmpty()

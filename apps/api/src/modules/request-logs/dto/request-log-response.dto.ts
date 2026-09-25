@@ -1,8 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RestfulMethod } from '@hitapi/shared/enums';
+import type {
+    RequestLogResponseDto as IRequestLogResponseDto,
+    RequestLogResponsePaginatedDto as IRequestLogResponsePaginatedDto,
+} from '@hitapi/types';
 import { MetadataResponseDto } from '../../../common/dto/metadata.response.dto.js';
 
-export class RequestLogResponseDto {
+export class RequestLogResponseDto implements IRequestLogResponseDto {
     @ApiProperty({ format: 'uuid' })
     requestUuid: string;
 
@@ -57,9 +61,12 @@ export class RequestLogResponseDto {
 
     @ApiPropertyOptional({ type: 'string' })
     consumerName?: string;
+
+    @ApiPropertyOptional({ type: 'string' })
+    consumerGroupName?: string;
 }
 
-export class RequestLogResponsePaginatedDto {
+export class RequestLogResponsePaginatedDto implements IRequestLogResponsePaginatedDto {
     @ApiProperty({ type: RequestLogResponseDto, isArray: true })
     data: RequestLogResponseDto[];
 

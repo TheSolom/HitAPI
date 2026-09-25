@@ -1,7 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import type { RequestLogDetailsResponseDto as IRequestLogDetailsResponseDto } from '@hitapi/types';
 import { RequestLogResponseDto } from './request-log-response.dto.js';
 
-export class RequestLogDetailsResponseDto extends RequestLogResponseDto {
+export class RequestLogDetailsResponseDto
+    extends RequestLogResponseDto
+    implements IRequestLogDetailsResponseDto
+{
     @ApiProperty({
         type: 'array',
         items: { type: 'array', items: { type: 'string' } },
