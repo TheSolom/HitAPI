@@ -1,67 +1,10 @@
-import {
-    IsString,
-    IsOptional,
-    IsBoolean,
-    IsEnum,
-    IsUUID,
-    IsNotEmpty,
-    IsInt,
-    IsIn,
-} from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsEnum, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { RestfulMethod } from '@hitapi/shared/enums';
-import { OrderDirection, type Period } from '@hitapi/types';
-import { IsPeriod } from '../../../common/validators/is-period.validator.js';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { OrderDirection } from '@hitapi/types';
+import { BaseAnalyticsOptionsDto } from '../../../common/dto/base-analytics-options.dto.js';
 
-export class GetTrafficConsumersTableOptionsDto {
-    @ApiProperty({ format: 'uuid' })
-    @IsUUID()
-    @IsNotEmpty()
-    appId: string;
-
-    @ApiPropertyOptional({
-        type: 'string',
-        default: '24h',
-        example: '24h, 7d, or start|end',
-    })
-    @IsPeriod()
-    @IsOptional()
-    period: Period = '24h';
-
-    @ApiPropertyOptional({ type: 'integer' })
-    @Type(() => Number)
-    @IsInt()
-    @IsOptional()
-    consumerId?: number;
-
-    @ApiPropertyOptional({ type: 'integer' })
-    @Type(() => Number)
-    @IsInt()
-    @IsOptional()
-    consumerGroupId?: number;
-
-    @ApiPropertyOptional({ enum: RestfulMethod })
-    @IsEnum(RestfulMethod)
-    @IsOptional()
-    method?: RestfulMethod;
-
-    @ApiPropertyOptional({ type: 'string' })
-    @IsString()
-    @IsOptional()
-    path?: string;
-
-    @ApiPropertyOptional({ type: 'boolean' })
-    @Type(() => Boolean)
-    @IsBoolean()
-    @IsOptional()
-    pathExact?: boolean;
-
-    @ApiPropertyOptional({ type: 'string' })
-    @IsString()
-    @IsOptional()
-    statusCode?: string;
-
+export class GetTrafficConsumersTableOptionsDto extends BaseAnalyticsOptionsDto {
     @ApiPropertyOptional({ type: 'string' })
     @IsString()
     @IsOptional()

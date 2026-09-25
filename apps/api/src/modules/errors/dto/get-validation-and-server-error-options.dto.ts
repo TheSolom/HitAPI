@@ -1,70 +1,17 @@
-import {
-    IsOptional,
-    IsString,
-    IsBoolean,
-    IsInt,
-    IsUUID,
-    IsNotEmpty,
-    IsEnum,
-    Max,
-    Min,
-} from 'class-validator';
+import { IsInt, Max, Min } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { RestfulMethod } from '@hitapi/shared/enums';
-import type {
-    Period,
-    GetValidationAndServerErrorOptions as IGetValidationAndServerErrorOptions,
-} from '@hitapi/types';
-import { IsPeriod } from '../../../common/validators/is-period.validator.js';
+import { ApiProperty } from '@nestjs/swagger';
+import type { GetValidationAndServerErrorOptions as IGetValidationAndServerErrorOptions } from '@hitapi/types';
+import { BaseAnalyticsOptionsDto } from '../../../common/dto/base-analytics-options.dto.js';
 
-export class GetValidationAndServerErrorOptionsDto implements IGetValidationAndServerErrorOptions {
-    @ApiProperty({ format: 'uuid' })
-    @IsUUID()
-    @IsNotEmpty()
-    appId: string;
-
-    @ApiPropertyOptional({
-        type: 'string',
-        default: '24h',
-        example: '24h, 7d, or start|end',
-    })
-    @IsPeriod()
-    @IsOptional()
-    period: Period = '24h';
-
+export class GetValidationAndServerErrorOptionsDto
+    extends BaseAnalyticsOptionsDto
+    implements IGetValidationAndServerErrorOptions
+{
     @ApiProperty({ type: 'integer', default: 100 })
     @Type(() => Number)
     @Max(100)
     @Min(1)
     @IsInt()
     limit: number = 100;
-
-    @ApiPropertyOptional({ type: 'integer' })
-    @Type(() => Number)
-    @IsInt()
-    @IsOptional()
-    consumerId?: number;
-
-    @ApiPropertyOptional({ type: 'integer' })
-    @Type(() => Number)
-    @IsInt()
-    @IsOptional()
-    consumerGroupId?: number;
-
-    @ApiPropertyOptional({ enum: RestfulMethod })
-    @IsEnum(RestfulMethod)
-    @IsOptional()
-    method?: RestfulMethod;
-
-    @ApiPropertyOptional({ type: 'string' })
-    @IsString()
-    @IsOptional()
-    path?: string;
-
-    @ApiPropertyOptional({ type: 'boolean' })
-    @Type(() => Boolean)
-    @IsBoolean()
-    @IsOptional()
-    pathExact?: boolean;
 }
