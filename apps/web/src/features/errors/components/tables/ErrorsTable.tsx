@@ -17,7 +17,8 @@ import { useSortState } from '@/hooks';
 import { useErrorsTableQuery } from '../../hooks';
 import { ErrorsTableToolbar } from './ErrorsTableToolbar';
 import { ErrorsTableRow } from './ErrorsTableRow';
-import type { ErrorSortField } from './table.utils';
+export type ErrorSortField =
+    'statusCode' | 'requestCount' | 'affectedConsumers' | 'path';
 
 interface ErrorsTableProps {
     options: Partial<GetErrorOptions>;
