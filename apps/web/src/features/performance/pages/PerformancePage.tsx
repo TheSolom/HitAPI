@@ -1,9 +1,8 @@
-import { useEffect } from 'react';
 import type { Period } from '@hitapi/types';
 import type { RestfulMethod } from '@hitapi/shared/enums';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { EmptyState } from '@/components/states/EmptyState';
-import { useUiStore } from '@/stores/ui-store';
+import { useAnalyticsQueryOptions } from '@/hooks';
 import {
     PerformanceMetricsCards,
     ApdexScoreChart,
@@ -30,29 +29,15 @@ export function PerformancePage({
     path,
     statusCode,
 }: Readonly<PerformancePageProps>) {
-    const activeAppId = useUiStore((s) => s.activeAppId);
-    const setActiveAppId = useUiStore((s) => s.setActiveAppId);
-    const storePeriod = useUiStore((s) => s.period);
-
-    // Sync appId from route if provided
-    useEffect(() => {
-        if (appId && activeAppId !== appId) {
-            setActiveAppId(appId);
-        }
-    }, [appId, activeAppId, setActiveAppId]);
-
-    const resolvedAppId = appId ?? activeAppId ?? '';
-    const resolvedPeriod = initialPeriod ?? storePeriod;
-
-    const queryOptions = {
-        appId: resolvedAppId,
-        period: resolvedPeriod,
+    const { resolvedAppId, queryOptions } = useAnalyticsQueryOptions({
+        appId,
+        period: initialPeriod,
         consumerId,
         consumerGroupId,
         method,
         path,
         statusCode,
-    };
+    });
 
     if (!resolvedAppId) {
         return (
