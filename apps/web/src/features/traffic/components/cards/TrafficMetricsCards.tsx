@@ -7,11 +7,11 @@ import {
     Users,
 } from 'lucide-react';
 import type { GetTrafficOptions } from '@hitapi/types';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { MetricsCardsSkeleton, StatCard } from '@/components/common';
+import { formatNumber } from '@/lib/format';
 import { formatPeriodDescription } from '@/lib/utils';
 import { useTrafficMetricsQuery } from '../../hooks';
-import { formatBytes, formatNumber, formatRate } from '../../utils';
-import { TrafficStatCard } from './TrafficStatCard';
+import { formatBytes, formatRate } from '../../utils';
 
 export interface TrafficMetricsCardsProps {
     options: Partial<GetTrafficOptions>;
@@ -23,22 +23,7 @@ export function TrafficMetricsCards({
     const { data: metrics, isLoading } = useTrafficMetricsQuery(options);
 
     if (isLoading) {
-        return (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-                {[1, 2, 3, 4, 5, 6].map((key) => (
-                    <Card key={key} className="animate-pulse">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <div className="h-3 w-20 rounded bg-muted" />
-                            <div className="h-4 w-4 rounded bg-muted" />
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            <div className="h-7 w-16 rounded bg-muted" />
-                            <div className="h-3 w-24 rounded bg-muted" />
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-        );
+        return <MetricsCardsSkeleton count={6} />;
     }
 
     const totalRequests = metrics?.totalRequestCount ?? 0;
@@ -61,21 +46,21 @@ export function TrafficMetricsCards({
 
     return (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-            <TrafficStatCard
+            <StatCard
                 title="Total Requests"
                 value={formatNumber(totalRequests)}
                 description={formatPeriodDescription(options.period)}
                 icon={Activity}
             />
 
-            <TrafficStatCard
+            <StatCard
                 title="Requests / Min"
                 value={requestsPerMinute.toFixed(2)}
                 description="Average throughput"
                 icon={Gauge}
             />
 
-            <TrafficStatCard
+            <StatCard
                 title="Error Rate"
                 value={formatRate(errorRate)}
                 description={`${formatNumber(clientErrors)} client · ${formatNumber(serverErrors)} server`}
@@ -83,21 +68,21 @@ export function TrafficMetricsCards({
                 valueClassName={getErrorRateColorClass(errorRate)}
             />
 
-            <TrafficStatCard
+            <StatCard
                 title="Data Transferred"
                 value={formatBytes(totalDataTransferred)}
                 description={`In: ${formatBytes(requestSizeSum)} · Out: ${formatBytes(responseSizeSum)}`}
                 icon={ArrowDownUp}
             />
 
-            <TrafficStatCard
+            <StatCard
                 title="Avg Payload"
                 value={formatBytes(responseSizeAvg)}
                 description={`Request avg: ${formatBytes(requestSizeAvg)}`}
                 icon={HardDrive}
             />
 
-            <TrafficStatCard
+            <StatCard
                 title="Unique Consumers"
                 value={formatNumber(uniqueConsumers)}
                 description="Active client consumers"

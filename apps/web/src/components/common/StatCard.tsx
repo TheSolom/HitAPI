@@ -3,7 +3,7 @@ import type { LucideIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-export interface PerformanceStatCardProps {
+export interface StatCardProps {
     title: string;
     value: ReactNode;
     description?: ReactNode;
@@ -12,14 +12,14 @@ export interface PerformanceStatCardProps {
     valueClassName?: string;
 }
 
-export function PerformanceStatCard({
+export function StatCard({
     title,
     value,
     description,
     icon: Icon,
     className,
     valueClassName,
-}: Readonly<PerformanceStatCardProps>) {
+}: Readonly<StatCardProps>) {
     return (
         <Card className={cn('overflow-hidden', className)}>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">

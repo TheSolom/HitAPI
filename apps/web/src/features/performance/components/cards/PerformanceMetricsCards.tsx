@@ -1,15 +1,10 @@
 import { Activity, Award, Clock, Sliders, Timer, Zap } from 'lucide-react';
 import type { GetPerformanceOptions } from '@hitapi/types';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { MetricsCardsSkeleton, StatCard } from '@/components/common';
+import { formatNumber } from '@/lib/format';
 import { formatPeriodDescription } from '@/lib/utils';
 import { usePerformanceMetricsQuery } from '../../hooks';
-import {
-    formatApdex,
-    formatNumber,
-    formatResponseTime,
-    getApdexRating,
-} from '../../utils';
-import { PerformanceStatCard } from './PerformanceStatCard';
+import { formatApdex, formatResponseTime, getApdexRating } from '../../utils';
 
 export interface PerformanceMetricsCardsProps {
     options: Partial<GetPerformanceOptions>;
@@ -27,22 +22,7 @@ export function PerformanceMetricsCards({
     const { data: metrics, isLoading } = usePerformanceMetricsQuery(options);
 
     if (isLoading) {
-        return (
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-                {[1, 2, 3, 4, 5, 6].map((key) => (
-                    <Card key={key} className="animate-pulse">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <div className="h-3 w-20 rounded bg-muted" />
-                            <div className="h-4 w-4 rounded bg-muted" />
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            <div className="h-7 w-16 rounded bg-muted" />
-                            <div className="h-3 w-24 rounded bg-muted" />
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-        );
+        return <MetricsCardsSkeleton count={6} />;
     }
 
     const totalRequests = metrics?.totalRequestCount ?? 0;
@@ -56,14 +36,14 @@ export function PerformanceMetricsCards({
 
     return (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-            <PerformanceStatCard
+            <StatCard
                 title="Total Requests"
                 value={formatNumber(totalRequests)}
                 description={formatPeriodDescription(options.period)}
                 icon={Activity}
             />
 
-            <PerformanceStatCard
+            <StatCard
                 title="Apdex Score"
                 value={formatApdex(apdexScore)}
                 description={
@@ -75,21 +55,21 @@ export function PerformanceMetricsCards({
                 valueClassName={apdexRating.colorClass}
             />
 
-            <PerformanceStatCard
+            <StatCard
                 title="Median (P50)"
                 value={formatResponseTime(responseTimeP50)}
                 description="50% of requests faster"
                 icon={Clock}
             />
 
-            <PerformanceStatCard
+            <StatCard
                 title="P75 Latency"
                 value={formatResponseTime(responseTimeP75)}
                 description="75% of requests faster"
                 icon={Timer}
             />
 
-            <PerformanceStatCard
+            <StatCard
                 title="P95 Latency"
                 value={formatResponseTime(responseTimeP95)}
                 description="95% of requests faster"
@@ -100,7 +80,7 @@ export function PerformanceMetricsCards({
                 )}
             />
 
-            <PerformanceStatCard
+            <StatCard
                 title="Target Time"
                 value={formatResponseTime(targetResponseTimeMs)}
                 description="Apdex target threshold"
