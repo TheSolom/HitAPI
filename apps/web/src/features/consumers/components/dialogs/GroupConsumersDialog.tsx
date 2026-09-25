@@ -1,14 +1,6 @@
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import {
-    ArrowRight,
-    Check,
-    Copy,
-    ExternalLink,
-    Search,
-    User,
-    X,
-} from 'lucide-react';
+import { ArrowRight, Search, User, X } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ConsumerGroupResponseDto } from '@hitapi/types';
 import { Badge } from '@/components/ui/badge';
@@ -24,7 +16,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ConsumerAvatar } from '../avatar';
+import { ConsumerCardItem } from '../cards/ConsumerCardItem';
 import { useConsumersQuery } from '../../hooks';
 
 interface GroupConsumersDialogProps {
@@ -109,74 +101,17 @@ export function GroupConsumersDialog({
         return (
             <ScrollArea className="max-h-[52vh] pr-2">
                 <div className="grid gap-2 sm:grid-cols-2">
-                    {filteredConsumers.map((consumer) => {
-                        const displayName =
-                            consumer.name || consumer.identifier;
-                        const isCopied = copiedId === consumer.identifier;
-
-                        return (
-                            <div
-                                key={consumer.id}
-                                className="group relative flex items-center justify-between gap-3 rounded-md border bg-card p-3 transition-colors duration-150 hover:bg-muted/30"
-                            >
-                                <Link
-                                    to="/consumers/$consumerId"
-                                    params={{
-                                        consumerId: String(consumer.id),
-                                    }}
-                                    onClick={() => {
-                                        onOpenChange(false);
-                                    }}
-                                    className="flex items-center gap-3 min-w-0 flex-1"
-                                >
-                                    <ConsumerAvatar
-                                        name={consumer.name}
-                                        identifier={consumer.identifier}
-                                    />
-
-                                    <div className="min-w-0 flex-1">
-                                        <div className="font-semibold text-xs text-foreground group-hover:text-primary transition-colors truncate">
-                                            {displayName}
-                                        </div>
-                                        <div className="font-mono text-[11px] text-muted-foreground truncate">
-                                            {consumer.identifier}
-                                        </div>
-                                    </div>
-                                </Link>
-
-                                <div className="flex items-center gap-1.5 shrink-0">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
-                                        onClick={(e) => {
-                                            handleCopy(consumer.identifier, e);
-                                        }}
-                                        title="Copy identifier"
-                                    >
-                                        {isCopied ? (
-                                            <Check className="h-3.5 w-3.5 text-emerald-500" />
-                                        ) : (
-                                            <Copy className="h-3.5 w-3.5" />
-                                        )}
-                                    </Button>
-
-                                    <Link
-                                        to="/consumers/$consumerId"
-                                        params={{
-                                            consumerId: String(consumer.id),
-                                        }}
-                                        onClick={() => {
-                                            onOpenChange(false);
-                                        }}
-                                        className="text-muted-foreground hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity p-1"
-                                    >
-                                        <ExternalLink className="h-3.5 w-3.5" />
-                                    </Link>
-                                </div>
-                            </div>
-                        );
-                    })}
+                    {filteredConsumers.map((consumer) => (
+                        <ConsumerCardItem
+                            key={consumer.id}
+                            consumer={consumer}
+                            isCopied={copiedId === consumer.identifier}
+                            onCopy={handleCopy}
+                            onNavigate={() => {
+                                onOpenChange(false);
+                            }}
+                        />
+                    ))}
                 </div>
             </ScrollArea>
         );
