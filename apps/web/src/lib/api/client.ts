@@ -12,6 +12,7 @@ export interface RequestOptions {
     method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
     query?: QueryParams;
     body?: JsonBody;
+    headers?: Record<string, string>;
     signal?: AbortSignal;
     anonymous?: boolean; // Skip attaching the bearer token
     _retry?: boolean; // Internal flag to avoid infinite 401 loops
@@ -101,8 +102,18 @@ async function fetchApiResponse(
     path: string,
     options: RequestOptions,
 ): Promise<Response> {
-    const { method = 'GET', query, body, signal, anonymous } = options;
-    const headers: Record<string, string> = { Accept: 'application/json' };
+    const {
+        method = 'GET',
+        query,
+        body,
+        signal,
+        anonymous,
+        headers: customHeaders,
+    } = options;
+    const headers: Record<string, string> = {
+        Accept: 'application/json, text/csv, */*',
+        ...customHeaders,
+    };
 
     if (body !== undefined) headers['Content-Type'] = 'application/json';
     if (!anonymous) {
@@ -132,10 +143,18 @@ async function parseResponse(response: Response): Promise<unknown> {
     const raw = await response.text();
     if (!raw) return null;
 
+    const contentType = response.headers.get('content-type') ?? '';
+    if (
+        contentType.includes('text/csv') ||
+        contentType.includes('text/plain')
+    ) {
+        return raw;
+    }
+
     try {
         return JSON.parse(raw);
     } catch {
-        return null;
+        return raw;
     }
 }
 
@@ -267,8 +286,12 @@ export async function apiRequest<TResponse>(
 }
 
 export const api = {
-    get: <T>(path: string, query?: QueryParams, signal?: AbortSignal) =>
-        apiRequest<T>(path, { query, signal }),
+    get: <T>(
+        path: string,
+        query?: QueryParams,
+        signal?: AbortSignal,
+        options?: Omit<RequestOptions, 'query' | 'signal' | 'method'>,
+    ) => apiRequest<T>(path, { ...options, query, signal }),
     post: <T>(path: string, body?: JsonBody, options?: RequestOptions) =>
         apiRequest<T>(path, { ...options, method: 'POST', body }),
     patch: <T>(path: string, body?: JsonBody, options?: RequestOptions) =>

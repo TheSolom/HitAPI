@@ -18,7 +18,6 @@ import {
 } from '@/features/auth';
 import { TeamsPage } from '@/features/teams';
 import { AppsPage } from '@/features/apps';
-import { RequestLogsPage } from '@/features/request-logs/pages/RequestLogsPage';
 import {
     AppDetailRouteComponent,
     ConsumerDetailRouteComponent,
@@ -32,11 +31,13 @@ import {
     TeamDetailRouteComponent,
     TrafficRouteComponent,
     PerformanceRouteComponent,
+    RequestLogsRouteComponent,
 } from './routes/route-components';
 import {
     validateTrafficSearch,
     validateErrorsSearch,
     validatePerformanceSearch,
+    validateRequestLogsSearch,
 } from './routes/route-search';
 
 /* ---------------------------------- Root ---------------------------------- */
@@ -174,7 +175,6 @@ const indexRoute = createRoute({
 const profileRoute = createChildRoute('/profile', ProfilePage);
 const teamsRoute = createChildRoute('/teams', TeamsPage);
 const appsRoute = createChildRoute('/apps', AppsPage);
-const logsRoute = createChildRoute('/logs', RequestLogsPage);
 
 /* -------------------------- Parametric Routes ----------------------------- */
 
@@ -256,6 +256,13 @@ const performanceRoute = createRoute({
     path: '/performance',
     validateSearch: validatePerformanceSearch,
     component: PerformanceRouteComponent,
+});
+
+const logsRoute = createRoute({
+    getParentRoute: () => protectedRoute,
+    path: '/logs',
+    validateSearch: validateRequestLogsSearch,
+    component: RequestLogsRouteComponent,
 });
 
 /* ------------------- Redirect Routes (Legacy Aliases) -------------------- */

@@ -30,9 +30,13 @@ export function parseRestfulMethod(val: unknown): RestfulMethod | undefined {
     return typeof val === 'string' ? (val as RestfulMethod) : undefined;
 }
 
-/* ------------------------ Shared search validators ------------------------- */
+/* ----------------------- Shared analytics base search --------------------- */
 
-export interface TrafficSearch {
+/**
+ * Base analytics search params shared across all analytics pages
+ * (Traffic, Errors, Performance, Logs, etc.)
+ */
+export interface AnalyticsSearch {
     appId?: string;
     period?: Period;
     consumerId?: number;
@@ -42,9 +46,11 @@ export interface TrafficSearch {
     statusCode?: string;
 }
 
+export type TrafficSearch = AnalyticsSearch;
+
 export function validateTrafficSearch(
     search: Record<string, unknown>,
-): TrafficSearch {
+): AnalyticsSearch {
     return {
         appId: parseSearchString(search.appId),
         period: parseSearchString(search.period),
@@ -56,7 +62,7 @@ export function validateTrafficSearch(
     };
 }
 
-export interface ErrorsSearch extends TrafficSearch {
+export interface ErrorsSearch extends AnalyticsSearch {
     tab?: ErrorsTab;
 }
 
@@ -69,10 +75,18 @@ export function validateErrorsSearch(
     };
 }
 
-export type PerformanceSearch = TrafficSearch;
+export type PerformanceSearch = AnalyticsSearch;
 
 export function validatePerformanceSearch(
     search: Record<string, unknown>,
 ): PerformanceSearch {
+    return validateTrafficSearch(search);
+}
+
+export type RequestLogsSearch = AnalyticsSearch;
+
+export function validateRequestLogsSearch(
+    search: Record<string, unknown>,
+): RequestLogsSearch {
     return validateTrafficSearch(search);
 }
