@@ -1,10 +1,11 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { GetErrorOptions } from '@hitapi/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { LoadingCards } from '@/components/states/LoadingState';
 import { useErrorsChartQuery } from '../../hooks';
 import { transformErrorsChartData } from './chart.utils';
-import { ErrorsChartHeader, type ChartViewType } from './ErrorsChartHeader';
+import type { ChartViewType } from '@/types/chart';
+import { ErrorsChartHeader } from './ErrorsChartHeader';
 import { ErrorsChartEmptyState } from './ErrorsChartEmptyState';
 import { ErrorsChartView } from './ErrorsChartView';
 

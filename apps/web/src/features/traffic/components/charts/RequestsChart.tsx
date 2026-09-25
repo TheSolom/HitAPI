@@ -4,7 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { LoadingCards } from '@/components/states/LoadingState';
 import { useRequestsChartQuery } from '../../hooks';
 import { transformRequestsChartData } from './chart.utils';
-import { RequestsChartHeader, type ChartViewType } from './RequestsChartHeader';
+import type { ChartViewType } from '@/types/chart';
+import { RequestsChartHeader } from './RequestsChartHeader';
 import { RequestsChartView } from './RequestsChartView';
 import { RequestsChartEmptyState } from './RequestsChartEmptyState';
 

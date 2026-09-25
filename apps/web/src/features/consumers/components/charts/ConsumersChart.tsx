@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { Period } from '@hitapi/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { LoadingCards } from '@/components/states/LoadingState';
@@ -7,10 +7,8 @@ import {
     calculateConsumerTotals,
     transformConsumerChartData,
 } from './chart.utils';
-import {
-    ConsumersChartHeader,
-    type ChartViewType,
-} from './ConsumersChartHeader';
+import type { ChartViewType } from '@/types/chart';
+import { ConsumersChartHeader } from './ConsumersChartHeader';
 import { ConsumersChartEmptyState } from './ConsumersChartEmptyState';
 import { ConsumersChartView } from './ConsumersChartView';
 
