@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { MethodFilterSelect, SearchInput } from '@/components/common';
 
-export interface TrafficEndpointsTableToolbarProps {
+export interface EndpointsTableToolbarProps {
     searchTerm: string;
     onSearchChange: (value: string) => void;
     selectedMethod: string;
@@ -11,7 +11,7 @@ export interface TrafficEndpointsTableToolbarProps {
     onResetFilters: () => void;
 }
 
-export function TrafficEndpointsTableToolbar({
+export function EndpointsTableToolbar({
     searchTerm,
     onSearchChange,
     selectedMethod,
@@ -19,7 +19,7 @@ export function TrafficEndpointsTableToolbar({
     totalCount,
     filteredCount,
     onResetFilters,
-}: Readonly<TrafficEndpointsTableToolbarProps>) {
+}: Readonly<EndpointsTableToolbarProps>) {
     const isFiltered = searchTerm !== '' || selectedMethod !== 'all';
 
     return (

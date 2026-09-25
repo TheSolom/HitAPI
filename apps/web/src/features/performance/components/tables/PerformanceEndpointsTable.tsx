@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Network } from 'lucide-react';
-import { OrderDirection, type GetPerformanceOptions } from '@hitapi/types';
+import { type GetPerformanceOptions } from '@hitapi/types';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
@@ -11,7 +10,12 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { SortIcon, TableLoadingRows } from '@/components/common';
+import {
+    EndpointsTableToolbar,
+    SortIcon,
+    TableLoadingRows,
+    TablePagination,
+} from '@/components/common';
 import { EmptyState } from '@/components/states/EmptyState';
 import { usePagination, useSortState } from '@/hooks';
 import { usePerformanceEndpointsTableQuery } from '../../hooks';
@@ -19,7 +23,6 @@ import {
     sortPerformanceEndpoints,
     type PerformanceSortField,
 } from './table.utils';
-import { PerformanceEndpointsTableToolbar } from './PerformanceEndpointsTableToolbar';
 import { PerformanceEndpointsTableRow } from './PerformanceEndpointsTableRow';
 
 export interface PerformanceEndpointsTableProps {
@@ -33,60 +36,53 @@ export function PerformanceEndpointsTable({
         usePerformanceEndpointsTableQuery(options);
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedMethod, setSelectedMethod] = useState<string>('all');
-    const {
-        sortBy,
-        order,
-        handleSort: onSort,
-    } = useSortState<PerformanceSortField>(
-        'totalRequestCount',
-        OrderDirection.DESC,
-    );
+    const [selectedMethod, setSelectedMethod] = useState('ALL');
 
+    const { sortBy, order, handleSort } =
+        useSortState<PerformanceSortField>('totalRequestCount');
+
+    // 1. Filter by search term and method
     const filteredEndpoints = useMemo(() => {
-        return rawEndpoints.filter((ep) => {
+        return rawEndpoints.filter((endpoint) => {
             const matchesSearch =
                 searchTerm === '' ||
-                ep.path.toLowerCase().includes(searchTerm.toLowerCase());
+                endpoint.path.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesMethod =
-                selectedMethod === 'all' ||
-                (ep.method as string) === selectedMethod;
+                selectedMethod === 'ALL' ||
+                endpoint.method.toUpperCase() === selectedMethod.toUpperCase();
             return matchesSearch && matchesMethod;
         });
     }, [rawEndpoints, searchTerm, selectedMethod]);
 
+    // 2. Sort
     const sortedEndpoints = useMemo(() => {
         return sortPerformanceEndpoints(filteredEndpoints, sortBy, order);
     }, [filteredEndpoints, sortBy, order]);
 
+    // 3. Paginate
     const {
+        paginatedItems: paginatedEndpoints,
         currentPage,
         totalPages,
-        pageSize,
-        paginatedItems: paginatedEndpoints,
-        goToNextPage,
-        goToPrevPage,
-        hasNextPage,
         hasPrevPage,
+        hasNextPage,
+        goToPrevPage,
+        goToNextPage,
         resetPage,
+        pageSize,
     } = usePagination(sortedEndpoints, 15);
 
-    const handleSort = (field: PerformanceSortField) => {
-        onSort(field);
-        resetPage();
-    };
+    const isFiltered = searchTerm !== '' || selectedMethod !== 'ALL';
 
     const resetFilters = () => {
         setSearchTerm('');
-        setSelectedMethod('all');
+        setSelectedMethod('ALL');
         resetPage();
     };
 
-    const isFiltered = searchTerm !== '' || selectedMethod !== 'all';
-
     return (
         <Card className="overflow-hidden">
-            <PerformanceEndpointsTableToolbar
+            <EndpointsTableToolbar
                 searchTerm={searchTerm}
                 onSearchChange={(val) => {
                     setSearchTerm(val);
@@ -251,31 +247,14 @@ export function PerformanceEndpointsTable({
 
             {/* Pagination Controls */}
             {sortedEndpoints.length > pageSize && (
-                <div className="flex items-center justify-between border-t px-4 py-3 text-xs text-muted-foreground">
-                    <div>
-                        Page {currentPage} of {totalPages}
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={!hasPrevPage}
-                            onClick={goToPrevPage}
-                            className="h-7 text-xs"
-                        >
-                            Previous
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={!hasNextPage}
-                            onClick={goToNextPage}
-                            className="h-7 text-xs"
-                        >
-                            Next
-                        </Button>
-                    </div>
-                </div>
+                <TablePagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    hasPrevPage={hasPrevPage}
+                    hasNextPage={hasNextPage}
+                    goToPrevPage={goToPrevPage}
+                    goToNextPage={goToNextPage}
+                />
             )}
         </Card>
     );

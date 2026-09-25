@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Network } from 'lucide-react';
-import { OrderDirection, type GetTrafficOptions } from '@hitapi/types';
+import { type GetTrafficOptions } from '@hitapi/types';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
@@ -11,12 +10,16 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { SortIcon, TableLoadingRows } from '@/components/common';
+import {
+    EndpointsTableToolbar,
+    SortIcon,
+    TableLoadingRows,
+    TablePagination,
+} from '@/components/common';
 import { EmptyState } from '@/components/states/EmptyState';
 import { usePagination, useSortState } from '@/hooks';
 import { useTrafficEndpointsTableQuery } from '../../hooks';
 import { sortTrafficEndpoints, type TrafficSortField } from './table.utils';
-import { TrafficEndpointsTableToolbar } from './TrafficEndpointsTableToolbar';
 import { TrafficEndpointsTableRow } from './TrafficEndpointsTableRow';
 
 export interface TrafficEndpointsTableProps {
@@ -30,48 +33,41 @@ export function TrafficEndpointsTable({
         useTrafficEndpointsTableQuery(options);
 
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedMethod, setSelectedMethod] = useState<string>('all');
-    const {
-        sortBy,
-        order,
-        handleSort: onSort,
-    } = useSortState<TrafficSortField>(
-        'totalRequestCount',
-        OrderDirection.DESC,
-    );
+    const [selectedMethod, setSelectedMethod] = useState('all');
 
+    const { sortBy, order, handleSort } =
+        useSortState<TrafficSortField>('totalRequestCount');
+
+    // 1. Filter by search term and method
     const filteredEndpoints = useMemo(() => {
-        return rawEndpoints.filter((ep) => {
+        return rawEndpoints.filter((endpoint) => {
             const matchesSearch =
                 searchTerm === '' ||
-                ep.path.toLowerCase().includes(searchTerm.toLowerCase());
+                endpoint.path.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesMethod =
                 selectedMethod === 'all' ||
-                (ep.method as string) === selectedMethod;
+                endpoint.method.toLowerCase() === selectedMethod.toLowerCase();
             return matchesSearch && matchesMethod;
         });
     }, [rawEndpoints, searchTerm, selectedMethod]);
 
+    // 2. Sort
     const sortedEndpoints = useMemo(() => {
         return sortTrafficEndpoints(filteredEndpoints, sortBy, order);
     }, [filteredEndpoints, sortBy, order]);
 
+    // 3. Paginate
     const {
+        paginatedItems: paginatedEndpoints,
         currentPage,
         totalPages,
-        pageSize,
-        paginatedItems: paginatedEndpoints,
-        goToNextPage,
-        goToPrevPage,
-        hasNextPage,
         hasPrevPage,
+        hasNextPage,
+        goToPrevPage,
+        goToNextPage,
         resetPage,
+        pageSize,
     } = usePagination(sortedEndpoints, 15);
-
-    const handleSort = (field: TrafficSortField) => {
-        onSort(field);
-        resetPage();
-    };
 
     const resetFilters = () => {
         setSearchTerm('');
@@ -83,7 +79,7 @@ export function TrafficEndpointsTable({
 
     return (
         <Card className="overflow-hidden">
-            <TrafficEndpointsTableToolbar
+            <EndpointsTableToolbar
                 searchTerm={searchTerm}
                 onSearchChange={(val) => {
                     setSearchTerm(val);
@@ -248,31 +244,14 @@ export function TrafficEndpointsTable({
 
             {/* Pagination Controls */}
             {sortedEndpoints.length > pageSize && (
-                <div className="flex items-center justify-between border-t px-4 py-3 text-xs text-muted-foreground">
-                    <div>
-                        Page {currentPage} of {totalPages}
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={!hasPrevPage}
-                            onClick={goToPrevPage}
-                            className="h-7 text-xs"
-                        >
-                            Previous
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={!hasNextPage}
-                            onClick={goToNextPage}
-                            className="h-7 text-xs"
-                        >
-                            Next
-                        </Button>
-                    </div>
-                </div>
+                <TablePagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    hasPrevPage={hasPrevPage}
+                    hasNextPage={hasNextPage}
+                    goToPrevPage={goToPrevPage}
+                    goToNextPage={goToNextPage}
+                />
             )}
         </Card>
     );

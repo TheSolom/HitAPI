@@ -4,12 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { EndpointPath, MethodBadge } from '@/components/common';
 import { cn } from '@/lib/utils';
-import {
-    formatApdex,
-    formatNumber,
-    formatResponseTime,
-    getApdexRating,
-} from '../../utils';
+import { formatNumber } from '@/lib/format';
+import { formatApdex, formatResponseTime, getApdexRating } from '../../utils';
 
 export interface PerformanceEndpointsTableRowProps {
     endpoint: PerformanceEndpointsTableResponseDto;

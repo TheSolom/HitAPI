@@ -4,7 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { EndpointPath, MethodBadge } from '@/components/common';
 import { cn } from '@/lib/utils';
-import { formatBytes, formatNumber, formatRate } from '../../utils';
+import { formatBytes, formatRate } from '../../utils';
+import { formatNumber } from '@/lib/format';
 import { getErrorRateBadgeClass } from './table.utils';
 
 export interface TrafficEndpointsTableRowProps {
