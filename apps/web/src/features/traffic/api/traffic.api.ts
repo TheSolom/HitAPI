@@ -2,6 +2,7 @@ import { api } from '@/lib/api/client';
 import type {
     CustomResponse,
     DataTransferredChartResponseDto,
+    ExportTrafficCsvOptions,
     GetTrafficOptions,
     QueryParams,
     RequestsChartResponseDto,
@@ -58,6 +59,13 @@ export const trafficApi = {
     endpointsTable: (options: GetTrafficOptions, signal?: AbortSignal) =>
         api.get<GetTrafficEndpointsTableResponse>(
             '/traffic/endpoints-table',
+            options as unknown as QueryParams,
+            signal,
+        ),
+
+    export: (options: ExportTrafficCsvOptions, signal?: AbortSignal) =>
+        api.get<string>(
+            '/traffic/export',
             options as unknown as QueryParams,
             signal,
         ),

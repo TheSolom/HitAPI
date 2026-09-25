@@ -1,12 +1,14 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type {
     DataTransferredChartResponseDto,
+    ExportTrafficCsvOptions,
     GetTrafficOptions,
     RequestsChartResponseDto,
     RequestsPerMinuteChartResponseDto,
     TrafficEndpointsTableResponseDto,
     TrafficMetricsResponseDto,
 } from '@hitapi/types';
+import { useExportCsv } from '@/hooks';
 import { trafficApi } from '../api';
 import { trafficKeys } from './traffic.keys';
 
@@ -103,5 +105,18 @@ export function useTrafficEndpointsTableQuery(
         },
         enabled: Boolean(options.appId),
         placeholderData: keepPreviousData,
+    });
+}
+
+export function useExportTraffic() {
+    return useExportCsv<ExportTrafficCsvOptions>({
+        filenamePrefix: 'traffic',
+        getAppId: (params) => params.appId,
+        fetcher: async (params) => {
+            const csv = await trafficApi.export(params);
+            if (typeof csv !== 'string')
+                throw new Error('Invalid export response');
+            return csv;
+        },
     });
 }

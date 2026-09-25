@@ -1,5 +1,7 @@
+import { Download, Loader2 } from 'lucide-react';
 import type { Period } from '@hitapi/types';
 import type { RestfulMethod } from '@hitapi/shared/enums';
+import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { EmptyState } from '@/components/states/EmptyState';
 import { useAnalyticsQueryOptions } from '@/hooks';
@@ -11,6 +13,7 @@ import {
     DataTransferredChart,
     TrafficEndpointsTable,
 } from '../components';
+import { useExportTraffic } from '../hooks';
 
 export interface TrafficPageProps {
     appId?: string;
@@ -41,6 +44,16 @@ export function TrafficPage({
         statusCode,
     });
 
+    const { exportCsv, isExporting } = useExportTraffic();
+
+    const handleExport = () => {
+        if (!resolvedAppId) return;
+        void exportCsv({
+            ...queryOptions,
+            appId: resolvedAppId,
+        });
+    };
+
     if (!resolvedAppId) {
         return (
             <div className="space-y-6">
@@ -61,6 +74,22 @@ export function TrafficPage({
             <PageHeader
                 title="Traffic Analytics"
                 description="Real-time monitoring of request volume, throughput, data transfer, and endpoint health."
+                actions={
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleExport}
+                        disabled={isExporting}
+                        className="h-9 gap-2"
+                    >
+                        {isExporting ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                            <Download className="h-3.5 w-3.5" />
+                        )}
+                        Export CSV
+                    </Button>
+                }
             />
 
             {/* KPI Metrics Cards */}
