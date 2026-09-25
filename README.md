@@ -207,7 +207,6 @@ npm run start:dev:web
 | **REST API Base**         | [http://localhost:3001/api/v1](http://localhost:3001/api/v1)     | Backend API endpoint              |
 | **Swagger Documentation** | [http://localhost:3001/api/docs](http://localhost:3001/api/docs) | Interactive OpenAPI documentation |
 | **BullMQ Dashboard**      | [http://localhost:3001/queues](http://localhost:3001/queues)     | Bull Board queue monitoring UI    |
-| **Redis Stack UI**        | [http://localhost:8001](http://localhost:8001)                   | RedisInsight visual cache browser |
 
 ---
 
