@@ -34,21 +34,26 @@ export class FileManager {
     }
 
     #serializeItem(item: RequestLogItem): string {
+        const request = { ...item.request };
+        if (request.body && Buffer.isBuffer(request.body)) {
+            request.body = request.body.toString('utf8') as unknown as Buffer;
+        }
+
+        const response = { ...item.response };
+        if (response.body && Buffer.isBuffer(response.body)) {
+            response.body = response.body.toString('utf8') as unknown as Buffer;
+        }
+
         const finalItem = {
             uuid: item.uuid,
-            request: this.#skipEmptyValues<Request>(item.request),
-            response: this.#skipEmptyValues<Response>(item.response),
+            request: this.#skipEmptyValues<Request>(request),
+            response: this.#skipEmptyValues<Response>(response),
             exception: item.exception,
             logs: item.logs,
             traceId: item.traceId,
         };
 
-        return JSON.stringify(finalItem, (_key, value) => {
-            if (Buffer.isBuffer(value)) {
-                return value.toString('base64');
-            }
-            return value as string;
-        });
+        return JSON.stringify(finalItem);
     }
 
     async #writeToCurrentFile(item: RequestLogItem): Promise<void> {
