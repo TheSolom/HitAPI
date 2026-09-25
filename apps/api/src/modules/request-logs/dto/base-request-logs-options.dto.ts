@@ -1,0 +1,148 @@
+import {
+    IsOptional,
+    IsString,
+    IsBoolean,
+    IsIP,
+    IsDateString,
+    IsEnum,
+    IsInt,
+    IsUUID,
+    IsNotEmpty,
+    Min,
+    Max,
+    IsPositive,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { RestfulMethod } from '@hitapi/shared/enums';
+import { IsPeriod } from '../../../common/validators/is-period.validator.js';
+import type { Period } from '@hitapi/types';
+
+export class BaseRequestLogsOptionsDto {
+    @ApiProperty({ format: 'uuid' })
+    @IsUUID()
+    @IsNotEmpty()
+    appId: string;
+
+    @ApiPropertyOptional({
+        type: 'string',
+        default: '24h',
+        example: '24h, 7d, or start|end',
+    })
+    @IsPeriod()
+    @IsOptional()
+    period: Period = '24h';
+
+    @ApiPropertyOptional({ type: 'integer' })
+    @Type(() => Number)
+    @IsInt()
+    @IsOptional()
+    consumerId?: number;
+
+    @ApiPropertyOptional({ type: 'integer' })
+    @Type(() => Number)
+    @IsInt()
+    @IsOptional()
+    consumerGroupId?: number;
+
+    @ApiPropertyOptional({ enum: RestfulMethod })
+    @IsEnum(RestfulMethod)
+    @IsOptional()
+    method?: RestfulMethod;
+
+    @ApiPropertyOptional({ type: 'string' })
+    @IsString()
+    @IsOptional()
+    path?: string;
+
+    @ApiPropertyOptional({ type: 'boolean' })
+    @Type(() => Boolean)
+    @IsBoolean()
+    @IsOptional()
+    pathExact?: boolean;
+
+    @ApiPropertyOptional({ type: 'integer' })
+    @Type(() => Number)
+    @Max(599)
+    @Min(100)
+    @IsInt()
+    @IsOptional()
+    statusCode?: number;
+
+    @ApiPropertyOptional({ format: 'date-time' })
+    @IsDateString()
+    @IsOptional()
+    minTimestamp?: string;
+
+    @ApiPropertyOptional({ format: 'date-time' })
+    @IsDateString()
+    @IsOptional()
+    maxTimestamp?: string;
+
+    @ApiPropertyOptional({ format: 'url' })
+    @IsString()
+    @IsOptional()
+    url?: string;
+
+    @ApiPropertyOptional({ type: 'integer' })
+    @Type(() => Number)
+    @IsPositive()
+    @IsInt()
+    @IsOptional()
+    minRequestSize?: number;
+
+    @ApiPropertyOptional({ type: 'integer' })
+    @Type(() => Number)
+    @IsPositive()
+    @IsInt()
+    @IsOptional()
+    maxRequestSize?: number;
+
+    @ApiPropertyOptional({ type: 'integer' })
+    @Type(() => Number)
+    @IsPositive()
+    @IsInt()
+    @IsOptional()
+    minResponseSize?: number;
+
+    @ApiPropertyOptional({ type: 'integer' })
+    @Type(() => Number)
+    @IsPositive()
+    @IsInt()
+    @IsOptional()
+    maxResponseSize?: number;
+
+    @ApiPropertyOptional({ type: 'integer' })
+    @Type(() => Number)
+    @IsPositive()
+    @IsInt()
+    @IsOptional()
+    minResponseTime?: number;
+
+    @ApiPropertyOptional({ type: 'integer' })
+    @Type(() => Number)
+    @IsPositive()
+    @IsInt()
+    @IsOptional()
+    maxResponseTime?: number;
+
+    @ApiPropertyOptional({ type: 'string' })
+    @IsString()
+    @IsOptional()
+    requestBody?: string;
+
+    @ApiPropertyOptional({ type: 'string' })
+    @IsString()
+    @IsOptional()
+    responseBody?: string;
+
+    @ApiPropertyOptional({ format: 'ip' })
+    @IsIP()
+    @IsOptional()
+    clientIp?: string;
+
+    @ApiPropertyOptional({ type: 'string' })
+    @IsString()
+    @IsOptional()
+    logLevel?: string;
+}
