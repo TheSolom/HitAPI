@@ -8,6 +8,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { Environment } from '@hitapi/types';
 import { validate } from './config/env/validation.js';
 import { ThrottlerModule } from './config/throttler/throttler.module.js';
 import { DBModule } from './config/db/database.module.js';
@@ -36,7 +37,7 @@ import { NdjsonBodyMiddleware } from './common/middlewares/ndjson-body.middlewar
 import { Routes } from './common/constants/routes.constant.js';
 
 const isIgnoreEnvFile = process.env.IGNORE_ENV_FILE === 'true';
-const nodeEnv = process.env.NODE_ENV || 'development';
+const nodeEnv = process.env.NODE_ENV || Environment.Development;
 
 const envFilePath = isIgnoreEnvFile
     ? undefined
