@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class InitialSchema1775378244925 implements MigrationInterface {
-    name = 'InitialSchema1775378244925';
+export class InitialSchema1791650579065 implements MigrationInterface {
+    name = 'InitialSchema1791650579065';
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(
@@ -23,7 +23,7 @@ export class InitialSchema1775378244925 implements MigrationInterface {
             `CREATE TABLE "consumer_group" ("id" SERIAL NOT NULL, "name" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "appId" uuid NOT NULL, CONSTRAINT "AppConsumerGroupName" UNIQUE ("appId", "name"), CONSTRAINT "PK_c2b2959be8d0210f3b38a4a86e0" PRIMARY KEY ("id"))`,
         );
         await queryRunner.query(
-            `CREATE TABLE "consumers" ("id" SERIAL NOT NULL, "identifier" character varying NOT NULL, "name" character varying(255), "hidden" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "appId" uuid NOT NULL, "groupId" integer, CONSTRAINT "AppConsumerIdentifier" UNIQUE ("appId", "identifier"), CONSTRAINT "PK_9355367764efa60a8c2c27856d0" PRIMARY KEY ("id"))`,
+            `CREATE TABLE "consumers" ("id" SERIAL NOT NULL, "identifier" character varying NOT NULL, "name" character varying(255), "hidden" boolean NOT NULL DEFAULT false, "groupId" integer, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "appId" uuid NOT NULL, CONSTRAINT "AppConsumerIdentifier" UNIQUE ("appId", "identifier"), CONSTRAINT "PK_9355367764efa60a8c2c27856d0" PRIMARY KEY ("id"))`,
         );
         await queryRunner.query(
             `CREATE TABLE "validation_error" ("id" BIGSERIAL NOT NULL, "msg" text NOT NULL, "type" character varying(255) NOT NULL, "loc" jsonb NOT NULL, "errorCount" integer NOT NULL DEFAULT '1', "endpointId" uuid NOT NULL, "consumerId" integer, CONSTRAINT "PK_de7ec9c2fb405b34eda316222d0" PRIMARY KEY ("id"))`,
@@ -41,7 +41,7 @@ export class InitialSchema1775378244925 implements MigrationInterface {
             `CREATE TABLE "endpoint" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "method" character varying NOT NULL, "path" character varying NOT NULL, "summary" character varying, "description" text, "targetResponseTimeMs" integer, "excluded" boolean NOT NULL DEFAULT false, "expectedStatusCodes" integer array NOT NULL DEFAULT '{}', "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "appId" uuid NOT NULL, CONSTRAINT "AppEndpointMethodPath" UNIQUE ("appId", "method", "path"), CONSTRAINT "PK_7785c5c2cf24e6ab3abb7a2e89f" PRIMARY KEY ("id"))`,
         );
         await queryRunner.query(
-            `CREATE TABLE "app" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "slug" character varying NOT NULL, "clientId" character varying NOT NULL, "targetResponseTimeMs" integer NOT NULL DEFAULT '500', "active" boolean NOT NULL DEFAULT true, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "frameworkId" integer NOT NULL, "teamId" uuid NOT NULL, CONSTRAINT "UQ_8993112cd607f65268a4f57da39" UNIQUE ("slug"), CONSTRAINT "UQ_94a75a2b2426d5d3b92c70cbdc5" UNIQUE ("clientId"), CONSTRAINT "PK_9478629fc093d229df09e560aea" PRIMARY KEY ("id"))`,
+            `CREATE TABLE "app" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "slug" character varying NOT NULL, "clientId" character varying NOT NULL, "targetResponseTimeMs" integer NOT NULL DEFAULT '500', "active" boolean NOT NULL DEFAULT true, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "frameworkId" integer NOT NULL, "teamId" uuid NOT NULL, CONSTRAINT "UQ_94a75a2b2426d5d3b92c70cbdc5" UNIQUE ("clientId"), CONSTRAINT "TeamAppSlug" UNIQUE ("teamId", "slug"), CONSTRAINT "PK_9478629fc093d229df09e560aea" PRIMARY KEY ("id"))`,
         );
         await queryRunner.query(
             `CREATE TABLE "team" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "name" character varying NOT NULL, "slug" character varying NOT NULL, "demo" boolean NOT NULL DEFAULT false, "stealth" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "UQ_e459cfa57273996b76d24a0fa68" UNIQUE ("slug"), CONSTRAINT "PK_f57d8293406df4af348402e4b74" PRIMARY KEY ("id"))`,
@@ -56,7 +56,7 @@ export class InitialSchema1775378244925 implements MigrationInterface {
             `CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "displayName" character varying NOT NULL, "email" character varying NOT NULL, "password" character varying, "verified" boolean NOT NULL DEFAULT false, "admin" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
         );
         await queryRunner.query(
-            `CREATE TABLE "traffic_metric" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "requestCount" integer NOT NULL, "requestSizeSum" bigint NOT NULL, "responseSizeSum" bigint NOT NULL, "responseTimeP50" integer NOT NULL, "responseTimeP75" integer NOT NULL, "responseTimeP95" integer NOT NULL, "timeWindow" TIMESTAMP WITH TIME ZONE NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "endpointId" uuid NOT NULL, "consumerId" integer, CONSTRAINT "TrafficMetricEndpointConsumerTimeWindow" UNIQUE ("endpointId", "consumerId", "timeWindow"), CONSTRAINT "PK_fb29a9a150e2e18d02aeef823ec" PRIMARY KEY ("id"))`,
+            `CREATE TABLE "traffic_metric" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "requestCount" integer NOT NULL, "requestSizeSum" bigint NOT NULL, "responseSizeSum" bigint NOT NULL, "responseTimeP50" integer NOT NULL, "responseTimeP75" integer NOT NULL, "responseTimeP95" integer NOT NULL, "apdexSatisfiedCount" integer NOT NULL DEFAULT '0', "apdexToleratedCount" integer NOT NULL DEFAULT '0', "apdexFrustratedCount" integer NOT NULL DEFAULT '0', "timeWindow" TIMESTAMP WITH TIME ZONE NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "endpointId" uuid NOT NULL, "consumerId" integer, CONSTRAINT "TrafficMetricEndpointConsumerTimeWindow" UNIQUE ("endpointId", "consumerId", "timeWindow"), CONSTRAINT "PK_fb29a9a150e2e18d02aeef823ec" PRIMARY KEY ("id"))`,
         );
         await queryRunner.query(
             `CREATE TABLE "resource" ("id" BIGSERIAL NOT NULL, "cpuPercent" numeric(5,2), "memoryRss" integer NOT NULL, "timeWindow" TIMESTAMP WITH TIME ZONE NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "appId" uuid NOT NULL, CONSTRAINT "AppResourceTimeWindow" UNIQUE ("timeWindow", "appId"), CONSTRAINT "PK_e2894a5867e06ae2e8889f1173f" PRIMARY KEY ("id"))`,
