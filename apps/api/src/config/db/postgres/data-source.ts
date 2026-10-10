@@ -12,18 +12,9 @@ const __dirname = path.dirname(__filename);
 
 const appRoot = path.resolve(__dirname, '../../../../');
 const nodeEnv = process.env.NODE_ENV || Environment.Development;
-const candidateEnvFiles = [
-    `.env.${nodeEnv}.local`,
-    `.env.${nodeEnv}`,
-    '.env.local',
-    '.env',
-];
-
-for (const envFile of candidateEnvFiles) {
-    const fullPath = path.join(appRoot, envFile);
-    if (fs.existsSync(fullPath)) {
-        dotenv.config({ path: fullPath });
-    }
+const fullPath = path.join(appRoot, `.env.${nodeEnv}`);
+if (fs.existsSync(fullPath)) {
+    dotenv.config({ path: fullPath });
 }
 
 const configService = new ConfigService<EnvironmentVariablesDto, false>();

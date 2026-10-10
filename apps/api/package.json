@@ -19,7 +19,7 @@
         "start": "nest start",
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
-        "start:prod": "node --env-file=.env.production.local dist/main",
+        "start:prod": "node --env-file=.env.production dist/main",
         "lint": "eslint \"{src,test}/**/*.ts\"",
         "lint:fix": "eslint \"{src,test}/**/*.ts\" --fix",
         "type-check": "tsc --noEmit",
